@@ -41,8 +41,8 @@ classDiagram
     + get_assigned_job(job_id: JobId) : AccountId
     + set_current_job_id(job_id: JobId) : void
     + get_current_job_id() : JobId
-    + set_account_type(account_type: AccountType) : void
-    + get_account_type() : AccountType
+    + set_account_type(account_type: AccountRole) : void
+    + get_account_type() : AccountRole
     + complain(job_id: JobId) : Result<(), JobError> // Added method
     + report(job_id: JobId) : Result<(), JobError> // Added method
     + rate_partner(job_id: JobId, rating: RatingPoint) : Result<(), JobError> // Added method
@@ -98,10 +98,10 @@ classDiagram
     + to_string() : String
   }
 
-  class AccountType {
-    + OWNER_JOB
+  class AccountRole {
+    + ENTERPRISE
+    + INVIDUAL
     + FREELANCER
-    + TEAM_LEADER
     + is_owner_job() : bool
     + is_freelancer() : bool
     + is_team_leader() : bool
@@ -140,8 +140,9 @@ classDiagram
     + getFreelancerAccountType() : AccountType
   }
 
-  Dapp -- AccountType
-  AccountType -- User
+  Dapp -- AccountRole
+  AccountRole -- User
+  User -- Balance
   User --* Job
   User -- JobId
   User -- AccountId
