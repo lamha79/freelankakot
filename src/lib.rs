@@ -3,6 +3,7 @@
 #[ink::contract]
 mod freelancer { 
  
+    use ink::env::caller;
     use ink::storage::Mapping;
     use ink::prelude::string::String;
     use ink::prelude::vec::Vec;
@@ -52,6 +53,7 @@ mod freelancer {
         REVIEW, 
         REOPEN, 
         FINISH, 
+        CANCELED,
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq, Clone, Copy)]
@@ -216,7 +218,8 @@ mod freelancer {
                 Status::REVIEW => return Err(JobError::Proccesing),
                 Status::OPEN => (),
                 Status::REOPEN => (),
-                Status::FINISH => return Err(JobError::Finish) //job đã kết thúc
+                Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
+                Status::FINISH => return Err(JobError::Finish), //job đã kết thúc
 
             }
 
@@ -253,7 +256,8 @@ mod freelancer {
             match job.status {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
-                Status::REVIEW => return Err(JobError::Submited),
+                Status::REVIEW => return Err(JobError::Submited),               
+                Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::DOING => {
                     job.result = Some(result);
@@ -291,6 +295,7 @@ mod freelancer {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
                 Status::DOING => return Err(JobError::Proccesing),
+                Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
                     job.status = Status::REOPEN;
@@ -332,6 +337,7 @@ mod freelancer {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
                 Status::DOING => return Err(JobError::Proccesing),
+                Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
                     job.status = Status::FINISH;
@@ -342,12 +348,48 @@ mod freelancer {
                     self.doing_job.remove(freelancer);
                     // thanh toán tiền job
                     let budget = job.budget;
-                    self.env().transfer(freelancer, budget);
+                    let _ = self.env().transfer(freelancer, budget);
                 }
             }
 
             Ok(())
         } 
+        
+        #[ink(message,payable)]
+        pub fn cancel(&mut self, job_id: JobId) -> Result<(), JobError> {
+        // Khách hàng có thể huỷ job nếu job ở trạng thái OPEN hoặc REOPEN, nếu job đã được giao thì không thể huỷ, budget của job sẽ được trả lại cho người giao job đó.
+        
+        // Retrieve job
+        let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+
+        // Check caller is job owner 
+        let caller = self.env().caller();        
+        let role = self.account_role.get(caller).unwrap();
+        
+        if self.owner_job.get((caller, role)).unwrap() != job_id {
+                return Err(JobError::NotAssignThisJob)        
+        }
+
+        // Only allow cancel if status is OPEN or REOPEN
+        match job.status {
+                Status::OPEN | Status::REOPEN => {
+                    // Set status to canceled
+                    job.status = Status::CANCELED;
+                    // Update job in storage
+                    self.jobs.insert(job_id, &job);
+        
+                    let budget = job.budget;
+                    let _ = self.env().transfer(caller, budget);
+
+                },
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
+                Status::FINISH => return Err(JobError::Finish),
+            }
+            Ok(())
+        }
+
+
 
         #[ink(message)]
         pub fn check_balance_of_contract(&self) -> Balance {
