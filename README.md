@@ -43,8 +43,9 @@ classDiagram
     + get_current_job_id() : JobId
     + set_account_type(account_type: AccountRole) : void
     + get_account_type() : AccountRole
-    + complain(job_id: JobId) : Result<(), JobError> // Added method
-    + report(job_id: JobId) : Result<(), JobError> // Added method
+    + complaint(job_id: JobId) : Result<(), JobError> // Added method
+    + negotiate(job_id: JobId, feedback: String, evidence: Vec<String>, token_value: u64, agreed: bool) : Result<(), JobError> // Added method
+    + resolve(job_id: JobId, report: Report) : Result<(), JobError> // Added method
     + rate_partner(job_id: JobId, rating: RatingPoint) : Result<(), JobError> // Added method
   }
 
@@ -65,6 +66,7 @@ classDiagram
     + REOPEN
     + FINISH
     + COMPLAINT // Added status
+    + REPORT // Added status
 
   }
 
@@ -127,7 +129,7 @@ classDiagram
 
   class Dapp {
     + user : User
-    +createJob(jobID: JobId): Result // Updated method signature
+    + createJob(jobID: JobId): Result // Updated method signature
     + cancleJob(jobID: JobId): Result // Updated method signature
     + createTeam(Map<String, String>): Result
     + addMember(userId: AccountID): Result

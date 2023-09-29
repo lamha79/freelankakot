@@ -1,29 +1,29 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 #[ink::contract]
-mod freelancer { 
- 
+mod freelancer {
+
     use ink::env::caller;
-    use ink::storage::Mapping;
     use ink::prelude::string::String;
     use ink::prelude::vec::Vec;
+    use ink::storage::Mapping;
 
     pub type JobId = u128;
+    pub type Report = String;
 
     #[ink(storage)]
     #[derive(Default)]
     pub struct Freelancer {
-        jobs : Mapping<JobId, Job>,
-        owner_job : Mapping<(AccountId, AccountRole), JobId>,
+        jobs: Mapping<JobId, Job>,
+        owner_job: Mapping<(AccountId, AccountRole), JobId>,
         doing_job: Mapping<AccountId, JobId>,
         assigned_job: Mapping<JobId, AccountId>,
         current_job_id: JobId,
         account_role: Mapping<AccountId, AccountRole>, //bỏ cái này vì trong personal account đã có thông tin rồi
         personal_account_info: Mapping<AccountId, UserInfo>,
         all_created_projects: Mapping<AccountId, Vec<(JobId, Status)>>,
-        all_obtain: Mapping<AccountId, Vec<(JobId, Status)>>
+        all_obtain: Mapping<AccountId, Vec<(JobId, Status)>>,
     }
-
 
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
     #[cfg_attr(
@@ -31,14 +31,14 @@ mod freelancer {
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
     )]
     pub struct Job {
-        name: String, 
+        name: String,
         description: String,
         result: Option<String>,
         status: Status,
         budget: Balance,
         // fee_percentage: Balance, //Phí để up việc
         // duration: BlockNumber,
-        // dealine: Option<BlockNumber>, 
+        // dealine: Option<BlockNumber>,
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
@@ -48,11 +48,12 @@ mod freelancer {
     )]
     pub enum Status {
         #[default]
-        OPEN, 
-        DOING, 
-        REVIEW, 
-        REOPEN, 
-        FINISH, 
+        OPEN,
+        DOING,
+        REVIEW,
+        REOPEN,
+        FINISH,
+        COMPLAINT,
         CANCELED,
     }
 
@@ -65,9 +66,8 @@ mod freelancer {
         #[default]
         INDIVIDUAL, // khách hàng cá nhân
         ENTERPRISE(OnwerRoleInEnterprise), // khác hàng doanh nghiệp
-        FREELANCER, 
+        FREELANCER,
     }
-
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq, Clone, Copy)]
     #[cfg_attr(
@@ -80,45 +80,37 @@ mod freelancer {
         ACCOUNTANT, //có thể bổ sung các role khác
     }
 
-
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
     #[cfg_attr(
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
     )]
-    pub struct UserInfo{
+    pub struct UserInfo {
         name: String,
-        detail: String, //liên kết đến IPFS lưu trữ thông tin cá nhân
-        role: AccountRole, // vai trò
+        detail: String,     //liên kết đến IPFS lưu trữ thông tin cá nhân
+        role: AccountRole,  // vai trò
         rating_points: u32, // điểm dánh giá
     }
 
-
-    
-
     #[derive(scale::Decode, scale::Encode)]
-    #[cfg_attr(
-        feature = "std",
-        derive(scale_info::TypeInfo)
-    )]
+    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum JobError {
-        Registered, //đã đăng kí tài khoản (đăng kí), không đăng kí nữa
-        NotRegistered, // chưa đăng kí tài khoản.
-        NotJobAssigner, // bạn không phải là người giao việc
-        NotFreelancer, // bạn không phải là freelancer
-        CreatedJob, //Job đã tạo
-        NotExisted, // Job không tồn tại
-        NotTaked, // chưa có người nhận job
-        Taked, //đã có người nhận
-        NotTakeThisJob, // bạn ko có nhận job này
-        NotAssignThisJob, //bạn ko phải là người giao việc này
-        Submited, //đã submit 
-        Proccesing, //đang có người làm
+        Registered,           //đã đăng kí tài khoản (đăng kí), không đăng kí nữa
+        NotRegistered,        // chưa đăng kí tài khoản.
+        NotJobAssigner,       // bạn không phải là người giao việc
+        NotFreelancer,        // bạn không phải là freelancer
+        CreatedJob,           //Job đã tạo
+        NotExisted,           // Job không tồn tại
+        NotTaked,             // chưa có người nhận job
+        Taked,                //đã có người nhận
+        NotTakeThisJob,       // bạn ko có nhận job này
+        NotAssignThisJob,     //bạn ko phải là người giao việc này
+        Submited,             //đã submit
+        Proccesing,           //đang có người làm
         CurrentJobIncomplete, //hoàn thành job hiện tại đã
         JobInvalid,
         Finish, //job đã hoàn thành
     }
-
 
     impl Freelancer {
         /// Constructor that initializes the `bool` value to the given `init_value`.
@@ -128,7 +120,7 @@ mod freelancer {
         }
 
         #[ink(message)]
-        pub fn register(&mut self, role: AccountRole) -> Result<(), JobError>{
+        pub fn register(&mut self, role: AccountRole) -> Result<(), JobError> {
             let caller = self.env().caller();
             match self.account_role.get(caller) {
                 None => self.account_role.insert(caller, &role),
@@ -149,48 +141,51 @@ mod freelancer {
             match self.check_role() {
                 None => return Err(JobError::NotRegistered),
                 Some(AccountRole::FREELANCER) => return Err(JobError::NotJobAssigner),
-                _ => ()
+                _ => (),
             }
             let caller = self.env().caller();
             let budget = self.env().transferred_value();
             let role = self.account_role.get(caller).unwrap();
             let job = Job {
-                name: name, 
-                description: description, 
-                budget: budget, 
+                name: name,
+                description: description,
+                budget: budget,
                 status: Status::default(),
-                result: None
+                result: None,
             };
             // mỗi tài khoản chỉ push 1 công việc
-            if self.owner_job.get((caller, role)).is_some() {return Err(JobError::CreatedJob)}; 
+            if self.owner_job.get((caller, role)).is_some() {
+                return Err(JobError::CreatedJob);
+            };
             // job đầu đánh số 0, các job tiếp theo thì cộng 1 vào
-            self.jobs.insert(self.current_job_id, &job); 
+            self.jobs.insert(self.current_job_id, &job);
             self.owner_job.insert((caller, role), &self.current_job_id);
-            self.current_job_id = self.current_job_id + 1; 
-            
-            Ok(())
+            self.current_job_id = self.current_job_id + 1;
 
+            Ok(())
         }
 
         // có thể tùy chỉnh thêm lọc công việc theo status hoặc theo owner hoặc theo freelancer
         // lọc theo owner khi 1 owner có thể tạo nhiều công việc (chưa làm)
         // freelancer có thể apply job open va reopen
         #[ink(message)]
-        pub fn get_jobs_with_status (&self, status: Status) -> Vec<Job> {
+        pub fn get_jobs_with_status(&self, status: Status) -> Vec<Job> {
             let mut jobs = Vec::new();
             for index in 0..self.current_job_id {
                 let job = self.jobs.get(index).unwrap();
                 if job.status == status {
                     jobs.push(self.jobs.get(index).unwrap());
                 }
-            };
+            }
             jobs
         }
-        
+
         #[ink(message)]
-        pub fn obtain(&mut self, job_id: JobId) -> Result<(), JobError>{
+        pub fn obtain(&mut self, job_id: JobId) -> Result<(), JobError> {
             // kiểm tra id job có lớn hơn hoặc curren_id hay không (curren_id là id của job tiếp theo)
-            if job_id >= self.current_job_id {return Err(JobError::NotExisted)};
+            if job_id >= self.current_job_id {
+                return Err(JobError::NotExisted);
+            };
             //kiểm tra role
             match self.check_role() {
                 None => return Err(JobError::NotRegistered),
@@ -201,7 +196,7 @@ mod freelancer {
             // kiểm tra người nhận có đang làm job nào hay không
             let caller = self.env().caller();
             if self.doing_job.get(caller).is_some() {
-                return Err(JobError::CurrentJobIncomplete)
+                return Err(JobError::CurrentJobIncomplete);
             }
 
             // check job assigned or not
@@ -211,16 +206,15 @@ mod freelancer {
             // }
 
             // kiểm tra job hợp lệ hay không? và tiến hành update
-            let mut job = self.jobs.get(job_id).unwrap(); 
+            let mut job = self.jobs.get(job_id).unwrap();
 
             match job.status {
                 Status::DOING => return Err(JobError::Proccesing), //đang trong quá trình thực  hiện
-                Status::REVIEW => return Err(JobError::Proccesing),
+                Status::REVIEW | Status::COMPLAINT => return Err(JobError::Proccesing),
                 Status::OPEN => (),
                 Status::REOPEN => (),
                 Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
-                Status::FINISH => return Err(JobError::Finish), //job đã kết thúc
-
+                Status::FINISH => return Err(JobError::Finish),       //job đã kết thúc
             }
 
             job.status = Status::DOING;
@@ -229,34 +223,39 @@ mod freelancer {
             self.assigned_job.insert(job_id, &caller);
             // insert doing_job
             self.doing_job.insert(caller, &job_id);
-            
+
             // chỉnh lại trạng thái job
             self.jobs.insert(job_id, &job);
 
             Ok(())
-
         }
 
         #[ink(message)]
-        pub fn submit(&mut self, job_id: JobId, result: String) -> Result<(), JobError>{
+        pub fn submit(&mut self, job_id: JobId, result: String) -> Result<(), JobError> {
             // kiểm tra id job có lớn hơn hoặc curren_id hay không (curren_id là id của job tiếp theo)
-            if job_id >= self.current_job_id {return Err(JobError::NotExisted)};
+            if job_id >= self.current_job_id {
+                return Err(JobError::NotExisted);
+            };
             //kiểm tra role
-            let caller = self.env().caller(); 
+            let caller = self.env().caller();
             match self.check_role() {
                 None => return Err(JobError::NotRegistered),
                 Some(AccountRole::FREELANCER) => (),
                 _ => return Err(JobError::NotFreelancer),
             }
             // kiểm tra người đó có apply job đó hay không, chú ý kiểm tra None
-            if self.assigned_job.get(job_id) == None || self.assigned_job.get(job_id).unwrap() != caller {return Err(JobError::NotTakeThisJob)};
+            if self.assigned_job.get(job_id) == None
+                || self.assigned_job.get(job_id).unwrap() != caller
+            {
+                return Err(JobError::NotTakeThisJob);
+            };
 
             let mut job = self.jobs.get(job_id).unwrap();
             //job phải ở trạng thái doing mới submit được
             match job.status {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
-                Status::REVIEW => return Err(JobError::Submited),               
+                Status::REVIEW | Status::COMPLAINT => return Err(JobError::Submited),
                 Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::DOING => {
@@ -271,10 +270,11 @@ mod freelancer {
         }
 
         #[ink(message)]
-        pub fn reject(&mut self, job_id: JobId) -> Result<(), JobError>{
-
+        pub fn reject(&mut self, job_id: JobId) -> Result<(), JobError> {
             // kiểm tra id job có lớn hơn curren_id hay không
-            if job_id >= self.current_job_id {return Err(JobError::NotExisted)};
+            if job_id >= self.current_job_id {
+                return Err(JobError::NotExisted);
+            };
             // kiểm tra role
             let caller = self.env().caller();
             match self.check_role() {
@@ -286,7 +286,7 @@ mod freelancer {
             // kiểm tra người đó có phải là giao job đó hay không, không cần kiểm tra none vì khi có id job thì sẽ
             // chắc chắn có người giao job đó.
             if self.owner_job.get((caller, role)).unwrap() != job_id {
-                return Err(JobError::NotAssignThisJob)
+                return Err(JobError::NotAssignThisJob);
             };
 
             let mut job = self.jobs.get(job_id).unwrap();
@@ -294,7 +294,7 @@ mod freelancer {
             match job.status {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
-                Status::DOING => return Err(JobError::Proccesing),
+                Status::DOING | Status::COMPLAINT => return Err(JobError::Proccesing),
                 Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
@@ -310,13 +310,14 @@ mod freelancer {
             }
 
             Ok(())
-
         }
 
         #[ink(message)]
-        pub fn aproval(&mut self, job_id: JobId) -> Result<(), JobError>{
+        pub fn aproval(&mut self, job_id: JobId) -> Result<(), JobError> {
             // kiểm tra id job có lớn hơn curren_id hay không
-            if job_id >= self.current_job_id {return Err(JobError::NotExisted)};
+            if job_id >= self.current_job_id {
+                return Err(JobError::NotExisted);
+            };
             // kiểm tra role
             let caller = self.env().caller();
             match self.check_role() {
@@ -328,7 +329,7 @@ mod freelancer {
             // kiểm tra người đó có phải là giao job đó hay không, không cần kiểm tra none vì khi có id job thì sẽ
             // chắc chắn có người giao job đó.
             if self.owner_job.get((caller, role)).unwrap() != job_id {
-                return Err(JobError::NotAssignThisJob)
+                return Err(JobError::NotAssignThisJob);
             };
 
             let mut job = self.jobs.get(job_id).unwrap();
@@ -336,7 +337,7 @@ mod freelancer {
             match job.status {
                 Status::OPEN => return Err(JobError::NotTaked),
                 Status::REOPEN => return Err(JobError::NotTaked),
-                Status::DOING => return Err(JobError::Proccesing),
+                Status::DOING | Status::COMPLAINT => return Err(JobError::Proccesing),
                 Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
@@ -353,51 +354,102 @@ mod freelancer {
             }
 
             Ok(())
-        } 
-        
-        #[ink(message,payable)]
-        pub fn cancel(&mut self, job_id: JobId) -> Result<(), JobError> {
-        // Khách hàng có thể huỷ job nếu job ở trạng thái OPEN hoặc REOPEN, nếu job đã được giao thì không thể huỷ, budget của job sẽ được trả lại cho người giao job đó.
-        
-        // Retrieve job
-        let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
-
-        // Check caller is job owner 
-        let caller = self.env().caller();        
-        let role = self.account_role.get(caller).unwrap();
-        
-        if self.owner_job.get((caller, role)).unwrap() != job_id {
-                return Err(JobError::NotAssignThisJob)        
         }
 
-        // Only allow cancel if status is OPEN or REOPEN
-        match job.status {
+        #[ink(message, payable)]
+        pub fn cancel(&mut self, job_id: JobId) -> Result<(), JobError> {
+            // Khách hàng có thể huỷ job nếu job ở trạng thái OPEN hoặc REOPEN, nếu job đã được giao thì không thể huỷ, budget của job sẽ được trả lại cho người giao job đó.
+
+            // Retrieve job
+            let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+
+            // Check caller is job owner
+            let caller = self.env().caller();
+            let role = self.account_role.get(caller).unwrap();
+
+            if self.owner_job.get((caller, role)).unwrap() != job_id {
+                return Err(JobError::NotAssignThisJob);
+            }
+
+            // Only allow cancel if status is OPEN or REOPEN
+            match job.status {
                 Status::OPEN | Status::REOPEN => {
                     // Set status to canceled
                     job.status = Status::CANCELED;
                     // Update job in storage
                     self.jobs.insert(job_id, &job);
-        
+
                     let budget = job.budget;
                     let _ = self.env().transfer(caller, budget);
-
-                },
-                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                }
+                Status::DOING | Status::REVIEW | Status::COMPLAINT => return Err(JobError::Proccesing),
                 Status::CANCELED => return Err(JobError::NotExisted), // job đã bị hủy
                 Status::FINISH => return Err(JobError::Finish),
             }
             Ok(())
         }
 
+        #[ink(message)]
+        pub fn complaint(&mut self, job_id: JobId) -> Result<(), JobError> {
+            // Retrieve the job
+            let mut job = self.jobs.get(&job_id).ok_or(JobError::NotExisted)?;
 
+            // Check if the job is assigned to the freelancer
+
+            // Check if the job is marked as finished
+
+            // Set the job status to COMPLAINT
+            job.status = Status::COMPLAINT;
+
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn negotiate(
+            &mut self,
+            job_id: JobId,
+            feedback: String,
+            evidence: Vec<String>,
+            token_value: u64,
+            agreed: bool,
+        ) -> Result<(), JobError> {
+            // Retrieve the job
+
+            // Check if the job is in the COMPLAINT state
+
+            // Update the feedback, evidence, and token value for the job
+
+            // Check if both parties agree to the proposed changes
+
+            // Sign the contract and perform payment
+
+            Ok(())
+        }
+
+        pub fn resolve(
+            &mut self,
+            job_id: JobId,
+            report: Option<Report>,
+        ) -> Result<(), JobError> {
+
+
+            // Perform resolution logic here
+            // ...
+
+            // Set the resolution
+
+            // Set the reports
+
+            // Set the status to REOPEN
+
+            Ok(())
+        }
 
         #[ink(message)]
         pub fn check_balance_of_contract(&self) -> Balance {
             self.env().balance()
         }
     }
-
-
 
     // viết test
     #[cfg(test)]
@@ -408,11 +460,10 @@ mod freelancer {
         fn new_works() {
             // let mut new_freelancer = Freelancer::new();
             // assert_eq!(new_freelancer.current_job_id, 0);
-            
+
             // // role cá nhân hoặc role doanh nghiệp
             // let individual_role = OnwerRole::INDIVIDUAL;
             // // let enterprise_role =OnwerRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD);
-
 
             // new_freelancer.create("TaskOne".to_string(), "Submit on one week".to_string(), individual_role);
             // assert_eq!(new_freelancer.current_job_id, 1);
@@ -421,8 +472,6 @@ mod freelancer {
             // assert_eq!(new_freelancer.jobs.get(1).unwrap().result, None);
             // assert_eq!(new_freelancer.jobs.get(1).unwrap().status, Status::OPEN);
             // assert_eq!(new_freelancer.jobs.get(1).unwrap().budget, 0); //buget khi đưa vào mặc định là 0
-            
-
         }
     }
 }
