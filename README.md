@@ -136,17 +136,20 @@ flowchart TB
     A[Client creates job] --> B{Job status<br>OPEN}
     B --> C[Freelancer takes job]
     C --> D{Job status<br>DOING}
+    D -- Deadline timeout --> H
     D -- Submit success --> E[Job status<br>REVIEW]
     E --> F{Client reviews<br>and approves?}
+    E -- Terminate --> K
     F -- Yes --> G[Job status<br>FINISH]
     F -- No --> H[Job status<br>UNQUALIFIED]
+    H -- Resubmit --> E
+    H -- Terminate --> K
     H --> I{Negotiate} 
     I -- Success --> G
-    I -- Fail --> K{Report}
-    D -- No --> L[Client cancels job]    
+    I -- Terminate --> K{Report}
     B --> M[Refund client<br>Job status<br>CANCELED]
     J --> M[Refund client<br>Job status<br>CANCELED]
     J --> C
-    K --> J[Job status<br>REOPEN]
+    K --> J[Job status<br>REOPEN] 
     
 ```
