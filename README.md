@@ -32,6 +32,9 @@ class Job{
   +Timestamp end_time
   +Option~AccountId~ person_create
   +Option~AccountId~ person_obtain
+  +String feedback
+  +bool request_negotiation
+  +bool require_rating
 }
 
   class Status {
@@ -59,6 +62,8 @@ class Job{
     + CurrentJobIncomplete, //hoàn thành job hiện tại đã
     + JobInvalid,
     + Finish, //job đã hoàn thành    
+    + InvalidPayAmount // số tiền thanh toán không hợp lệ
+    + AlreadyRequestNegotiation // đã yêu cầu thương lượng
   }
 
   class JobId {
@@ -138,10 +143,9 @@ flowchart TB
     C --> D{Job status<br>DOING}
     D -- Deadline timeout --> H
     D -- Submit success --> E[Job status<br>REVIEW]
-    E --> F{Client reviews<br>and approves?}
     E -- Terminate --> K
-    F -- Yes --> G[Job status<br>FINISH]
-    F -- No --> H[Job status<br>UNQUALIFIED]
+    E -- Done --> G[Job status<br>FINISH]
+    E -- Reject --> H[Job status<br>UNQUALIFIED]
     H -- Resubmit --> E
     H -- Terminate --> K
     H -- Request Negotiate --> I{Negotiate} 
