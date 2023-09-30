@@ -138,9 +138,8 @@ class Job{
 
 ```mermaid
 flowchart TB
-    A[Client creates job] --> B{Job status<br>OPEN}
-    B --> C[Freelancer takes job]
-    C --> D{Job status<br>DOING}
+    A[Client creates job] --> B[Job status<br>OPEN]
+    B -- Freelancer takes job --> D[Job status<br>DOING]
     D -- Deadline timeout --> H
     D -- Submit success --> E[Job status<br>REVIEW]
     E -- Terminate --> K
@@ -150,10 +149,10 @@ flowchart TB
     H -- Terminate --> K
     H -- Request Negotiate --> I{Negotiate} 
     I -- Success --> G
-    I -- Terminate --> K{Report}
-    B --> M[Refund client<br>Job status<br>CANCELED]
-    J --> M[Refund client<br>Job status<br>CANCELED]
-    J --> C
-    K --> J[Job status<br>REOPEN] 
+    I -- Terminate --> K[Report]
+    B -- Cancle job --> M[Refund client<br>Job status<br>CANCELED]
+    J -- Cancle job --> M
+    J -- Freelancer take job --> D
+    K -- Success--> J[Job status<br>REOPEN] 
     
 ```
