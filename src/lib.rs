@@ -530,7 +530,7 @@ mod freelankakot {
             job_id: JobId,
             feedback: String,
             pay: u128,
-        ) -> Result<(), JobError> {
+        ) -> Result<AccountRole, JobError> {
             let caller = self.env().caller();
 
             // Retrieve caller info
@@ -540,9 +540,10 @@ mod freelankakot {
             let caller_info = caller_info.ok_or(JobError::NotRegistered)?;
 
             // Validate caller is a freelancer
-            if caller_info.role != AccountRole::FREELANCER {
-                return Err(JobError::NotFreelancer);
-            }
+            // if caller_info.role != AccountRole::FREELANCER {
+            //     return Err(JobError::NotFreelancer);
+            // }
+            // Ai cũng có thể gửi yêu cầu thương lượng
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
 
             // Validate job is not expired
@@ -567,7 +568,6 @@ mod freelankakot {
                             } else {
                                 return Err(JobError::AlreadyRequestNegotiation);
                             }
-                            
                         }
                         Status::OPEN | Status::REOPEN => return Err(JobError::NotAssignThisJob),
                         Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
@@ -576,7 +576,7 @@ mod freelankakot {
                 }
                 _ => return Err(JobError::InvalidPayAmount),
             }
-            Ok(())
+            Ok(caller_info.role)
         }
 
         pub fn respond_negotiate(
