@@ -240,7 +240,7 @@ mod freelankakot {
                 end_time: start_time + duration * 24 * 60 * 60 * 1000,
                 person_create: Some(caller),
                 person_obtain: None,
-                feedback: "".to_string(),
+                feedback: String::new(),
                 request_negotiation: false,
                 require_rating: false,
             };
