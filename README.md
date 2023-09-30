@@ -144,7 +144,7 @@ flowchart TB
     F -- No --> H[Job status<br>UNQUALIFIED]
     H -- Resubmit --> E
     H -- Terminate --> K
-    H --> I{Negotiate} 
+    H -- Request Negotiate --> I{Negotiate} 
     I -- Success --> G
     I -- Terminate --> K{Report}
     B --> M[Refund client<br>Job status<br>CANCELED]
