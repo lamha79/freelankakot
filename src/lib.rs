@@ -582,9 +582,9 @@ mod freelankakot {
         pub fn respond_negotiate(
             &mut self,
             job_id: JobId,
-            feedback: String,
-            pay: u8,
+            agreement: u8,
         ) -> Result<(), JobError> {
+            
             Ok(())
         }
 
