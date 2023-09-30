@@ -37,6 +37,7 @@ mod freelankakot {
     pub struct Job {
         name: String,
         description: String,
+        category: Category, 
         result: Option<String>,
         status: Status,
         budget: Balance,                   // Ngân sách
@@ -49,6 +50,18 @@ mod freelankakot {
         feedback: String, // phản hồi của đối tác
         request_negotiation: bool, //yêu cầu thương lượng
         require_rating: bool, //yêu cầu đánh giá
+    }
+
+    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
+    pub enum Category {
+        #[default]
+        IT, 
+        MARKETING, 
+        PHOTOSHOP, 
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
@@ -197,6 +210,7 @@ mod freelankakot {
             &mut self,
             name: String,
             description: String,
+            category: Category,
             duration: u64,
         ) -> Result<(), JobError> {
             //duration là nhập số ngày chú ý timestamp tính theo mili giây
@@ -216,10 +230,11 @@ mod freelankakot {
             let job = Job {
                 name: name,
                 description: description,
+                category: category,
                 result: None,
                 status: Status::default(),
                 budget: budget,
-                pay: budget,
+                pay: budget * (100 - FEE_PERCENTAGE as u128) / 100,
                 fee_percentage: FEE_PERCENTAGE,
                 start_time: start_time,
                 end_time: start_time + duration * 24 * 60 * 60 * 1000,
@@ -446,8 +461,8 @@ mod freelankakot {
                     self.successful_jobs
                         .insert((caller, freelancer, job_id), &Some(String::new()));
                     // chuyển tiền và giữ lại phần trăm phí
-                    let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
-                    let _ = self.env().transfer(freelancer, budget);
+                    // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
+                    let _ = self.env().transfer(freelancer, job.pay);
                 }
             }
             Ok(())
@@ -490,8 +505,8 @@ mod freelankakot {
                     // Update job in storage
                     self.jobs.insert(job_id, &job);
                     // trả tiền
-                    let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
-                    let _ = self.env().transfer(caller, budget);
+                    // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
+                    let _ = self.env().transfer(caller, job.pay);
                     //update unsuccessful_jobs: chú ý là chỉ có chỗ này lưu trữ thông tin công việc đã thất bại. còn nếu công việc đó được reopen thì trong jobs chỉ lưu trạng thái tiếp theo của công việc đó.
                     self.unsuccesful_jobs.insert(
                         (caller, job.person_obtain.unwrap(), job_id),
