@@ -140,14 +140,13 @@ flowchart TB
     E --> F{Client reviews<br>and approves?}
     F -- Yes --> G[Job status<br>FINISH]
     F -- No --> H[Job status<br>UNQUALIFIED]
-    H --> I{Freelancer agrees<br> reject?} 
-    I -- No --> K[Raise complaint]
+    H --> I{Negotiate} 
+    I -- Success --> G
+    I -- Fail --> K{Report}
     D -- No --> L[Client cancels job]    
     B --> M[Refund client<br>Job status<br>CANCELED]
     J --> M[Refund client<br>Job status<br>CANCELED]
     J --> C
-    K -- Negotiate success --> G
-    K -- Report --> J
-    I -- Yes --> J[Job status<br>REOPEN]
+    K --> J[Job status<br>REOPEN]
     
 ```
