@@ -1,17 +1,20 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 #[ink::contract]
-mod freelancer { 
+mod freelankakot { 
 
     use ink::storage::Mapping;
     use ink::prelude::string::String;
     use ink::prelude::vec::Vec;
 
     pub type JobId = u128;
+    pub type ReportId = u128;
+    pub type ReportInfo = String;
+    pub type Report = Mapping<ReportId, ReportInfo>;
     const FEE_PERCENTAGE: u8 = 3;
     #[ink(storage)]
     #[derive(Default)]
-    pub struct Freelancer {
+    pub struct Account {
         jobs : Mapping<JobId, Job>, //map jobID đến job: luôn là trạng thái cuối cùng của job, như vậy job reopen sẽ ko lưu người làm trước, phần đó lưu trong unsuccessful_job kèm đánh giá
         current_job_id: JobId,
         personal_account_info: Mapping<AccountId, UserInfo>,
@@ -127,7 +130,7 @@ mod freelancer {
     }
 
 
-    impl Freelancer {
+    impl Account {
         /// Constructor that initializes the `bool` value to the given `init_value`.
         #[ink(constructor)]
         pub fn new() -> Self {
@@ -497,7 +500,47 @@ mod freelancer {
             }
             Ok(())
         }
+        
+        #[ink(message)]
+        pub fn negotiate(
+            &mut self,
+            job_id: JobId,
+            feedback: String,
+            evidence: Vec<String>,
+            token_value: u64,
+            agreed: bool,
+        ) -> Result<(), JobError> {
+            // Retrieve the job
 
+            // Check if the job is in the UNQUALIFIED state
+
+            // Update the feedback, evidence, and token value for the job
+
+            // Check if both parties agree to the proposed changes
+
+            // Sign the contract and perform payment
+
+            Ok(())
+        }
+
+        pub fn resolve(
+            &mut self,
+            job_id: JobId,
+            report: Option<Report>,
+        ) -> Result<(), JobError> {
+
+
+            // Perform resolution logic here
+            // ...
+
+            // Set the resolution
+
+            // Set the reports
+
+            // Set the status to REOPEN
+
+            Ok(())
+        }
 
 
         #[ink(message)]

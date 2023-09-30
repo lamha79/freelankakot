@@ -11,63 +11,36 @@ Freelankakot is a freelancing platform in Polkadot developed [ink!](https://gith
 ```mermaid
 
 classDiagram
-  class User {
-    + jobs : Mapping<JobId, Job>
-    + owner_job : Mapping<AccountId, JobId>
-    + doing_job : Mapping<AccountId, JobId>
-    + assigned_job : Mapping<JobId, AccountId>
-    + current_job_id : JobId
-    + profile_user: Mapping<RatingPoint, Vec<CompletedJob>>
-    + role : AccountRole
-    + new() : User
-    + create(name: String, description: String) : void
-    + get_open_jobs() : Vec<Job>
-    + obtain(job_id: JobId) : Result<(), JobError>
-    + submit(job_id: JobId, result: String) : Result<(), JobError>
-    + reject(job_id: JobId) : Result<(), JobError>
-    + cancle(job_id: JobID) : Result<(),JobError>
-    + approval(job_id: JobId) : Result<(), JobError>
-    + validate(job_id: JobId) : bool
-    + check_balance(job_id: JobId) : bool
-    + save_to_blockchain(job_id: JobId) : bool
-    + add_member(account_id: AccountId) : void
-    + remove_member(account_id: AccountId) : void
-    + select_job_for_team(job_id: JobId) : void
-    + set_owner_job(account_id: AccountId, job_id: JobId) : void
-    + get_owner_job(account_id: AccountId) : JobId
-    + set_doing_job(account_id: AccountId, job_id: JobId) : void
-    + get_doing_job(account_id: AccountId) : JobId
-    + set_assigned_job(job_id: JobId, account_id: AccountId) : void
-    + get_assigned_job(job_id: JobId) : AccountId
-    + set_current_job_id(job_id: JobId) : void
-    + get_current_job_id() : JobId
-    + set_account_type(account_type: AccountRole) : void
-    + get_account_type() : AccountRole
-    + complaint(job_id: JobId) : Result<(), JobError> // Added method
-    + negotiate(job_id: JobId, feedback: String, evidence: Vec<String>, token_value: u64, agreed: bool) : Result<(), JobError> // Added method
-    + resolve(job_id: JobId, report: Report) : Result<(), JobError> // Added method
-    + rate_partner(job_id: JobId, rating: RatingPoint) : Result<(), JobError> // Added method
-  }
+  class Account{
+  +Mapping~JobId~ jobs
+  +JobId current_job_id
+  +Mapping~AccountId~ personal_account_info
+  +Mapping~AccountId~ owner_jobs
+  +Mapping~AccountId~ freelancer_jobs
+  +Mapping~(AccountId,AccountId,JobId)~ successful_jobs
+  +Mapping~(AccountId,AccountId,JobId)~ unsuccesful_jobs
+}
 
-  class Job {
-    + name : String
-    + description : String
-    + result : Option<String>
-    + status : Status
-    + budget : Balance
-    + set_status(status: Status) : void
-    + get_status() : Status
-  }
+class Job{
+  +String name
+  +String description
+  +Option~String~ result
+  +Status status
+  +Balance budget
+  +u8 fee_percentage
+  +Timestamp start_time
+  +Timestamp end_time
+  +Option~AccountId~ person_create
+  +Option~AccountId~ person_obtain
+}
 
   class Status {
-    + OPEN
     + DOING
     + REVIEW
+    + UNQUALIFIED
     + REOPEN
     + FINISH
-    + COMPLAINT // Added status
-    + REPORT // Added status
-
+    + CANCELED   
   }
 
   class JobError {    
@@ -143,15 +116,38 @@ classDiagram
   }
 
   Dapp -- AccountRole
-  AccountRole -- User
-  User -- Balance
-  User --* Job
-  User -- JobId
-  User -- AccountId
-  User -- RatingPoint
-  User -- CompletedJob
+  AccountRole -- Account
+  Account -- Balance
+  Account --* Job
+  Account -- JobId
+  Account -- AccountId
+  Account -- RatingPoint
+  Account -- CompletedJob
   JobError -- Job
   Job -- Status
 
 
+```
+
+## How it works
+
+```mermaid
+flowchart TB
+    A[Client creates job] --> B{Job status<br>OPEN}
+    B --> C[Freelancer takes job]
+    C --> D{Job status<br>DOING}
+    D -- Submit success --> E[Job status<br>REVIEW]
+    E --> F{Client reviews<br>and approves?}
+    F -- Yes --> G[Job status<br>FINISH]
+    F -- No --> H[Job status<br>UNQUALIFIED]
+    H --> I{Freelancer agrees<br> reject?} 
+    I -- No --> K[Raise complaint]
+    D -- No --> L[Client cancels job]    
+    B --> M[Refund client<br>Job status<br>CANCELED]
+    J --> M[Refund client<br>Job status<br>CANCELED]
+    J --> C
+    K -- Negotiate success --> G
+    K -- Report --> J
+    I -- Yes --> J[Job status<br>REOPEN]
+    
 ```
