@@ -25,8 +25,8 @@ mod freelankakot {
         owner_jobs: Mapping<AccountId, Vec<JobId>>,
         freelancer_jobs: Mapping<AccountId, Vec<JobId>>,
         successful_jobs: Mapping<(AccountId, AccountId, JobId), Option<String>>, //(AccountId: người tạo job, AccountId: người nhận job, jobID) => Option<String> là review có thể là string review hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-        unsuccesful_jobs: Mapping<(AccountId, AccountId, JobId), Option<String>>, //(AccountId: người tạo job, AccountId: Người nhận job, jobID) => Option<String> là report có thể là string nhận xét hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-                                                                                  // còn phần đánh giá cá nhân thông qua raiting point trong user_info
+        unsuccessful_jobs: Mapping<(AccountId, AccountId, JobId), Option<String>>, //(AccountId: người tạo job, AccountId: Người nhận job, jobID) => Option<String> là report có thể là string nhận xét hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
+                                                                                   // còn phần đánh giá cá nhân thông qua raiting point trong user_info
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
@@ -37,19 +37,20 @@ mod freelankakot {
     pub struct Job {
         name: String,
         description: String,
-        category: Category, 
+        category: Category,
         result: Option<String>,
         status: Status,
-        budget: Balance,                   // Ngân sách
+        budget: Balance,                  // Ngân sách
         fee_percentage: u8,               // Phần trăm tiền phí
         start_time: Timestamp,            // thời gian bắt đầu tính từ lúc khởi tạo công việc
         end_time: Timestamp, //thời gian kết thúc = thời gian bắt đầu + duration người dùng nhập sẽ tính bằng ngày. (thời gian này bao gồm khởi tạo công việc và xét duyệt quá thời hạn người tạo phải hủy job tránh tình trạng treo người làm xong ko được nghiệm thu)
         person_create: Option<AccountId>, // vì có trait default nên để option cho dễ
         person_obtain: Option<AccountId>,
-        pay: Balance, //số tiền đã trả cho người làm
-        feedback: String, // phản hồi của đối tác
-        request_negotiation: bool, //yêu cầu thương lượng
-        require_rating: bool, //yêu cầu đánh giá
+        pay: Balance,                 //số tiền đã trả cho người làm
+        feedback: String,             // phản hồi của đối tác
+        request_negotiation: bool,    //yêu cầu thương lượng
+        requester: Option<AccountId>, // người yêu cầu thương lượng
+        require_rating: bool,         //yêu cầu đánh giá
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
@@ -59,9 +60,9 @@ mod freelankakot {
     )]
     pub enum Category {
         #[default]
-        IT, 
-        MARKETING, 
-        PHOTOSHOP, 
+        IT,
+        MARKETING,
+        PHOTOSHOP,
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
@@ -144,9 +145,9 @@ mod freelankakot {
         Finish,               //job đã kết thúc (hoàn thành hoặc bị hủy)
 
         // Lỗi liên quan đến đánh giá
-        InvalidPayAmount, //số tiền phí không hợp lệ
-        AlreadyRequestNegotiation, //đã yêu cầu thương lượng
-    }    
+        InvalidPayAmount,          //số tiền phí không hợp lệ
+        InvalidRequestNegotiation, // yêu cầu thương lượng không hợp lệ
+    }
 
     impl Account {
         /// Constructor that initializes the `bool` value to the given `init_value`.
@@ -225,7 +226,7 @@ mod freelankakot {
                     }
                 }
             }
-            let budget = self.env().transferred_value();
+            let budget = self.env().transferred_value() * (100 - FEE_PERCENTAGE as u128) / 100;
             let start_time = self.env().block_timestamp();
             let job = Job {
                 name: name,
@@ -234,7 +235,7 @@ mod freelankakot {
                 result: None,
                 status: Status::default(),
                 budget: budget,
-                pay: budget * (100 - FEE_PERCENTAGE as u128) / 100,
+                pay: budget,
                 fee_percentage: FEE_PERCENTAGE,
                 start_time: start_time,
                 end_time: start_time + duration * 24 * 60 * 60 * 1000,
@@ -242,6 +243,7 @@ mod freelankakot {
                 person_obtain: None,
                 feedback: String::new(),
                 request_negotiation: false,
+                requester: None,
                 require_rating: false,
             };
             let current_id = self.current_job_id;
@@ -508,7 +510,7 @@ mod freelankakot {
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
                     let _ = self.env().transfer(caller, job.pay);
                     //update unsuccessful_jobs: chú ý là chỉ có chỗ này lưu trữ thông tin công việc đã thất bại. còn nếu công việc đó được reopen thì trong jobs chỉ lưu trạng thái tiếp theo của công việc đó.
-                    self.unsuccesful_jobs.insert(
+                    self.unsuccessful_jobs.insert(
                         (caller, job.person_obtain.unwrap(), job_id),
                         &Some(String::new()),
                     );
@@ -521,10 +523,10 @@ mod freelankakot {
                         // Update job in storage
                         self.jobs.insert(job_id, &job);
                         // trả tiền
-                        let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
+                        let budget = job.budget; // chuyển tiền và giữ lại phần trăm phí tạo việc
                         let _ = self.env().transfer(caller, budget);
                         //update unsuccessful_jobs: chú ý là chỉ có chỗ này lưu trữ thông tin công việc đã thất bại. còn nếu công việc đó được reopen thì trong jobs chỉ lưu trạng thái tiếp theo của công việc đó.
-                        self.unsuccesful_jobs.insert(
+                        self.unsuccessful_jobs.insert(
                             (caller, job.person_obtain.unwrap(), job_id),
                             &Some(String::new()),
                         );
@@ -545,7 +547,9 @@ mod freelankakot {
             job_id: JobId,
             feedback: String,
             pay: u128,
-        ) -> Result<AccountRole, JobError> {
+        ) -> Result<(), JobError> {
+            let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+
             let caller = self.env().caller();
 
             // Retrieve caller info
@@ -554,23 +558,25 @@ mod freelankakot {
             // Validate caller is registered
             let caller_info = caller_info.ok_or(JobError::NotRegistered)?;
 
-            // Validate caller is a freelancer
-            // if caller_info.role != AccountRole::FREELANCER {
-            //     return Err(JobError::NotFreelancer);
-            // }
-            // Ai cũng có thể gửi yêu cầu thương lượng
-            let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+            // Caller is a freelancer?
+            if caller_info.role != AccountRole::FREELANCER {
+                if job.person_create.unwrap() != caller {
+                    return Err(JobError::NotAssignThisJob);
+                }
+            } else {
+                // Validate caller is assigned the job
+                if job.person_obtain.unwrap() != caller {
+                    return Err(JobError::NotTakeThisJob);
+                }
+            }
 
             // Validate job is not expired
             if job.end_time < self.env().block_timestamp() {
                 return Err(JobError::OutOfDate);
             }
-            // Validate caller is assigned the job
-            if job.person_obtain.unwrap() != caller {
-                return Err(JobError::NotTakeThisJob);
-            }
-            let bugdget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; //
-                                                                             // Add validation for pay amount
+
+            let bugdget = job.budget;
+            // Add validation for pay amount
             match pay {
                 i if (i > 0 && i < bugdget) => {
                     // Validate job status
@@ -578,10 +584,11 @@ mod freelankakot {
                         Status::UNQUALIFIED => {
                             // Send negotiation request
                             if job.request_negotiation == false {
-                            job.request_negotiation = true;
-                            job.feedback = feedback;
+                                job.request_negotiation = true;
+                                job.feedback = feedback;
+                                job.requester = Some(caller);
                             } else {
-                                return Err(JobError::AlreadyRequestNegotiation);
+                                return Err(JobError::InvalidRequestNegotiation);
                             }
                         }
                         Status::OPEN | Status::REOPEN => return Err(JobError::NotAssignThisJob),
@@ -591,15 +598,74 @@ mod freelankakot {
                 }
                 _ => return Err(JobError::InvalidPayAmount),
             }
-            Ok(caller_info.role)
+            Ok(())
         }
 
+        #[ink(message, payable)]
         pub fn respond_negotiate(
             &mut self,
             job_id: JobId,
-            agreement: u8,
+            agreement: bool,
         ) -> Result<(), JobError> {
-            
+            let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+
+            let caller = self.env().caller();
+
+            // Retrieve caller info
+            let caller_info = self.personal_account_info.get(&caller);
+
+            // Validate caller is registered
+            let _caller_info = caller_info.ok_or(JobError::NotRegistered)?;
+
+            // Validate job is not expired
+            if job.end_time < self.env().block_timestamp() {
+                return Err(JobError::OutOfDate);
+            }
+
+            match job.requester.unwrap() {
+                i if i == job.person_create.unwrap() => {
+                    if caller != job.person_obtain.unwrap() {
+                        return Err(JobError::NotTakeThisJob);
+                    }
+                }
+                i if i == job.person_obtain.unwrap() => {
+                    if caller != job.person_create.unwrap() {
+                        return Err(JobError::NotAssignThisJob);
+                    }
+                }
+                _ => return Err(JobError::NotTaked),
+            }
+
+            match job.status {
+                Status::UNQUALIFIED => {
+                    if job.request_negotiation {
+                        if agreement {
+                            job.status = Status::FINISH;
+                            // Update job in storage
+                            self.jobs.insert(job_id, &job);
+                            // Transfer funds
+                            let _ = self.env().transfer(job.person_obtain.unwrap(), job.pay);
+                            let _ = self
+                                .env()
+                                .transfer(job.person_create.unwrap(), job.budget - job.pay);
+                            // Update unsuccessful_jobs: Note that only this part stores information about failed jobs. If the job is reopened, only the next status of the job is stored in jobs.
+                            self.successful_jobs.insert(
+                                (caller, job.person_obtain.unwrap(), job_id),
+                                &Some(String::new()),
+                            );
+                        } else {
+                            job.request_negotiation = false;
+                            job.requester = None;
+                            job.pay = job.budget;
+                        }
+                    } else {
+                        return Err(JobError::InvalidRequestNegotiation);
+                    }
+                }
+                Status::OPEN | Status::REOPEN => return Err(JobError::NotAssignThisJob),
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                Status::CANCELED | Status::FINISH => return Err(JobError::NotExisted),
+            }
             Ok(())
         }
 
