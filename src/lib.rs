@@ -142,7 +142,7 @@ mod freelankakot {
 
         //Lỗi liên quan tới status job
         Submited,             //đã submit
-        Proccessing,           //đang có người làm
+        Proccessing,          //đang có người làm
         CurrentJobIncomplete, //hoàn thành job hiện tại đã
         Finish,               //job đã kết thúc (hoàn thành hoặc bị hủy)
 
@@ -645,7 +645,7 @@ mod freelankakot {
             }
             Ok(())
         }
-        
+
         #[ink(message, payable)]
         pub fn terminate(&mut self, job_id: JobId, reason: String) -> Result<(), JobError> {
             // Retrieve the job from storage
