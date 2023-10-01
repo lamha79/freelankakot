@@ -535,15 +535,11 @@ mod freelankakot {
             pay: u128,
         ) -> Result<(), JobError> {
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
-
             let caller = self.env().caller();
-
             // Retrieve caller info
             let caller_info = self.personal_account_info.get(&caller);
-
             // Validate caller is registered
             let caller_info = caller_info.ok_or(JobError::NotRegistered)?;
-
             // Caller is a freelancer?
             if caller_info.role != AccountRole::FREELANCER {
                 if job.person_create.unwrap() != caller {
@@ -555,7 +551,6 @@ mod freelankakot {
                     return Err(JobError::NotTakeThisJob);
                 }
             }
-
             // Add validation for pay amount
             match pay {
                 i if (i > 0 && i < job.budget) => {
@@ -564,6 +559,7 @@ mod freelankakot {
                         Status::UNQUALIFIED => {
                             // Send negotiation request
                             if job.request_negotiation == false {
+                                job.pay = pay;
                                 job.request_negotiation = true;
                                 job.feedback = feedback;
                                 job.requester = Some(caller);
@@ -589,15 +585,11 @@ mod freelankakot {
             agreement: bool,
         ) -> Result<(), JobError> {
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
-
             let caller = self.env().caller();
-
             // Retrieve caller info
             let caller_info = self.personal_account_info.get(&caller);
-
             // Validate caller is registered
             let _caller_info = caller_info.ok_or(JobError::NotRegistered)?;
-
             match job.requester.unwrap() {
                 i if i == job.person_create.unwrap() => {
                     if caller != job.person_obtain.unwrap() {
@@ -630,6 +622,7 @@ mod freelankakot {
                                 &Some(String::new()),
                             );
                         } else {
+                            // If respond is don't agree
                             job.request_negotiation = false;
                             job.requester = None;
                             job.pay = job.budget;
