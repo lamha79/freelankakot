@@ -142,7 +142,7 @@ mod freelankakot {
 
         //Lỗi liên quan tới status job
         Submited,             //đã submit
-        Proccesing,           //đang có người làm
+        Proccessing,           //đang có người làm
         CurrentJobIncomplete, //hoàn thành job hiện tại đã
         Finish,               //job đã kết thúc (hoàn thành hoặc bị hủy)
 
@@ -310,7 +310,7 @@ mod freelankakot {
                 return Err(JobError::OutOfDate);
             };
             match job.status {
-                Status::DOING => return Err(JobError::Proccesing),
+                Status::DOING => return Err(JobError::Proccessing),
                 Status::REVIEW | Status::UNQUALIFIED => return Err(JobError::Submited),
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
                 Status::OPEN | Status::REOPEN => {
@@ -408,7 +408,7 @@ mod freelankakot {
 
             match job.status {
                 Status::OPEN | Status::REOPEN => return Err(JobError::NotTaked),
-                Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccesing),
+                Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccessing),
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
                     //update lại thông tin job để freelancer biết chưa hài lòng
@@ -445,7 +445,7 @@ mod freelankakot {
 
             match job.status {
                 Status::OPEN | Status::REOPEN => return Err(JobError::NotTaked),
-                Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccesing),
+                Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccessing),
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
                 Status::REVIEW => {
                     //update lại thông tin job
@@ -520,7 +520,7 @@ mod freelankakot {
                     );
                 }
                 Status::DOING | Status::REVIEW | Status::UNQUALIFIED => {
-                    return Err(JobError::Proccesing)
+                    return Err(JobError::Proccessing)
                 }
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish), // job đã bị hủy hoặc finish
             }
@@ -573,7 +573,7 @@ mod freelankakot {
                             }
                         }
                         Status::OPEN | Status::REOPEN => return Err(JobError::NotAssignThisJob),
-                        Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                        Status::DOING | Status::REVIEW => return Err(JobError::Proccessing),
                         Status::CANCELED | Status::FINISH => return Err(JobError::NotExisted),
                     }
                 }
@@ -640,45 +640,61 @@ mod freelankakot {
                     }
                 }
                 Status::OPEN | Status::REOPEN => return Err(JobError::NotAssignThisJob),
-                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccessing),
                 Status::CANCELED | Status::FINISH => return Err(JobError::NotExisted),
             }
             Ok(())
         }
-
+        
+        #[ink(message, payable)]
         pub fn terminate(&mut self, job_id: JobId, reason: String) -> Result<(), JobError> {
+            // Retrieve the job from storage
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+            // Get the caller's address
             let caller = self.env().caller();
+            // Retrieve caller info
             let caller_info = self.personal_account_info.get(&caller);
+            // Validate that the caller is registered
             let _caller_info = caller_info.ok_or(JobError::NotRegistered)?;
+            // Handle different status cases
             match job.status {
+                // If the job is in the OPEN or REOPEN status, do nothing
                 Status::OPEN | Status::REOPEN => (),
+                // If the job is in the UNQUALIFIED status
                 Status::UNQUALIFIED => {
+                    // Check if the caller is the creator of the job
                     if caller == job.person_create.unwrap() {
+                        // Set the reporter as the job's person_obtain
                         job.reporter = job.person_obtain;
+                        // Store the reason for termination in the unsuccessful_jobs mapping
                         self.unsuccessful_jobs
                             .insert((caller, job.person_obtain.unwrap(), job_id), &Some(reason));
                     } else {
+                        // Set the reporter as the job's person_create
                         job.reporter = job.person_create;
+                        // Store an empty reason for termination in the unsuccessful_jobs mapping
                         self.unsuccessful_jobs.insert(
                             (caller, job.person_obtain.unwrap(), job_id),
                             &Some("".to_string()),
                         );
-                    };
+                    }
+                    // Check if the job's end_time has passed
                     if job.end_time < self.env().block_timestamp() {
                         job.require_report = false;
                     } else {
                         job.require_report = true;
                     }
+                    // Set the job status to REOPEN
                     job.status = Status::REOPEN;
                     job.pay = job.budget;
                     job.person_obtain = None;
                     self.jobs.insert(job_id, &job);
                 }
-                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                // If the job is in the DOING or REVIEW status, return an error
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccessing),
+                // If the job is in the CANCELED or FINISH status, return an error
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
             }
-
             Ok(())
         }
 
