@@ -8,12 +8,6 @@ mod freelankakot {
     use ink::storage::Mapping;
 
     pub type JobId = u128;
-    pub type ReportId = u128;
-    pub type ReportInfo = Vec<String>;
-    pub type RatingId = u128;
-    pub type RatingPoint = u8;
-    pub type Report = Mapping<ReportId, ReportInfo>;
-    pub type Rating = Mapping<RatingId, RatingPoint>;
 
     const FEE_PERCENTAGE: u8 = 3;
     #[ink(storage)]
@@ -666,10 +660,8 @@ mod freelankakot {
                         // Set the reporter as the job's person_create
                         job.reporter = job.person_create;
                         // Store an empty reason for termination in the unsuccessful_jobs mapping
-                        self.unsuccessful_jobs.insert(
-                            (caller, job.person_obtain.unwrap(), job_id),
-                            &Some("".to_string()),
-                        );
+                        self.unsuccessful_jobs
+                            .insert((caller, job.person_obtain.unwrap(), job_id), &Some(reason));
                     }
                     // Check if the job's end_time has passed
                     if job.end_time < self.env().block_timestamp() {
@@ -690,25 +682,11 @@ mod freelankakot {
             }
             Ok(())
         }
-
-        pub fn report(&mut self, job_id: JobId, report: Option<Report>) -> Result<(), JobError> {
-            Ok(())
-        }
-
-        pub fn rating(&mut self, job_id: JobId, rating: Option<Rating>) -> Result<(), JobError> {
-            Ok(())
-        }
-
-        #[ink(message)]
-        pub fn check_balance_of_contract(&self) -> Balance {
-            self.env().balance()
-        }
     }
 
     // viết test
     #[cfg(test)]
     mod tests {
-        use super::*;
 
         #[ink::test]
         fn new_works() {
