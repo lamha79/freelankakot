@@ -50,6 +50,8 @@ mod freelankakot {
         feedback: String,             // phản hồi của đối tác
         request_negotiation: bool,    //yêu cầu thương lượng
         requester: Option<AccountId>, // người yêu cầu thương lượng
+        require_report: bool,         // yêu cầu tố cáo
+        reporter: Option<AccountId>,  // người được phép tố cáo
         require_rating: bool,         //yêu cầu đánh giá
     }
 
@@ -244,6 +246,8 @@ mod freelankakot {
                 feedback: String::new(),
                 request_negotiation: false,
                 requester: None,
+                require_report: false,
+                reporter: None,
                 require_rating: false,
             };
             let current_id = self.current_job_id;
@@ -515,27 +519,9 @@ mod freelankakot {
                         &Some(String::new()),
                     );
                 }
-                Status::UNQUALIFIED => {
-                    if job.end_time < self.env().block_timestamp() {
-                        //nếu đã qua thời gian thì được cancle job
-                        // Set status to canceled
-                        job.status = Status::CANCELED;
-                        // Update job in storage
-                        self.jobs.insert(job_id, &job);
-                        // trả tiền
-                        let budget = job.budget; // chuyển tiền và giữ lại phần trăm phí tạo việc
-                        let _ = self.env().transfer(caller, budget);
-                        //update unsuccessful_jobs: chú ý là chỉ có chỗ này lưu trữ thông tin công việc đã thất bại. còn nếu công việc đó được reopen thì trong jobs chỉ lưu trạng thái tiếp theo của công việc đó.
-                        self.unsuccessful_jobs.insert(
-                            (caller, job.person_obtain.unwrap(), job_id),
-                            &Some(String::new()),
-                        );
-                    } else {
-                        //nếu còn thời gian freelancer có thể gọi complaint nhiều lần, nếu hết thời gian mà ko đồng ý kết quả thì trạng thái job là Unqualified và người tạo phải hủy để rút tiền về, freelancer và người tạo job có thể raiting và "phốt" nhau.
-                        return Err(JobError::Proccesing);
-                    }
+                Status::DOING | Status::REVIEW | Status::UNQUALIFIED => {
+                    return Err(JobError::Proccesing)
                 }
-                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish), // job đã bị hủy hoặc finish
             }
             Ok(())
@@ -570,15 +556,9 @@ mod freelankakot {
                 }
             }
 
-            // Validate job is not expired
-            if job.end_time < self.env().block_timestamp() {
-                return Err(JobError::OutOfDate);
-            }
-
-            let bugdget = job.budget;
             // Add validation for pay amount
             match pay {
-                i if (i > 0 && i < bugdget) => {
+                i if (i > 0 && i < job.budget) => {
                     // Validate job status
                     match job.status {
                         Status::UNQUALIFIED => {
@@ -587,6 +567,7 @@ mod freelankakot {
                                 job.request_negotiation = true;
                                 job.feedback = feedback;
                                 job.requester = Some(caller);
+                                self.jobs.insert(job_id, &job);
                             } else {
                                 return Err(JobError::InvalidRequestNegotiation);
                             }
@@ -616,11 +597,6 @@ mod freelankakot {
 
             // Validate caller is registered
             let _caller_info = caller_info.ok_or(JobError::NotRegistered)?;
-
-            // Validate job is not expired
-            if job.end_time < self.env().block_timestamp() {
-                return Err(JobError::OutOfDate);
-            }
 
             match job.requester.unwrap() {
                 i if i == job.person_create.unwrap() => {
@@ -657,6 +633,7 @@ mod freelankakot {
                             job.request_negotiation = false;
                             job.requester = None;
                             job.pay = job.budget;
+                            self.jobs.insert(job_id, &job);
                         }
                     } else {
                         return Err(JobError::InvalidRequestNegotiation);
@@ -669,15 +646,38 @@ mod freelankakot {
             Ok(())
         }
 
-        pub fn terminate(&mut self, job_id: JobId, report: Option<Report>) -> Result<(), JobError> {
-            // Perform resolution logic here
-            // ...
-
-            // Set the resolution
-
-            // Set the reports
-
-            // Set the status to REOPEN
+        pub fn terminate(&mut self, job_id: JobId, reason: String) -> Result<(), JobError> {
+            let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
+            let caller = self.env().caller();
+            let caller_info = self.personal_account_info.get(&caller);
+            let _caller_info = caller_info.ok_or(JobError::NotRegistered)?;
+            match job.status {
+                Status::OPEN | Status::REOPEN => (),
+                Status::UNQUALIFIED => {
+                    if caller == job.person_create.unwrap() {
+                        job.reporter = job.person_obtain;
+                        self.unsuccessful_jobs
+                            .insert((caller, job.person_obtain.unwrap(), job_id), &Some(reason));
+                    } else {
+                        job.reporter = job.person_create;
+                        self.unsuccessful_jobs.insert(
+                            (caller, job.person_obtain.unwrap(), job_id),
+                            &Some("".to_string()),
+                        );
+                    };
+                    if job.end_time < self.env().block_timestamp() {
+                        job.require_report = false;
+                    } else {
+                        job.require_report = true;
+                    }
+                    job.status = Status::REOPEN;
+                    job.pay = job.budget;
+                    job.person_obtain = None;
+                    self.jobs.insert(job_id, &job);
+                }
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccesing),
+                Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
+            }
 
             Ok(())
         }
