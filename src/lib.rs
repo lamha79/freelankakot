@@ -160,17 +160,17 @@ mod freelankakot {
             &mut self,
             name: String,
             detail: String,
-            num_role: u8,
+            string_role: String,
         ) -> Result<(), JobError> {
             let caller = self.env().caller();
-            let role: AccountRole;
-            if num_role == 1 {
+            let mut role: AccountRole = AccountRole::default();
+            if string_role.to_lowercase() == "individual" {
                 role = AccountRole::INDIVIDUAL;
-            } else if num_role == 2 {
+            } else if string_role.to_lowercase() == "teamlead" {
                 role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD);
-            } else if num_role == 3 {
+            } else if string_role.to_lowercase() == "accountant" {
                 role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT);
-            } else {
+            } else if string_role.to_lowercase() == "freelancer" {
                 role = AccountRole::FREELANCER;
             };
             let caller_info = UserInfo {
