@@ -163,15 +163,15 @@ mod freelankakot {
             num_role: u8,
         ) -> Result<(), JobError> {
             let caller = self.env().caller();
-            let mut role = AccountRole::default();
+            let role: AccountRole;
             if num_role == 1 {
-                role = AccountRole::INDIVIDUAL
+                role = AccountRole::INDIVIDUAL;
             } else if num_role == 2 {
-                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD)
+                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD);
             } else if num_role == 3 {
-                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT)
+                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT);
             } else {
-                role = AccountRole::FREELANCER
+                role = AccountRole::FREELANCER;
             };
             let caller_info = UserInfo {
                 name: name,
