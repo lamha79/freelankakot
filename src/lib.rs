@@ -4,10 +4,13 @@
 mod freelankakot {
 
     use ink::prelude::string::String;
+    use ink::prelude::string::ToString;
     use ink::prelude::vec::Vec;
     use ink::storage::Mapping;
 
     pub type JobId = u128;
+    pub type RatingPoint = u128;
+    pub type ReportInfo = String;
 
     const FEE_PERCENTAGE: u8 = 3;
     #[ink(storage)]
@@ -18,9 +21,9 @@ mod freelankakot {
         personal_account_info: Mapping<AccountId, UserInfo>,
         owner_jobs: Mapping<AccountId, Vec<JobId>>,
         freelancer_jobs: Mapping<AccountId, Vec<JobId>>,
-        successful_jobs: Mapping<(AccountId, AccountId, JobId), Option<String>>, //(AccountId: người tạo job, AccountId: người nhận job, jobID) => Option<String> là review có thể là string review hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-        unsuccessful_jobs: Mapping<(AccountId, AccountId, JobId), Option<String>>, //(AccountId: người tạo job, AccountId: Người nhận job, jobID) => Option<String> là report có thể là string nhận xét hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-                                                                                   // còn phần đánh giá cá nhân thông qua raiting point trong user_info
+        successful_jobs: Mapping<(AccountId, AccountId, JobId), Option<RatingPoint>>, //(AccountId: người tạo job, AccountId: người nhận job, jobID) => Option<String> là review có thể là string review hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
+        unsuccessful_jobs: Mapping<(AccountId, AccountId, JobId), Option<ReportInfo>>, //(AccountId: người tạo job, AccountId: Người nhận job, jobID) => Option<String> là report có thể là string nhận xét hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
+                                                                                       // còn phần đánh giá cá nhân thông qua raiting point trong user_info
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
@@ -459,7 +462,7 @@ mod freelankakot {
                         .insert(freelancer, &freelancer_detail);
                     //khởi tạo job thành công, nội dung đánh giá sẽ do raiting làm
                     self.successful_jobs
-                        .insert((caller, freelancer, job_id), &Some(String::new()));
+                        .insert((caller, freelancer, job_id), &Some(0));
                     // chuyển tiền và giữ lại phần trăm phí
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
                     let _ = self.env().transfer(freelancer, job.pay);
@@ -506,12 +509,7 @@ mod freelankakot {
                     self.jobs.insert(job_id, &job);
                     // trả tiền
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
-                    let _ = self.env().transfer(caller, job.pay);
-                    //update unsuccessful_jobs: chú ý là chỉ có chỗ này lưu trữ thông tin công việc đã thất bại. còn nếu công việc đó được reopen thì trong jobs chỉ lưu trạng thái tiếp theo của công việc đó.
-                    self.unsuccessful_jobs.insert(
-                        (caller, job.person_obtain.unwrap(), job_id),
-                        &Some(String::new()),
-                    );
+                    let _ = self.env().transfer(job.person_create.unwrap(), job.budget);
                 }
                 Status::DOING | Status::REVIEW | Status::UNQUALIFIED => {
                     return Err(JobError::Proccessing)
@@ -611,10 +609,8 @@ mod freelankakot {
                                 .env()
                                 .transfer(job.person_create.unwrap(), job.budget - job.pay);
                             // Update unsuccessful_jobs: Note that only this part stores information about failed jobs. If the job is reopened, only the next status of the job is stored in jobs.
-                            self.successful_jobs.insert(
-                                (caller, job.person_obtain.unwrap(), job_id),
-                                &Some(String::new()),
-                            );
+                            self.successful_jobs
+                                .insert((caller, job.person_obtain.unwrap(), job_id), &Some(0));
                         } else {
                             // If respond is don't agree
                             job.request_negotiation = false;
@@ -660,8 +656,10 @@ mod freelankakot {
                         // Set the reporter as the job's person_create
                         job.reporter = job.person_create;
                         // Store an empty reason for termination in the unsuccessful_jobs mapping
-                        self.unsuccessful_jobs
-                            .insert((caller, job.person_obtain.unwrap(), job_id), &Some(reason));
+                        self.unsuccessful_jobs.insert(
+                            (caller, job.person_obtain.unwrap(), job_id),
+                            &Some("".to_string()),
+                        );
                     }
                     // Check if the job's end_time has passed
                     if job.end_time < self.env().block_timestamp() {
@@ -680,6 +678,16 @@ mod freelankakot {
                 // If the job is in the CANCELED or FINISH status, return an error
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
             }
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn report(&mut self, job_id: JobId, report: ReportInfo) -> Result<(), JobError> {
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn rating(&mut self, job_id: JobId, rating: RatingPoint) -> Result<(), JobError> {
             Ok(())
         }
     }
