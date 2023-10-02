@@ -1046,12 +1046,15 @@ mod freelankakot {
 
         #[ink::test]
         fn test_submit_success() {
-            let mut account = Account::new();
+            let mut account = build_contract();
+            let alice = default_accounts().alice;
+            set_caller(alice);
             let _resut_create_account = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
                 "individual".to_string(),
             );
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             account
                 .create(
                     "My new job".to_string(),
@@ -1061,7 +1064,7 @@ mod freelankakot {
                 )
                 .unwrap();
             let _job = account.jobs.get(0).unwrap();
-            let freelancer = AccountId::from([1u8; 32]);
+            let freelancer = default_accounts().bob;
             account.personal_account_info.insert(
                 freelancer,
                 &UserInfo {
@@ -1072,6 +1075,7 @@ mod freelankakot {
                     rating_points: 0,
                 },
             );
+            set_caller(freelancer);
             account.obtain(0).unwrap();
             let input = "This is the job result.".to_string();
             let result = account.submit(0, input.clone());
@@ -1083,7 +1087,8 @@ mod freelankakot {
 
         #[ink::test]
         fn test_submit_fail_not_registered() {
-            let mut account = Account::new();
+            let mut account = build_contract();
+            set_caller(default_accounts().alice);
             let _resut_create_account = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
@@ -1098,13 +1103,15 @@ mod freelankakot {
                 )
                 .unwrap();
             let input = "This is the job result.".to_string();
+            set_caller(default_accounts().bob);
             let _result = account.submit(0, input);
             assert_eq!(_result.unwrap_err(), JobError::NotRegistered);
         }
 
         #[ink::test]
         fn test_submit_fail_not_freelancer() {
-            let mut account = Account::new();
+            let mut account = build_contract();
+            set_caller(default_accounts().alice);
             let _resut_create_account = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
@@ -1118,7 +1125,7 @@ mod freelankakot {
                     1, // 1 day
                 )
                 .unwrap();
-            let job_assigner = AccountId::from([1u8; 32]);
+            let job_assigner = default_accounts().bob;
             account.personal_account_info.insert(
                 job_assigner,
                 &UserInfo {
@@ -1130,29 +1137,20 @@ mod freelankakot {
                 },
             );
             let input = "This is the job result.".to_string();
+            set_caller(job_assigner);
             let _result = account.submit(0, input);
             assert_eq!(_result.unwrap_err(), JobError::NotFreelancer);
         }
 
         #[ink::test]
         fn test_submit_fail_job_not_existed() {
-            let mut account = Account::new();
-
+            let mut account = build_contract();
+            set_caller(default_accounts().alice);
             let _resut_create_account = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
-                "individual".to_string(),
+                "freelancer".to_string(),
             );
-            account
-                .create(
-                    "My new job".to_string(),
-                    "This is a description of my new job.".to_string(),
-                    "it".to_string(),
-                    1, // 1 day
-                )
-                .unwrap();
-            let _job = account.jobs.get(0).unwrap();
-            account.jobs.remove(0);
             let input = "This is the job result.".to_string();
             let _result = account.submit(0, input);
             assert_eq!(_result.unwrap_err(), JobError::NotExisted);
