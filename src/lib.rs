@@ -26,12 +26,12 @@ mod freelankakot {
         jobs: Mapping<JobId, Job>, // map jobID đến job: luôn là trạng thái cuối cùng của job, như vậy job reopen sẽ ko lưu người làm trước, phần đó lưu trong unsuccessful_job kèm đánh giá
         current_job_id: JobId,
         personal_account_info: Mapping<AccountId, UserInfo>,
-        owner_jobs: Mapping<AccountId, Vec<JobId>>,
-        freelancer_jobs: Mapping<AccountId, Vec<JobId>>,
-        list_jobs_assign: Mapping<AccountId, (JobId, bool)>, // danh sách công việc đã giao <id,(job_id,hoàn thành hay chưa?))>
-        list_jobs_take: Mapping<AccountId, (JobId, bool)>, // danh sách công việc đã nhận <id,(job_id,hoàn thành hay chưa?))>
-        ratings: Mapping<AccountId, (JobId, Option<RatingPoint>)>, // <JobId: id công việc, Điểm đánh giá>
-        reports: Mapping<AccountId, (JobId, Option<ReportInfo>)>, // <JobId: id công việc, Thông tin tố cáo>
+        owner_jobs: Mapping<AccountId, Vec<(JobId, bool)>>, //khi tạo job phải add thông tin vào, thay đổi khi create, approval, respond_negotiate thành công
+        freelancer_jobs: Mapping<AccountId, Vec<(JobId, bool)>>, //khi nhận job phải add thông tin vào, thay đổi khi obtain, approval, respond_negotiate thành công
+        // list_jobs_assign: Mapping<AccountId, Vec<(JobId, bool)>>, // danh sách công việc đã giao <id,(job_id,hoàn thành hay chưa?))>
+        // list_jobs_take: Mapping<AccountId, Vec<(JobId, bool)>>, // danh sách công việc đã nhận <id,(job_id,hoàn thành hay chưa?))>
+        ratings: Mapping<AccountId, Vec<(JobId, Option<RatingPoint>)>>, // <JobId: id công việc, Điểm đánh giá>
+        reports: Mapping<AccountId, Vec<(JobId, Option<ReportInfo>)>>, // <JobId: id công việc, Thông tin tố cáo>
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
@@ -225,12 +225,12 @@ mod freelankakot {
         }
         // show toàn bộ công việc của người tạo
         #[ink(message)]
-        pub fn get_job_id_of_onwer(&self, owner: AccountId) -> Option<Vec<JobId>> {
+        pub fn get_job_id_of_onwer(&self, owner: AccountId) -> Option<Vec<(JobId, bool)>> {
             self.owner_jobs.get(owner)
         }
         //show toàn bộ công việc của người nhận
         #[ink(message)]
-        pub fn get_job_id_of_freelancer(&self, owner: AccountId) -> Option<Vec<JobId>> {
+        pub fn get_job_id_of_freelancer(&self, owner: AccountId) -> Option<Vec<(JobId, bool)>> {
             self.freelancer_jobs.get(owner)
         }
 
@@ -302,12 +302,12 @@ mod freelankakot {
             match self.owner_jobs.contains(caller) {
                 true => {
                     let mut jobs_of_caller = self.owner_jobs.get(caller).unwrap();
-                    jobs_of_caller.push(current_id);
+                    jobs_of_caller.push((current_id, false));
                     self.owner_jobs.insert(caller, &jobs_of_caller);
                 }
                 false => {
                     let mut jobs_of_caller = Vec::new();
-                    jobs_of_caller.push(current_id);
+                    jobs_of_caller.push((current_id, false));
                     self.owner_jobs.insert(caller, &jobs_of_caller);
                 }
             }
@@ -371,12 +371,12 @@ mod freelankakot {
                     match self.freelancer_jobs.contains(caller) {
                         true => {
                             let mut jobs_of_caller = self.freelancer_jobs.get(caller).unwrap();
-                            jobs_of_caller.push(job_id);
+                            jobs_of_caller.push((job_id,false));
                             self.freelancer_jobs.insert(caller, &jobs_of_caller);
                         }
                         false => {
                             let mut jobs_of_caller = Vec::new();
-                            jobs_of_caller.push(job_id);
+                            jobs_of_caller.push((job_id, false));
                             self.freelancer_jobs.insert(caller, &jobs_of_caller);
                         }
                     }
@@ -502,11 +502,30 @@ mod freelankakot {
                         freelancer_detail.successful_jobs_and_all_jobs.0 + 1;
                     self.personal_account_info
                         .insert(freelancer, &freelancer_detail);
-                    //khởi tạo job thành công, nội dung đánh giá sẽ do raiting làm
-                    self.list_jobs_assign
-                        .insert(job.person_create.unwrap(), &(job_id, true));
-                    self.list_jobs_take
-                        .insert(job.person_obtain.unwrap(), &(job_id, true));
+                    
+                    //Chỉnh lại trạng thái công việc đã thành công của onwer_jobs và freelancer_jobs
+                    let mut owner_jobs_of_account_id = self.owner_jobs.get(caller).unwrap();
+                    for element in owner_jobs_of_account_id.iter_mut() {
+                        if element.0 == job_id {
+                            element.1 = true;
+                            break;
+                        }
+                    }
+                    self.owner_jobs.insert(caller, &owner_jobs_of_account_id);
+
+                    let mut freelancer_jobs_of_account_id = self.freelancer_jobs.get(freelancer).unwrap();
+                    for element in freelancer_jobs_of_account_id.iter_mut() {
+                        if element.0 == job_id {
+                            element.1 = true;
+                            break;
+                        }
+                    }
+                    self.owner_jobs.insert(caller, &freelancer_jobs_of_account_id);
+                    
+                    // self.list_jobs_assign
+                    //     .insert(job.person_create.unwrap(), &(job_id, true));
+                    // self.list_jobs_take
+                    //     .insert(job.person_obtain.unwrap(), &(job_id, true));
                     // chuyển tiền và giữ lại phần trăm phí
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
                     let _ = self.env().transfer(freelancer, job.pay);
@@ -553,14 +572,21 @@ mod freelankakot {
                     // trả tiền
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100; // chuyển tiền và giữ lại phần trăm phí tạo việc
                     let _ = self.env().transfer(job.person_create.unwrap(), job.budget);
-                    self.list_jobs_assign
-                        .insert(job.person_create.unwrap(), &(job_id, false));
-
+                    // self.list_jobs_assign
+                    //     .insert(job.person_create.unwrap(), &(job_id, false));
                     self.jobs.insert(job_id, &job);
-                }
-                Status::DOING | Status::REVIEW | Status::UNQUALIFIED => {
+                },
+                Status::DOING | Status::REVIEW => {
                     return Err(JobError::Proccessing)
-                }
+                },
+                //nếu job đang ở trạng thái tranh chấp thì tùy theo deadline mà được hủy hay ko
+                Status::UNQUALIFIED => {
+                    if self.env().block_timestamp() > job.end_time {
+                        return Err(JobError::OutOfDate);
+                    } else {
+                        return Err(JobError::Proccessing);
+                    }
+                },
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish), // job đã bị hủy hoặc finish
             }
             Ok(())
@@ -657,11 +683,30 @@ mod freelankakot {
                             let _ = self
                                 .env()
                                 .transfer(job.person_create.unwrap(), job.budget - job.pay);
-                            self.list_jobs_assign
-                                .insert(job.person_create.unwrap(), &(job_id, true));
-                            self.list_jobs_take
-                                .insert(job.person_obtain.unwrap(), &(job_id, true));
-                            self.jobs.insert(job_id, &job);
+                            // self.list_jobs_assign
+                            //     .insert(job.person_create.unwrap(), &(job_id, true));
+                            // self.list_jobs_take
+                            //     .insert(job.person_obtain.unwrap(), &(job_id, true));
+                            // self.jobs.insert(job_id, &job);
+                            //Chỉnh lại trạng thái công việc đã thành công của onwer_jobs và freelancer_jobs
+                            let mut owner_jobs_of_account_id = self.owner_jobs.get(caller).unwrap();
+                            for element in owner_jobs_of_account_id.iter_mut() {
+                                if element.0 == job_id {
+                                    element.1 = true;
+                                    break;
+                                }
+                            }
+                            self.owner_jobs.insert(caller, &owner_jobs_of_account_id);
+
+                            let freelancer = job.person_obtain.unwrap();
+                            let mut freelancer_jobs_of_account_id = self.freelancer_jobs.get(freelancer).unwrap();
+                            for element in freelancer_jobs_of_account_id.iter_mut() {
+                                if element.0 == job_id {
+                                    element.1 = true;
+                                    break;
+                                }
+                            }
+                            self.owner_jobs.insert(caller, &freelancer_jobs_of_account_id);
                         } else {
                             // If respond is don't agree
                             job.request_negotiation = false;
@@ -713,8 +758,8 @@ mod freelankakot {
                         _ => return Err(JobError::InvalidTermination),
                     }
                     // Update history jobs
-                    self.list_jobs_take
-                        .insert(job.person_obtain.unwrap(), &(job_id, false));
+                    // self.list_jobs_take
+                    //     .insert(job.person_obtain.unwrap(), &(job_id, false));
                     // Set the job status to REOPEN
                     job.status = Status::REOPEN;
                     job.pay = job.budget;
@@ -741,17 +786,42 @@ mod freelankakot {
                 x if x == job.reporter.unwrap() => {
                     job.reporter = None;
                     self.jobs.insert(job_id, &job);
-                    self.list_jobs_take
-                        .insert(job.person_obtain.unwrap(), &(job_id, false));
-
+                    // self.list_jobs_take
+                    //     .insert(job.person_obtain.unwrap(), &(job_id, false));
                     match x {
                         y if y == job.person_create.unwrap() => {
-                            self.reports
-                                .insert(job.person_obtain.unwrap(), &(job_id, Some(report)));
+                            // self.reports
+                            //     .insert(job.person_obtain.unwrap(), &(job_id, Some(report)));
+                            //Chỉnh lại report của onwer_jobs
+                            match self.reports.contains(job.person_obtain.unwrap()) {
+                                true => {
+                                    let mut report_of_onwer = self.reports.get(job.person_obtain.unwrap()).unwrap();
+                                    report_of_onwer.push((job_id, Some(report)));
+                                    self.reports.insert(job.person_obtain.unwrap(), &report_of_onwer);
+                                }
+                                false => {
+                                    let mut report_of_onwer = Vec::new();
+                                    report_of_onwer.push((job_id, Some(report)));
+                                    self.reports.insert(job.person_obtain.unwrap(), &report_of_onwer);
+                                }
+                            }
                         }
                         y if y == job.person_obtain.unwrap() => {
-                            self.reports
-                                .insert(job.person_create.unwrap(), &(job_id, Some(report)));
+                            // self.reports
+                            //     .insert(job.person_create.unwrap(), &(job_id, Some(report)));
+                            //Chỉnh lại report của freelancer_jobs
+                            match self.reports.contains(job.person_create.unwrap()) {
+                                true => {
+                                    let mut report_of_freelancer = self.reports.get(job.person_create.unwrap()).unwrap();
+                                    report_of_freelancer.push((job_id, Some(report)));
+                                    self.reports.insert(job.person_create.unwrap(), &report_of_freelancer);
+                                }
+                                false => {
+                                    let mut report_of_freelancer = Vec::new();
+                                    report_of_freelancer.push((job_id, Some(report)));
+                                    self.reports.insert(job.person_create.unwrap(), &report_of_freelancer);
+                                }
+                            }
                         }
                         _ => return Err(JobError::InvalidReport),
                     }
@@ -780,15 +850,41 @@ mod freelankakot {
                 Status::FINISH => match (caller, job.require_rating) {
                     (a, (b, _)) if (a == job.person_create.unwrap() && b) => {
                         job.require_rating.0 = false;
-                        self.ratings
-                            .insert(job.person_obtain.unwrap(), &(job_id, Some(rating_point)));
                         self.jobs.insert(job_id, &job);
+                        // self.ratings
+                        //     .insert(job.person_obtain.unwrap(), &(job_id, Some(rating_point)));
+                        // update ratings
+                        match self.ratings.contains(job.person_create.unwrap()) {
+                            true => {
+                                let mut ratings_of_onwer = self.ratings.get(caller).unwrap();
+                                ratings_of_onwer.push((job_id, Some(rating_point)));
+                                self.ratings.insert(job.person_obtain.unwrap(), &ratings_of_onwer);
+                            }
+                            false => {
+                                let mut ratings_of_onwer = Vec::new();
+                                ratings_of_onwer.push((job_id, Some(rating_point)));
+                                self.ratings.insert(job.person_obtain.unwrap(), &ratings_of_onwer);
+                            }
+                        }
                     }
                     (a, (_, c)) if (a == job.person_obtain.unwrap() && c) => {
                         job.require_rating.1 = true;
-                        self.ratings
-                            .insert(job.person_create.unwrap(), &(job_id, Some(rating_point)));
                         self.jobs.insert(job_id, &job);
+                        // self.ratings
+                        //     .insert(job.person_create.unwrap(), &(job_id, Some(rating_point)));
+                        // update ratings
+                        match self.ratings.contains(job.person_obtain.unwrap()) {
+                            true => {
+                                let mut ratings_of_freelancer = self.ratings.get(caller).unwrap();
+                                ratings_of_freelancer.push((job_id, Some(rating_point)));
+                                self.ratings.insert(job.person_create.unwrap(), &ratings_of_freelancer);
+                            }
+                            false => {
+                                let mut ratings_of_freelancer = Vec::new();
+                                ratings_of_freelancer.push((job_id, Some(rating_point)));
+                                self.ratings.insert(job.person_create.unwrap(), &ratings_of_freelancer);
+                            }
+                        }
                     }
                     _ => return Err(JobError::InvalidRating),
                 },
@@ -901,7 +997,7 @@ mod freelankakot {
             assert_eq!(job.budget, 970); //hao 3% phí
             assert_eq!(job.status, Status::OPEN);
             assert_eq!(account.personal_account_info.get(alice).unwrap().successful_jobs_and_all_jobs, (0,1));
-            assert_eq!(account.owner_jobs.get(alice).unwrap(), Vec::from([0]));
+            assert_eq!(account.owner_jobs.get(alice).unwrap(), Vec::from([(0, false)]));
         }
 
         #[ink::test]
@@ -945,7 +1041,7 @@ mod freelankakot {
             assert_eq!(job.status, Status::DOING);
             assert_eq!(job.person_obtain, Some(bob));
             assert_eq!(account.personal_account_info.get(bob).unwrap().successful_jobs_and_all_jobs, (0,1));
-            assert_eq!(account.freelancer_jobs.get(bob).unwrap(), Vec::from([0]));
+            assert_eq!(account.freelancer_jobs.get(bob).unwrap(), Vec::from([(0, false)]));
         }
 
         #[ink::test]
