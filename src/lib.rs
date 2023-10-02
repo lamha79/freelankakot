@@ -4,7 +4,6 @@
 mod freelankakot {
 
     use ink::prelude::string::String;
-    use ink::prelude::string::ToString;
     use ink::prelude::vec::Vec;
     use ink::storage::Mapping;
 
@@ -21,9 +20,9 @@ mod freelankakot {
         personal_account_info: Mapping<AccountId, UserInfo>,
         owner_jobs: Mapping<AccountId, Vec<JobId>>,
         freelancer_jobs: Mapping<AccountId, Vec<JobId>>,
-        successful_jobs: Mapping<(AccountId, AccountId, JobId), Option<RatingPoint>>, //(AccountId: người tạo job, AccountId: người nhận job, jobID) => Option<String> là review có thể là string review hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-        unsuccessful_jobs: Mapping<(AccountId, AccountId, JobId), Option<ReportInfo>>, //(AccountId: người tạo job, AccountId: Người nhận job, jobID) => Option<String> là report có thể là string nhận xét hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
-                                                                                       // còn phần đánh giá cá nhân thông qua raiting point trong user_info
+        history_jobs: Mapping<JobId, bool>, //(AccountId: người tạo job, AccountId: người nhận job, jobID) => Option<String> là review có thể là string review hoặc là link đến ipfs (do freelancer và người giao việc đánh giá)
+        ratings: Mapping<JobId, Option<RatingPoint>>,
+        reports: Mapping<JobId, Option<ReportInfo>>,
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug)]
@@ -457,6 +456,7 @@ mod freelankakot {
                 Status::REVIEW => {
                     //update lại thông tin job
                     job.status = Status::FINISH;
+                    job.require_rating = true;
                     self.jobs.insert(job_id, &job);
                     //update user_info chỗ công việc thành công của owner tăng thêm 1
                     let mut owner_detail = caller_info.unwrap();
@@ -471,8 +471,7 @@ mod freelankakot {
                     self.personal_account_info
                         .insert(freelancer, &freelancer_detail);
                     //khởi tạo job thành công, nội dung đánh giá sẽ do raiting làm
-                    self.successful_jobs
-                        .insert((caller, freelancer, job_id), &Some(0));
+                    self.history_jobs.insert(job_id, &true);
                     // chuyển tiền và giữ lại phần trăm phí
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
                     let _ = self.env().transfer(freelancer, job.pay);
@@ -536,6 +535,7 @@ mod freelankakot {
             feedback: String,
             pay: u128,
         ) -> Result<(), JobError> {
+            // Gửi yêu cầu thương lượng tới phía đối tác, người gửi setup mức giá mong muốn cho công việc đã submit 
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             let caller = self.env().caller();
             // Retrieve caller info
@@ -586,6 +586,7 @@ mod freelankakot {
             job_id: JobId,
             agreement: bool,
         ) -> Result<(), JobError> {
+            // Phản hồi thương lương từ phía gửi, người nhận yêu cầu lựa chọn đồng ý hoặc không đồng ý với yêu cầu này
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             let caller = self.env().caller();
             // Retrieve caller info
@@ -619,8 +620,7 @@ mod freelankakot {
                                 .env()
                                 .transfer(job.person_create.unwrap(), job.budget - job.pay);
                             // Update unsuccessful_jobs: Note that only this part stores information about failed jobs. If the job is reopened, only the next status of the job is stored in jobs.
-                            self.successful_jobs
-                                .insert((caller, job.person_obtain.unwrap(), job_id), &Some(0));
+                            self.history_jobs.insert(job_id, &true);
                         } else {
                             // If respond is don't agree
                             job.request_negotiation = false;
@@ -640,7 +640,8 @@ mod freelankakot {
         }
 
         #[ink(message, payable)]
-        pub fn terminate(&mut self, job_id: JobId, reason: String) -> Result<(), JobError> {
+        pub fn terminate(&mut self, job_id: JobId) -> Result<(), JobError> {
+            // Trong trường hợp bên nào đó không muốn tiếp tục thương lượng có thể chấm dứt hợp đồng bất cứ lúc nào. Nếu lý do chấm dứt hợp đồng hợp lý (quá hạn công việc), bên bị chấm dứt không có quyền tố cáo. Nếu yêu cầu chấm dứt hợp đồng không hợp lý, người bị chấm dứt có quyền tố cáo đối tác
             // Retrieve the job from storage
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             // Get the caller's address
@@ -659,24 +660,25 @@ mod freelankakot {
                     if caller == job.person_create.unwrap() {
                         // Set the reporter as the job's person_obtain
                         job.reporter = job.person_obtain;
-                        // Store the reason for termination in the unsuccessful_jobs mapping
-                        self.unsuccessful_jobs
-                            .insert((caller, job.person_obtain.unwrap(), job_id), &Some(reason));
+                        // Check if the job's end_time has passed
+                        if job.end_time < self.env().block_timestamp() {
+                            job.require_report = false;
+                        } else {
+                            job.require_report = true;
+                        }
                     } else {
                         // Set the reporter as the job's person_create
                         job.reporter = job.person_create;
-                        // Store an empty reason for termination in the unsuccessful_jobs mapping
-                        self.unsuccessful_jobs.insert(
-                            (caller, job.person_obtain.unwrap(), job_id),
-                            &Some("".to_string()),
-                        );
+                        // Check if the job's end_time has passed
+                        if job.end_time < self.env().block_timestamp() {
+                            job.require_report = true;
+                        } else {
+                            job.require_report = false;
+                        }
                     }
-                    // Check if the job's end_time has passed
-                    if job.end_time < self.env().block_timestamp() {
-                        job.require_report = false;
-                    } else {
-                        job.require_report = true;
-                    }
+                    // Update history jobs
+                    self.history_jobs.insert(job_id, &true);
+
                     // Set the job status to REOPEN
                     job.status = Status::REOPEN;
                     job.pay = job.budget;
