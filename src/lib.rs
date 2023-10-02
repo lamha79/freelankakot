@@ -130,7 +130,7 @@ mod freelankakot {
         rating_points: i32,                       // điểm dánh giá có thể âm nên để i32
     }
 
-    #[derive(scale::Decode, scale::Encode)]
+    #[derive(scale::Decode, scale::Encode,Debug)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum JobError {
         // Lỗi liên quan tới đăng kí tài khoản
@@ -782,22 +782,160 @@ mod freelankakot {
     #[cfg(test)]
     mod tests {
 
+        use crate::freelankakot::*;
+        use ink::codegen::Env;
+
         #[ink::test]
-        fn new_works() {
-            // let mut new_freelancer = Freelancer::new();
-            // assert_eq!(new_freelancer.current_job_id, 0);
+        fn test_register_success() {
+            let mut account = Account::new();
 
-            // // role cá nhân hoặc role doanh nghiệp
-            // let individual_role = OnwerRole::INDIVIDUAL;
-            // // let enterprise_role =OnwerRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD);
+            // Register a new individual user.
+            let result = account.register(
+                "Alice".to_string(),
+                "Alice's details".to_string(),
+                "individual".to_string(),
+            );
+            assert!(result.is_ok());
 
-            // new_freelancer.create("TaskOne".to_string(), "Submit on one week".to_string(), individual_role);
-            // assert_eq!(new_freelancer.current_job_id, 1);
-            // assert_eq!(new_freelancer.jobs.get(1).unwrap().name, "TaskOne".to_string());
-            // assert_eq!(new_freelancer.jobs.get(1).unwrap().description, "Submit on one week".to_string());
-            // assert_eq!(new_freelancer.jobs.get(1).unwrap().result, None);
-            // assert_eq!(new_freelancer.jobs.get(1).unwrap().status, Status::OPEN);
-            // assert_eq!(new_freelancer.jobs.get(1).unwrap().budget, 0); //buget khi đưa vào mặc định là 0
+            // Get the caller's account information.
+            let caller_info = account
+                .personal_account_info
+                .get(&account.env().caller())
+                .unwrap();
+
+            // Assert that the caller's information is correct.
+            assert_eq!(caller_info.name, "Alice");
+            assert_eq!(caller_info.detail, "Alice's details");
+            assert_eq!(caller_info.role, AccountRole::INDIVIDUAL);
+        }
+
+        #[ink::test]
+        fn test_create_success() {
+            let mut account = Account::new();
+
+            // Create a new job with the given parameters.
+            let result = account.create(
+                "My new job".to_string(),
+                "This is a description of my new job.".to_string(),
+                Category::IT,
+                1, // 1 day
+            );
+
+            // Assert that the function call succeeds.
+            assert!(result.is_ok());
+
+            // Get the newly created job.
+            let job = account.jobs.get(0).unwrap();
+
+            // Assert that the job has the expected parameters.
+            assert_eq!(job.name, "My new job");
+            assert_eq!(job.description, "This is a description of my new job.");
+            assert_eq!(job.category, Category::IT);
+            assert_eq!(job.start_time, account.env().block_timestamp());
+            assert_eq!(
+                job.end_time,
+                account.env().block_timestamp() + 24 * 60 * 60 * 1000
+            );
+
+            // Assert that the caller's account information is updated correctly.
+            let caller_info = account
+                .personal_account_info
+                .get(&account.env().caller())
+                .unwrap();
+            assert_eq!(caller_info.successful_jobs_and_all_jobs.1, 1);
+        }
+
+        #[ink::test]
+        fn test_obtain_success() {
+            let mut account = Account::new();
+
+            // Create a new job with the given parameters.
+            let result_create_job = account.create(
+                "My new job".to_string(),
+                "This is a description of my new job.".to_string(),
+                Category::IT,
+                1, // 1 day
+            );
+
+            assert!(result_create_job.is_ok());
+
+            // Get the newly created job.
+            let _job = account.jobs.get(0).unwrap();
+
+            // Obtain the job as a freelancer.
+            let freelancer = AccountId::from([1u8; 32]);
+            account.personal_account_info.insert(
+                freelancer,
+                &UserInfo {
+                    name: "Freelancer".to_string(),
+                    detail: "This is a freelancer.".to_string(),
+                    role: AccountRole::FREELANCER,
+                    successful_jobs_and_all_jobs: (0, 0),
+                    rating_points: 0,
+                },
+            );
+
+            let result = account.obtain(0);
+
+            // Assert that the function call succeeds.
+            assert!(result.is_ok());
+
+            // Assert that the job status is updated to DOING.
+            let job = account.jobs.get(0).unwrap();
+            assert_eq!(job.status, Status::DOING);
+
+            // Assert that the freelancer is assigned to the job.
+            assert_eq!(job.person_obtain, Some(freelancer));
+
+            // Assert that the freelancer's account information is updated correctly.
+            let freelancer_info = account.personal_account_info.get(&freelancer).unwrap();
+            assert_eq!(freelancer_info.successful_jobs_and_all_jobs.1, 1);
+        }
+
+        #[ink::test]
+        fn test_submit_success() {
+            let mut account = Account::new();
+
+            // Create a new job with the given parameters.
+            let result_create_job = account.create(
+                "My new job".to_string(),
+                "This is a description of my new job.".to_string(),
+                Category::IT,
+                1, // 1 day
+            );
+            
+            assert!(result_create_job.is_ok());
+
+            // Get the newly created job.
+            let job = account.jobs.get(0).unwrap();
+
+            // Obtain the job as a freelancer.
+            let freelancer = AccountId::from([1u8; 32]);
+            account.personal_account_info.insert(
+                freelancer,
+                &UserInfo {
+                    name: "Freelancer".to_string(),
+                    detail: "This is a freelancer.".to_string(),
+                    role: AccountRole::FREELANCER,
+                    successful_jobs_and_all_jobs: (0, 0),
+                    rating_points: 0,
+                },
+            );
+
+            account.obtain(0);
+
+            // Submit the job result.
+            let result = "This is the job result.".to_string();
+            let result = account.submit(0, result);
+
+            // Assert that the function call succeeds.
+            assert!(result.is_ok());
+
+            // Assert that the job status is updated to REVIEW.
+            let job = account.jobs.get(0).unwrap();
+            assert_eq!(job.status, Status::REVIEW);
+
+            // Assert that the job result is set correctly.           
         }
     }
 }
