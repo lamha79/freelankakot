@@ -237,7 +237,7 @@ mod freelankakot {
             &mut self,
             name: String,
             description: String,
-            category: Category,
+            string_category: String,
             duration: u64,
         ) -> Result<(), JobError> {
             //duration là nhập số ngày chú ý timestamp tính theo mili giây
@@ -252,8 +252,17 @@ mod freelankakot {
                     }
                 }
             }
-            let budget = self.env().transferred_value() * (100 - FEE_PERCENTAGE as u128) / 100;
+            let budget = self.env().transferred_value();
+            let pay = budget * (100 - FEE_PERCENTAGE as u128) / 100;
             let start_time = self.env().block_timestamp();
+            let mut category = Category::default();
+            if string_category.to_lowercase() == "it" {
+                category = Category::IT;
+            } else if string_category.to_lowercase() == "marketing" {
+                category = Category::MARKETING;
+            } else if string_category.to_lowercase() == "photoshop" {
+                category = Category::PHOTOSHOP;
+            };
             let job = Job {
                 name: name,
                 description: description,
@@ -261,7 +270,7 @@ mod freelankakot {
                 result: None,
                 status: Status::default(),
                 budget: budget,
-                pay: budget,
+                pay: pay,
                 fee_percentage: FEE_PERCENTAGE,
                 start_time: start_time,
                 end_time: start_time + duration * 24 * 60 * 60 * 1000,
