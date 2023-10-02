@@ -130,7 +130,7 @@ mod freelankakot {
         rating_points: i32,                       // điểm dánh giá có thể âm nên để i32
     }
 
-    #[derive(scale::Decode, scale::Encode,Debug)]
+    #[derive(scale::Decode, scale::Encode, Debug)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum JobError {
         // Lỗi liên quan tới đăng kí tài khoản
@@ -253,7 +253,7 @@ mod freelankakot {
                 }
             }
             let budget = self.env().transferred_value();
-            let pay = budget* (100 - FEE_PERCENTAGE as u128) / 100;
+            let pay = budget * (100 - FEE_PERCENTAGE as u128) / 100;
             let start_time = self.env().block_timestamp();
             let mut category = Category::default();
             if string_category.to_lowercase() == "it" {
@@ -444,6 +444,7 @@ mod freelankakot {
             }
             Ok(())
         }
+
         #[ink(message, payable)]
         pub fn aproval(&mut self, job_id: JobId) -> Result<(), JobError> {
             let caller = self.env().caller();
@@ -872,7 +873,7 @@ mod freelankakot {
                 "photoshop".to_string(),
                 1, // 1 day
             );
-           
+
             assert!(result_create_job.is_ok());
             let _job = account.jobs.get(0).unwrap();
             let freelancer = AccountId::from([1u8; 32]);
@@ -893,7 +894,25 @@ mod freelankakot {
             let job = account.jobs.get(0).unwrap();
             assert_eq!(job.status, Status::REVIEW);
             assert_eq!(job.result, Some(input));
+        }
 
+        #[ink::test]
+        fn test_reject_success() {
+            let mut account = Account::new();
+            account
+                .create(
+                    "My new job".to_string(),
+                    "This is a description of my new job.".to_string(),
+                    "it".to_string(),
+                    1, // 1 day
+                )
+                .unwrap();
+
+            let _job = account.jobs.get(0).unwrap();
+            let result = account.reject(0);
+            assert!(result.is_ok());
+            let job = account.jobs.get(0).unwrap();
+            assert_eq!(job.status, Status::UNQUALIFIED);
         }
     }
 }
