@@ -11,16 +11,17 @@ mod freelankakot {
     pub type ReportInfo = String;
 
     const FEE_PERCENTAGE: u8 = 3;
+
     #[ink(storage)]
     #[derive(Default)]
     pub struct Account {
-        jobs: Mapping<JobId, Job>, //map jobID đến job: luôn là trạng thái cuối cùng của job, như vậy job reopen sẽ ko lưu người làm trước, phần đó lưu trong unsuccessful_job kèm đánh giá
+        jobs: Mapping<JobId, Job>, // map jobID đến job: luôn là trạng thái cuối cùng của job, như vậy job reopen sẽ ko lưu người làm trước, phần đó lưu trong unsuccessful_job kèm đánh giá
         current_job_id: JobId,
         personal_account_info: Mapping<AccountId, UserInfo>,
         owner_jobs: Mapping<AccountId, Vec<JobId>>,
         freelancer_jobs: Mapping<AccountId, Vec<JobId>>,
-        list_jobs_assign: Mapping<AccountId, (JobId, bool)>, // danh sách công việc đã giao
-        list_jobs_take: Mapping<AccountId, (JobId, bool)>,   // danh sách công việc đá hoàn thành
+        list_jobs_assign: Mapping<AccountId, (JobId, bool)>, // danh sách công việc đã giao <id,(job_id,hoàn thành hay chưa?))>
+        list_jobs_take: Mapping<AccountId, (JobId, bool)>, // danh sách công việc đã nhận <id,(job_id,hoàn thành hay chưa?))>
         ratings: Mapping<AccountId, (JobId, Option<RatingPoint>)>, // <JobId: id công việc, Điểm đánh giá>
         reports: Mapping<AccountId, (JobId, Option<ReportInfo>)>, // <JobId: id công việc, Thông tin tố cáo>
     }
@@ -36,19 +37,19 @@ mod freelankakot {
         category: Category,
         result: Option<String>,
         status: Status,
-        budget: Balance,                  // Ngân sách
-        fee_percentage: u8,               // Phần trăm tiền phí
+        budget: Balance,                  // ngân sách
+        fee_percentage: u8,               // phần trăm tiền phí
         start_time: Timestamp,            // thời gian bắt đầu tính từ lúc khởi tạo công việc
         end_time: Timestamp, //thời gian kết thúc = thời gian bắt đầu + duration người dùng nhập sẽ tính bằng ngày. (thời gian này bao gồm khởi tạo công việc và xét duyệt quá thời hạn người tạo phải hủy job tránh tình trạng treo người làm xong ko được nghiệm thu)
-        person_create: Option<AccountId>, // vì có trait default nên để option cho dễ
-        person_obtain: Option<AccountId>,
-        pay: Balance,                 //số tiền đã trả cho người làm
-        feedback: String,             // phản hồi của đối tác
-        request_negotiation: bool,    //yêu cầu thương lượng
+        person_create: Option<AccountId>, // id người giao việc
+        person_obtain: Option<AccountId>, // id người nhận việc
+        pay: Balance,        // số tiền đã trả cho người làm
+        feedback: String,    // phản hồi của đối tác
+        request_negotiation: bool, // yêu cầu thương lượng
         requester: Option<AccountId>, // người yêu cầu thương lượng
-        reporter: Option<AccountId>,  // người được phép tố cáo
-        require_rating: (bool, bool), //yêu cầu đánh giá của (người giao việc, người nhận việc)
-        unqualifier: bool,
+        reporter: Option<AccountId>, // người được phép tố cáo
+        require_rating: (bool, bool), // yêu cầu đánh giá của (người giao việc, người nhận việc)
+        unqualifier: bool,   // smart contract phát hiện công việc không đạt chất lương (quá hạn)
     }
 
     #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
@@ -132,25 +133,25 @@ mod freelankakot {
     #[derive(scale::Decode, scale::Encode)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum JobError {
-        //Lỗi liên quan tới đăng kí tài khoản
+        // Lỗi liên quan tới đăng kí tài khoản
         Registered,    //đã đăng kí tài khoản (đăng kí), không đăng kí nữa
         NotRegistered, // chưa đăng kí tài khoản.
 
-        //Lỗi role
+        // Lỗi role
         NotJobAssigner, // bạn không phải là người giao việc
         NotFreelancer,  // bạn không phải là freelancer
 
-        //Lỗi check job
+        // Lỗi check job
         NotExisted,       // Job không tồn tại
         NotTaked,         // chưa có người nhận job
         Taked,            //đã có người nhận
         NotTakeThisJob,   // bạn ko có nhận job này
         NotAssignThisJob, //bạn ko phải là người giao việc này
 
-        //lỗi liên quan đến thời gian hoàn thành job
+        // Lỗi liên quan đến thời gian hoàn thành job
         OutOfDate,
 
-        //Lỗi liên quan tới status job
+        // Lỗi liên quan tới status job
         Submited,             //đã submit
         Proccessing,          //đang có người làm
         CurrentJobIncomplete, //hoàn thành job hiện tại đã
@@ -326,7 +327,6 @@ mod freelankakot {
                     }
                 }
             }
-
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             //check end_time
             if job.end_time < self.env().block_timestamp() {
@@ -381,20 +381,19 @@ mod freelankakot {
                 }
             }
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
-            job.unqualifier = job.end_time < self.env().block_timestamp();
-            //check job đó có phải của mình nhận hay không
+            // Check job đó có phải của mình nhận hay không
             if job.person_obtain.unwrap() != caller {
                 return Err(JobError::NotTakeThisJob);
             };
-            //check job status
+            // Check job status
             match job.status {
                 // Status::OPEN | Status::REOPEN => return Err(JobError::NotTakeThisJob), // không thể xảy ra vì job đã của freelance
                 Status::REVIEW | Status::UNQUALIFIED => return Err(JobError::Submited),
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
                 Status::DOING => {
-                    //update lại thông tin job
+                    // Update lại thông tin job
                     // Check job is expired
-                    self.env().block_timestamp();
+                    job.unqualifier = job.end_time < self.env().block_timestamp();
                     job.result = Some(result);
                     job.status = Status::REVIEW;
                     self.jobs.insert(job_id, &job);
@@ -420,12 +419,10 @@ mod freelankakot {
                 }
             }
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
-
             //check job đó có phải của mình giao hay không
             if job.person_create.unwrap() != caller {
                 return Err(JobError::NotAssignThisJob);
             };
-
             match job.status {
                 Status::OPEN | Status::REOPEN => return Err(JobError::NotTaked),
                 Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccessing),
@@ -438,7 +435,6 @@ mod freelankakot {
             }
             Ok(())
         }
-
         #[ink(message, payable)]
         pub fn aproval(&mut self, job_id: JobId) -> Result<(), JobError> {
             let caller = self.env().caller();
@@ -459,7 +455,6 @@ mod freelankakot {
             if job.person_create.unwrap() != caller {
                 return Err(JobError::NotAssignThisJob);
             };
-
             match job.status {
                 Status::OPEN | Status::REOPEN => return Err(JobError::NotTaked),
                 Status::DOING | Status::UNQUALIFIED => return Err(JobError::Proccessing),
@@ -488,7 +483,6 @@ mod freelankakot {
                     // chuyển tiền và giữ lại phần trăm phí
                     // let budget = job.budget * (100 - FEE_PERCENTAGE as u128) / 100;
                     let _ = self.env().transfer(freelancer, job.pay);
-
                     self.jobs.insert(job_id, &job);
                 }
             }
@@ -603,7 +597,7 @@ mod freelankakot {
             job_id: JobId,
             agreement: bool,
         ) -> Result<(), JobError> {
-            // Phản hồi thương lương từ phía gửi, người nhận yêu cầu lựa chọn đồng ý hoặc không đồng ý với yêu cầu này
+            // Phản hồi thương lượng từ phía gửi, người nhận yêu cầu lựa chọn đồng ý hoặc không đồng ý với yêu cầu này
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             let caller = self.env().caller();
             // Retrieve caller info
@@ -711,26 +705,31 @@ mod freelankakot {
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             // Get the caller's address
             let caller = self.env().caller();
-            // Retrieve caller info
-            // Validate that the caller is registered
+            // Retrieve caller info validate that the caller is registered
             let _caller_info = self
                 .personal_account_info
                 .get(&caller)
                 .ok_or(JobError::NotRegistered)?;
-            if caller == job.reporter.unwrap() {
-                job.reporter = None;
-                self.jobs.insert(job_id, &job);
-                self.list_jobs_take
-                    .insert(job.person_obtain.unwrap(), &(job_id, false));
-                if caller == job.person_create.unwrap() {
-                    self.reports
-                        .insert(job.person_obtain.unwrap(), &(job_id, Some(report)));
-                } else {
-                    self.reports
-                        .insert(job.person_create.unwrap(), &(job_id, Some(report)));
+            match caller {
+                x if x == job.reporter.unwrap() => {
+                    job.reporter = None;
+                    self.jobs.insert(job_id, &job);
+                    self.list_jobs_take
+                        .insert(job.person_obtain.unwrap(), &(job_id, false));
+
+                    match x {
+                        y if y == job.person_create.unwrap() => {
+                            self.reports
+                                .insert(job.person_obtain.unwrap(), &(job_id, Some(report)));
+                        }
+                        y if y == job.person_obtain.unwrap() => {
+                            self.reports
+                                .insert(job.person_create.unwrap(), &(job_id, Some(report)));
+                        }
+                        _ => return Err(JobError::InvalidReport),
+                    }
                 }
-            } else {
-                return Err(JobError::InvalidReport);
+                _ => return Err(JobError::InvalidReport),
             }
             Ok(())
         }
@@ -740,8 +739,7 @@ mod freelankakot {
             let mut job = self.jobs.get(job_id).ok_or(JobError::NotExisted)?;
             // Get the caller's address
             let caller = self.env().caller();
-            // Retrieve caller info
-            // Validate that the caller is registered
+            // Retrieve caller info and validate that the caller is registered
             let _caller_info = self
                 .personal_account_info
                 .get(&caller)
@@ -755,12 +753,14 @@ mod freelankakot {
                 Status::FINISH => match (caller, job.require_rating) {
                     (a, (b, _)) if (a == job.person_create.unwrap() && b) => {
                         job.require_rating.0 = false;
-                        self.ratings.insert(job.person_obtain.unwrap(),&(job_id,Some(rating_point)));
+                        self.ratings
+                            .insert(job.person_obtain.unwrap(), &(job_id, Some(rating_point)));
                         self.jobs.insert(job_id, &job);
                     }
                     (a, (_, c)) if (a == job.person_obtain.unwrap() && c) => {
                         job.require_rating.1 = true;
-                        self.ratings.insert(job.person_create.unwrap(),&(job_id,Some(rating_point)));
+                        self.ratings
+                            .insert(job.person_create.unwrap(), &(job_id, Some(rating_point)));
                         self.jobs.insert(job_id, &job);
                     }
                     _ => return Err(JobError::InvalidRating),
