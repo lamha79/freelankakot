@@ -188,15 +188,11 @@ mod freelankakot {
             string_role: String,
         ) -> Result<(), JobError> {
             let caller = self.env().caller();
-            let mut role: AccountRole = AccountRole::default();
-            if string_role.to_lowercase() == "individual" {
-                role = AccountRole::INDIVIDUAL;
-            } else if string_role.to_lowercase() == "teamlead" {
-                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD);
-            } else if string_role.to_lowercase() == "accountant" {
-                role = AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT);
-            } else if string_role.to_lowercase() == "freelancer" {
-                role = AccountRole::FREELANCER;
+            let role = match string_role.to_lowercase().as_str() {
+                "individual" => AccountRole::INDIVIDUAL,
+                "teamlead" => AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD),
+                "accountant" => AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT),
+                _ => AccountRole::FREELANCER, 
             };
             let caller_info = UserInfo {
                 name: name,
@@ -807,10 +803,49 @@ mod freelankakot {
 
         use crate::freelankakot::*;
         use ink::codegen::Env;
+        use ink::env::test;
+
+        // vec để set địa chỉ contract.
+        const CONTRACT: [u8; 32] = [7; 32];
+
+        // lấy dãy các account truy cập alice là [1;32] bov là [2;32]...
+        // cách truy cập là default_accounts().alice, ...
+        fn default_accounts() -> test::DefaultAccounts<Environment> {
+            ink::env::test::default_accounts::<Environment>()
+        }
+
+        //set caller: người gọi
+        fn set_caller(sender: AccountId) {
+            ink::env::test::set_caller::<Environment>(sender);
+        }
+
+        //set callee: người được gọi
+        fn set_callee(sender: AccountId) {
+            ink::env::test::set_callee::<Environment>(sender);
+        }
+
+        //tạo địa chỉ [7;32]
+        fn get_address_contract() -> AccountId {
+            AccountId::from(CONTRACT)
+        }
+
+        //build contract với địa chỉ là [7;32]
+        fn build_contract() -> Account {
+            let callee: AccountId = AccountId::from(CONTRACT);
+            ink::env::test::set_callee::<ink::env::DefaultEnvironment>(callee);
+            Account::new()
+        }
+
 
         #[ink::test]
         fn test_register_success() {
-            let mut account = Account::new();
+            //build contract với địa chỉ là [7;32]
+            let mut account = build_contract();
+            //check lại đúng địa chỉ [7;32] chưa
+            assert_eq!(account.env().account_id(), get_address_contract());
+            //lấy account alice và set người gọi là alice 
+            let alice = default_accounts().alice;
+            set_caller(alice);
             let result = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
@@ -819,7 +854,7 @@ mod freelankakot {
             assert!(result.is_ok());
             let caller_info = account
                 .personal_account_info
-                .get(&account.env().caller())
+                .get(&alice)
                 .unwrap();
             assert_eq!(caller_info.name, "Alice");
             assert_eq!(caller_info.detail, "Alice's details");
@@ -828,8 +863,21 @@ mod freelankakot {
 
         #[ink::test]
         fn test_create_success() {
-            let mut account = Account::new();
-
+            //build contract với địa chỉ là [7;32]
+            let mut account = build_contract();
+            //lấy alice và set caller là alice 
+            let alice = default_accounts().alice;
+            set_caller(alice);
+            let _resut_create_account = account.register(
+                "Alice".to_string(),
+                "Alice's details".to_string(),
+                "individual".to_string(),
+            );
+            //check người gọi và thử role tk đăng kí có phải alice ko
+            assert_eq!(account.env().caller(), alice);
+            assert_eq!(account.personal_account_info.get(&alice).unwrap().role, AccountRole::INDIVIDUAL);
+            //set số lượng tiền deposit vào smartcontract
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             // Create a new job.
             let result = account.create(
                 "My new job".to_string(),
@@ -850,31 +898,37 @@ mod freelankakot {
                 job.end_time,
                 account.env().block_timestamp() + 24 * 60 * 60 * 1000
             );
-            assert_eq!(job.budget, 1000);
+            assert_eq!(job.budget, 970); //hao 3% phí
             assert_eq!(job.status, Status::OPEN);
+            assert_eq!(account.personal_account_info.get(alice).unwrap().successful_jobs_and_all_jobs, (0,1));
+            assert_eq!(account.owner_jobs.get(alice).unwrap(), Vec::from([0]));
         }
 
         #[ink::test]
         fn test_obtain_success() {
-            let mut account = Account::new();
-
+            //build contract với địa chỉ là [7;32]
+            let mut account = build_contract();
+            //lấy alice và set caller là alice 
+            let alice = default_accounts().alice;
+            set_caller(alice);
             let _resut_create_account = account.register(
                 "Alice".to_string(),
                 "Alice's details".to_string(),
                 "individual".to_string(),
             );
-            account
-                .create(
-                    "My new job".to_string(),
-                    "This is a description of my new job.".to_string(),
-                    "it".to_string(),
-                    1, // 1 day
-                )
-                .unwrap();
-            let _job = account.jobs.get(0).unwrap();
-            let freelancer = AccountId::from([1u8; 32]);
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
+            // Create a new job.
+            let result = account.create(
+                "My new job".to_string(),
+                "This is a description of my new job.".to_string(),
+                "it".to_string(),
+                1, // 1 day
+            );
+            assert!(result.is_ok());
+            //insert bob là freelancer 
+            let bob = default_accounts().bob;
             account.personal_account_info.insert(
-                freelancer,
+                bob,
                 &UserInfo {
                     name: "Freelancer".to_string(),
                     detail: "This is a freelancer.".to_string(),
@@ -883,11 +937,15 @@ mod freelankakot {
                     rating_points: 0,
                 },
             );
+            //bob là người gọi
+            set_caller(bob);
             let result = account.obtain(0);
             assert!(result.is_ok());
             let job = account.jobs.get(0).unwrap();
             assert_eq!(job.status, Status::DOING);
-            assert_eq!(job.person_obtain, Some(freelancer));
+            assert_eq!(job.person_obtain, Some(bob));
+            assert_eq!(account.personal_account_info.get(bob).unwrap().successful_jobs_and_all_jobs, (0,1));
+            assert_eq!(account.freelancer_jobs.get(bob).unwrap(), Vec::from([0]));
         }
 
         #[ink::test]
