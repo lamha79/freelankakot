@@ -252,8 +252,7 @@ mod freelankakot {
                     }
                 }
             }
-            let budget = self.env().transferred_value();
-            let pay = budget * (100 - FEE_PERCENTAGE as u128) / 100;
+            let budget = self.env().transferred_value()* (100 - FEE_PERCENTAGE as u128) / 100;
             let start_time = self.env().block_timestamp();
             let mut category = Category::default();
             if string_category.to_lowercase() == "it" {
@@ -270,7 +269,7 @@ mod freelankakot {
                 result: None,
                 status: Status::default(),
                 budget: budget,
-                pay: pay,
+                pay: budget,
                 fee_percentage: FEE_PERCENTAGE,
                 start_time: start_time,
                 end_time: start_time + duration * 24 * 60 * 60 * 1000,
