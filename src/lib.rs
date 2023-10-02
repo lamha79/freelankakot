@@ -12,6 +12,14 @@ mod freelankakot {
 
     const FEE_PERCENTAGE: u8 = 3;
 
+    #[ink(event)]
+    pub struct Registered {
+        #[ink(topic)]
+        account_id: AccountId,
+        #[ink(topic)]
+        account_role: AccountRole,
+    }
+
     #[ink(storage)]
     #[derive(Default)]
     pub struct Account {
@@ -201,6 +209,10 @@ mod freelankakot {
                 None => self.personal_account_info.insert(caller, &caller_info),
                 _ => return Err(JobError::Registered),
             };
+            Self::env().emit_event(Registered {
+                account_id: caller,
+                account_role: role,
+            });
             Ok(())
         }
 
