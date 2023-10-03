@@ -3,6 +3,7 @@ import { SubstrateDeployment } from '@scio-labs/use-inkathon'
 
 export enum ContractIds {
   Greeter = 'greeter',
+  Freelankakot = 'freelankakot'
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
@@ -12,8 +13,8 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
       {
         contractId: ContractIds.Greeter,
         networkId: network,
-        abi: await import(`../../contracts/deployments/greeter/metadata.json`),
-        address: (await import(`../../contracts/deployments/greeter/${network}.ts`)).address,
+        abi: await import(`../../contracts/deployments/freelankakot/metadata.json`),
+        address: (await import(`../../contracts/deployments/freelankakot/${network}.ts`)).address,
       },
     ])
     .reduce(async (acc, curr) => [...(await acc), ...(await curr)], [] as any)
