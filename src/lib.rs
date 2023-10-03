@@ -940,6 +940,47 @@ mod freelankakot {
             Account::new()
         }
 
+        fn register_owner(constract: &mut Account, caller: AccountId){
+            set_caller(caller);
+            let name = "User".to_string();
+            let detail = "User information".to_string();
+            let string_role = "individual".to_string();
+            let result = constract.register(name, detail, string_role);
+            assert!(result.is_ok())
+        }
+
+        fn register_freelancer(constract: &mut Account, caller: AccountId){
+            set_caller(caller);
+            let name = "Freelancer".to_string();
+            let detail = "Freelancer information".to_string();
+            let string_role = "freelancer".to_string();
+            let result = constract.register(name, detail, string_role);
+            assert!(result.is_ok())
+        }
+
+        fn create_new_job(contract: &mut Account, caller: AccountId) {
+            set_caller(caller);
+            let name = "user's job".to_string();
+            let description = "detail of user's job".to_string();
+            let string_category = "it".to_string();
+            let duration: u64 = 1;
+            let result = contract.create(name, description, string_category, duration);
+            assert!(result.is_ok());
+        }
+
+        fn obtain_job(contract: &mut Account, caller: AccountId, job_id: u128) {
+            set_caller(caller);
+            let result = contract.obtain(job_id);
+            assert!(result.is_ok());
+        }
+
+        fn submit_job(contract: &mut Account, caller: AccountId, job_id: u128) {
+            set_caller(caller);
+            let result_job = "this is a result of this job".to_string();
+            let result = contract.submit(job_id, result_job);
+            assert!(result.is_ok());
+        }
+
         #[ink::test]
         fn test_register_success() {
             //build contract với địa chỉ là [7;32]
@@ -1181,6 +1222,56 @@ mod freelankakot {
             let input = "This is the job result.".to_string();
             let _result = account.submit(0, input);
             assert_eq!(_result.unwrap_err(), JobError::NotExisted);
+        }
+
+        #[ink::test]
+        fn test_reject_not_work() {
+            let mut account = build_contract();
+            set_caller(default_accounts().alice);
+            //check lỗi chưa đăng kí
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::NotRegistered));
+            //alice đăng kí user và tạo job
+            register_owner(&mut account, default_accounts().alice);
+            create_new_job(&mut account, default_accounts().alice);
+            //bob đăng kí freelancer
+            register_freelancer(&mut account, default_accounts().bob);
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::NotJobAssigner));
+            //charlie đăng kí và reject
+            register_owner(&mut account, default_accounts().charlie);
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::NotAssignThisJob));
+            //check alice hủy job
+            set_caller(default_accounts().alice);
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::NotTaked));
+            //bob nhận việc và alice reject
+            set_caller(default_accounts().bob);
+            let _ = account.obtain(0);
+            set_caller(default_accounts().alice);
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::Proccessing));
+            //chỉnh trạng thái công việc cancle
+            let mut job0 = account.jobs.get(0).unwrap();
+            job0.status = Status::CANCELED;
+            account.jobs.insert(0, &job0);
+            set_caller(default_accounts().alice);
+            let result = account.reject(0);
+            assert_eq!(result, Err(JobError::Finish));
+        }
+
+        #[ink::test]
+        fn test_reject_should_work() {
+            let mut account = build_contract();
+            register_owner(&mut account, default_accounts().alice);
+            create_new_job(&mut account, default_accounts().alice);
+            register_freelancer(&mut account, default_accounts().bob);
+            obtain_job(&mut account, default_accounts().bob, 0);
+            submit_job(&mut account, default_accounts().bob, 0);
+            set_caller(default_accounts().alice);
+            let result = account.reject(0);
+            assert!(result.is_ok());
         }
     }
 }
