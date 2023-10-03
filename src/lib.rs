@@ -192,7 +192,7 @@ mod freelankakot {
                 "individual" => AccountRole::INDIVIDUAL,
                 "teamlead" => AccountRole::ENTERPRISE(OnwerRoleInEnterprise::TEAMLEAD),
                 "accountant" => AccountRole::ENTERPRISE(OnwerRoleInEnterprise::ACCOUNTANT),
-                _ => AccountRole::FREELANCER, 
+                _ => AccountRole::FREELANCER,
             };
             let caller_info = UserInfo {
                 name: name,
@@ -371,7 +371,7 @@ mod freelankakot {
                     match self.freelancer_jobs.contains(caller) {
                         true => {
                             let mut jobs_of_caller = self.freelancer_jobs.get(caller).unwrap();
-                            jobs_of_caller.push((job_id,false));
+                            jobs_of_caller.push((job_id, false));
                             self.freelancer_jobs.insert(caller, &jobs_of_caller);
                         }
                         false => {
@@ -502,7 +502,7 @@ mod freelankakot {
                         freelancer_detail.successful_jobs_and_all_jobs.0 + 1;
                     self.personal_account_info
                         .insert(freelancer, &freelancer_detail);
-                    
+
                     //Chỉnh lại trạng thái công việc đã thành công của onwer_jobs và freelancer_jobs
                     let mut owner_jobs_of_account_id = self.owner_jobs.get(caller).unwrap();
                     for element in owner_jobs_of_account_id.iter_mut() {
@@ -513,15 +513,17 @@ mod freelankakot {
                     }
                     self.owner_jobs.insert(caller, &owner_jobs_of_account_id);
 
-                    let mut freelancer_jobs_of_account_id = self.freelancer_jobs.get(freelancer).unwrap();
+                    let mut freelancer_jobs_of_account_id =
+                        self.freelancer_jobs.get(freelancer).unwrap();
                     for element in freelancer_jobs_of_account_id.iter_mut() {
                         if element.0 == job_id {
                             element.1 = true;
                             break;
                         }
                     }
-                    self.owner_jobs.insert(caller, &freelancer_jobs_of_account_id);
-                    
+                    self.owner_jobs
+                        .insert(caller, &freelancer_jobs_of_account_id);
+
                     // self.list_jobs_assign
                     //     .insert(job.person_create.unwrap(), &(job_id, true));
                     // self.list_jobs_take
@@ -575,10 +577,8 @@ mod freelankakot {
                     // self.list_jobs_assign
                     //     .insert(job.person_create.unwrap(), &(job_id, false));
                     self.jobs.insert(job_id, &job);
-                },
-                Status::DOING | Status::REVIEW => {
-                    return Err(JobError::Proccessing)
-                },
+                }
+                Status::DOING | Status::REVIEW => return Err(JobError::Proccessing),
                 //nếu job đang ở trạng thái tranh chấp thì tùy theo deadline mà được hủy hay ko
                 Status::UNQUALIFIED => {
                     if self.env().block_timestamp() > job.end_time {
@@ -586,7 +586,7 @@ mod freelankakot {
                     } else {
                         return Err(JobError::Proccessing);
                     }
-                },
+                }
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish), // job đã bị hủy hoặc finish
             }
             Ok(())
@@ -699,14 +699,16 @@ mod freelankakot {
                             self.owner_jobs.insert(caller, &owner_jobs_of_account_id);
 
                             let freelancer = job.person_obtain.unwrap();
-                            let mut freelancer_jobs_of_account_id = self.freelancer_jobs.get(freelancer).unwrap();
+                            let mut freelancer_jobs_of_account_id =
+                                self.freelancer_jobs.get(freelancer).unwrap();
                             for element in freelancer_jobs_of_account_id.iter_mut() {
                                 if element.0 == job_id {
                                     element.1 = true;
                                     break;
                                 }
                             }
-                            self.owner_jobs.insert(caller, &freelancer_jobs_of_account_id);
+                            self.owner_jobs
+                                .insert(caller, &freelancer_jobs_of_account_id);
                         } else {
                             // If respond is don't agree
                             job.request_negotiation = false;
@@ -795,14 +797,17 @@ mod freelankakot {
                             //Chỉnh lại report của onwer_jobs
                             match self.reports.contains(job.person_obtain.unwrap()) {
                                 true => {
-                                    let mut report_of_onwer = self.reports.get(job.person_obtain.unwrap()).unwrap();
+                                    let mut report_of_onwer =
+                                        self.reports.get(job.person_obtain.unwrap()).unwrap();
                                     report_of_onwer.push((job_id, Some(report)));
-                                    self.reports.insert(job.person_obtain.unwrap(), &report_of_onwer);
+                                    self.reports
+                                        .insert(job.person_obtain.unwrap(), &report_of_onwer);
                                 }
                                 false => {
                                     let mut report_of_onwer = Vec::new();
                                     report_of_onwer.push((job_id, Some(report)));
-                                    self.reports.insert(job.person_obtain.unwrap(), &report_of_onwer);
+                                    self.reports
+                                        .insert(job.person_obtain.unwrap(), &report_of_onwer);
                                 }
                             }
                         }
@@ -812,14 +817,17 @@ mod freelankakot {
                             //Chỉnh lại report của freelancer_jobs
                             match self.reports.contains(job.person_create.unwrap()) {
                                 true => {
-                                    let mut report_of_freelancer = self.reports.get(job.person_create.unwrap()).unwrap();
+                                    let mut report_of_freelancer =
+                                        self.reports.get(job.person_create.unwrap()).unwrap();
                                     report_of_freelancer.push((job_id, Some(report)));
-                                    self.reports.insert(job.person_create.unwrap(), &report_of_freelancer);
+                                    self.reports
+                                        .insert(job.person_create.unwrap(), &report_of_freelancer);
                                 }
                                 false => {
                                     let mut report_of_freelancer = Vec::new();
                                     report_of_freelancer.push((job_id, Some(report)));
-                                    self.reports.insert(job.person_create.unwrap(), &report_of_freelancer);
+                                    self.reports
+                                        .insert(job.person_create.unwrap(), &report_of_freelancer);
                                 }
                             }
                         }
@@ -849,42 +857,42 @@ mod freelankakot {
                 Status::CANCELED => return Err(JobError::NotExisted),
                 Status::FINISH => match (caller, job.require_rating) {
                     (a, (b, _)) if (a == job.person_create.unwrap() && b) => {
-                        job.require_rating.0 = false;
-                        self.jobs.insert(job_id, &job);
-                        // self.ratings
-                        //     .insert(job.person_obtain.unwrap(), &(job_id, Some(rating_point)));
                         // update ratings
                         match self.ratings.contains(job.person_create.unwrap()) {
                             true => {
                                 let mut ratings_of_onwer = self.ratings.get(caller).unwrap();
                                 ratings_of_onwer.push((job_id, Some(rating_point)));
-                                self.ratings.insert(job.person_obtain.unwrap(), &ratings_of_onwer);
+                                self.ratings
+                                    .insert(job.person_obtain.unwrap(), &ratings_of_onwer);
                             }
                             false => {
                                 let mut ratings_of_onwer = Vec::new();
                                 ratings_of_onwer.push((job_id, Some(rating_point)));
-                                self.ratings.insert(job.person_obtain.unwrap(), &ratings_of_onwer);
+                                self.ratings
+                                    .insert(job.person_obtain.unwrap(), &ratings_of_onwer);
                             }
                         }
+                        job.require_rating.0 = false;
+                        self.jobs.insert(job_id, &job);
                     }
                     (a, (_, c)) if (a == job.person_obtain.unwrap() && c) => {
-                        job.require_rating.1 = true;
-                        self.jobs.insert(job_id, &job);
-                        // self.ratings
-                        //     .insert(job.person_create.unwrap(), &(job_id, Some(rating_point)));
                         // update ratings
                         match self.ratings.contains(job.person_obtain.unwrap()) {
                             true => {
                                 let mut ratings_of_freelancer = self.ratings.get(caller).unwrap();
                                 ratings_of_freelancer.push((job_id, Some(rating_point)));
-                                self.ratings.insert(job.person_create.unwrap(), &ratings_of_freelancer);
+                                self.ratings
+                                    .insert(job.person_create.unwrap(), &ratings_of_freelancer);
                             }
                             false => {
                                 let mut ratings_of_freelancer = Vec::new();
                                 ratings_of_freelancer.push((job_id, Some(rating_point)));
-                                self.ratings.insert(job.person_create.unwrap(), &ratings_of_freelancer);
+                                self.ratings
+                                    .insert(job.person_create.unwrap(), &ratings_of_freelancer);
                             }
                         }
+                        job.require_rating.1 = false;
+                        self.jobs.insert(job_id, &job);
                     }
                     _ => return Err(JobError::InvalidRating),
                 },
@@ -932,14 +940,13 @@ mod freelankakot {
             Account::new()
         }
 
-
         #[ink::test]
         fn test_register_success() {
             //build contract với địa chỉ là [7;32]
             let mut account = build_contract();
             //check lại đúng địa chỉ [7;32] chưa
             assert_eq!(account.env().account_id(), get_address_contract());
-            //lấy account alice và set người gọi là alice 
+            //lấy account alice và set người gọi là alice
             let alice = default_accounts().alice;
             set_caller(alice);
             let result = account.register(
@@ -948,10 +955,7 @@ mod freelankakot {
                 "individual".to_string(),
             );
             assert!(result.is_ok());
-            let caller_info = account
-                .personal_account_info
-                .get(&alice)
-                .unwrap();
+            let caller_info = account.personal_account_info.get(&alice).unwrap();
             assert_eq!(caller_info.name, "Alice");
             assert_eq!(caller_info.detail, "Alice's details");
             assert_eq!(caller_info.role, AccountRole::INDIVIDUAL);
@@ -961,7 +965,7 @@ mod freelankakot {
         fn test_create_success() {
             //build contract với địa chỉ là [7;32]
             let mut account = build_contract();
-            //lấy alice và set caller là alice 
+            //lấy alice và set caller là alice
             let alice = default_accounts().alice;
             set_caller(alice);
             let _resut_create_account = account.register(
@@ -971,7 +975,10 @@ mod freelankakot {
             );
             //check người gọi và thử role tk đăng kí có phải alice ko
             assert_eq!(account.env().caller(), alice);
-            assert_eq!(account.personal_account_info.get(&alice).unwrap().role, AccountRole::INDIVIDUAL);
+            assert_eq!(
+                account.personal_account_info.get(&alice).unwrap().role,
+                AccountRole::INDIVIDUAL
+            );
             //set số lượng tiền deposit vào smartcontract
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             // Create a new job.
@@ -996,15 +1003,25 @@ mod freelankakot {
             );
             assert_eq!(job.budget, 970); //hao 3% phí
             assert_eq!(job.status, Status::OPEN);
-            assert_eq!(account.personal_account_info.get(alice).unwrap().successful_jobs_and_all_jobs, (0,1));
-            assert_eq!(account.owner_jobs.get(alice).unwrap(), Vec::from([(0, false)]));
+            assert_eq!(
+                account
+                    .personal_account_info
+                    .get(alice)
+                    .unwrap()
+                    .successful_jobs_and_all_jobs,
+                (0, 1)
+            );
+            assert_eq!(
+                account.owner_jobs.get(alice).unwrap(),
+                Vec::from([(0, false)])
+            );
         }
 
         #[ink::test]
         fn test_obtain_success() {
             //build contract với địa chỉ là [7;32]
             let mut account = build_contract();
-            //lấy alice và set caller là alice 
+            //lấy alice và set caller là alice
             let alice = default_accounts().alice;
             set_caller(alice);
             let _resut_create_account = account.register(
@@ -1021,7 +1038,7 @@ mod freelankakot {
                 1, // 1 day
             );
             assert!(result.is_ok());
-            //insert bob là freelancer 
+            //insert bob là freelancer
             let bob = default_accounts().bob;
             account.personal_account_info.insert(
                 bob,
@@ -1040,8 +1057,18 @@ mod freelankakot {
             let job = account.jobs.get(0).unwrap();
             assert_eq!(job.status, Status::DOING);
             assert_eq!(job.person_obtain, Some(bob));
-            assert_eq!(account.personal_account_info.get(bob).unwrap().successful_jobs_and_all_jobs, (0,1));
-            assert_eq!(account.freelancer_jobs.get(bob).unwrap(), Vec::from([(0, false)]));
+            assert_eq!(
+                account
+                    .personal_account_info
+                    .get(bob)
+                    .unwrap()
+                    .successful_jobs_and_all_jobs,
+                (0, 1)
+            );
+            assert_eq!(
+                account.freelancer_jobs.get(bob).unwrap(),
+                Vec::from([(0, false)])
+            );
         }
 
         #[ink::test]
