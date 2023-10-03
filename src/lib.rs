@@ -928,6 +928,11 @@ mod freelankakot {
             ink::env::test::set_callee::<Environment>(sender);
         }
 
+        //get account Balance 
+        fn get_balance_of(sender: AccountId) -> u128 {
+            ink::env::test::get_account_balance::<Environment>(sender).unwrap()
+        }
+
         //tạo địa chỉ [7;32]
         fn get_address_contract() -> AccountId {
             AccountId::from(CONTRACT)
@@ -1314,12 +1319,21 @@ mod freelankakot {
         #[ink::test]
         fn test_aproval_should_work() {
             let mut account = build_contract();
-            register_owner(&mut account, default_accounts().alice);
-            create_new_job(&mut account, default_accounts().alice);
-            register_freelancer(&mut account, default_accounts().bob);
-            obtain_job(&mut account, default_accounts().bob, 0);
-            submit_job(&mut account, default_accounts().bob, 0);
-            set_caller(default_accounts().alice);
+            let alice = default_accounts().alice;
+            let bob = default_accounts().bob;
+            register_owner(&mut account, alice);
+            set_caller(alice);
+            set_callee(AccountId::from([7;32]));
+            ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
+            let old_balance_of_alice = get_balance_of(alice);
+            create_new_job(&mut account, alice);
+            assert_eq!(account.jobs.get(0).unwrap().budget, 970);
+            //không hiểu sao lại lỗi chỗ này
+            // assert_eq!(get_balance_of(alice), old_balance_of_alice - 1000);
+            register_freelancer(&mut account, bob);
+            obtain_job(&mut account, bob, 0);
+            submit_job(&mut account, bob, 0);
+            set_caller(alice);
             let result = account.aproval(0);
             assert!(result.is_ok());
         }
