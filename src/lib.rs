@@ -19,6 +19,111 @@ mod freelankakot {
         #[ink(topic)]
         account_role: AccountRole,
     }
+    #[ink(event)]
+    pub struct JobCreated {
+        #[ink(topic)]
+        name: String,
+        #[ink(topic)]
+        description: String,
+        #[ink(topic)]
+        deposite: u128,
+        #[ink(topic)]
+        duration: u64,
+    }
+
+    #[ink(event)]
+    pub struct JobObtained {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        freelancer: AccountId,
+    }
+
+    #[ink(event)]
+    pub struct JobSubmitted {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        freelancer: AccountId,
+        #[ink(topic)]
+        result: String,
+    }
+
+    #[ink(event)]
+    pub struct JobRejected {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        owner: AccountId,
+    }
+
+    #[ink(event)]
+    pub struct JobApproved {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        owner: AccountId,
+        #[ink(topic)]
+        freelancer: AccountId,
+    }
+
+    #[ink(event)]
+    pub struct JobCanceled {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        owner: AccountId,
+    }
+
+    #[ink(event)]
+    pub struct JobNegotiationRequested {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        requester: AccountId,
+        #[ink(topic)]
+        pay: u128,
+    }
+
+    #[ink(event)]
+    pub struct JobNegotiationResponded {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        responder: AccountId,
+        #[ink(topic)]
+        agreement: bool,
+    }
+
+    #[ink(event)]
+    pub struct JobTerminated {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        terminator: AccountId,
+        #[ink(topic)]
+        reporter: Option<AccountId>,
+    }
+
+    #[ink(event)]
+    pub struct JobReported {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        reporter: AccountId,
+        #[ink(topic)]
+        report: ReportInfo,
+    }
+
+    #[ink(event)]
+    pub struct JobRated {
+        #[ink(topic)]
+        job_id: JobId,
+        #[ink(topic)]
+        rater: AccountId,
+        #[ink(topic)]
+        rating_point: RatingPoint,
+    }
 
     #[ink(storage)]
     #[derive(Default)]
@@ -72,7 +177,7 @@ mod freelankakot {
         PHOTOSHOP,
     }
 
-    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
+    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq,Clone)]
     #[cfg_attr(
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
@@ -277,8 +382,8 @@ mod freelankakot {
                 category = Category::PHOTOSHOP;
             };
             let job = Job {
-                name: name,
-                description: description,
+                name: name.clone(),
+                description: description.clone(),
                 category: category,
                 result: None,
                 status: Status::default(),
@@ -317,6 +422,14 @@ mod freelankakot {
             owner_detail.successful_jobs_and_all_jobs.1 =
                 owner_detail.successful_jobs_and_all_jobs.1 + 1;
             self.personal_account_info.insert(caller, &owner_detail);
+
+            // Emit the event.
+            Self::env().emit_event(JobCreated {
+                name: name,
+                description: description,
+                deposite: deposite,
+                duration: duration,
+            });
             Ok(())
         }
 
@@ -387,8 +500,14 @@ mod freelankakot {
                     self.personal_account_info
                         .insert(caller, &freelancer_detail);
                     self.jobs.insert(job_id, &job);
+                    // Emit the event.
+                    Self::env().emit_event(JobObtained {
+                        job_id,
+                        freelancer: caller,
+                    });
                 }
             }
+
             Ok(())
         }
 
@@ -420,9 +539,15 @@ mod freelankakot {
                     // Update lại thông tin job
                     // Check job is expired
                     job.unqualifier = job.end_time < self.env().block_timestamp();
-                    job.result = Some(result);
+                    job.result = Some(result.clone());
                     job.status = Status::REVIEW;
                     self.jobs.insert(job_id, &job);
+                    // Emit the event.
+                    Self::env().emit_event(JobSubmitted {
+                        job_id,
+                        freelancer: caller,
+                        result,
+                    });
                 }
                 _ => (),
             }
@@ -457,6 +582,11 @@ mod freelankakot {
                     //update lại thông tin job để freelancer biết chưa hài lòng
                     job.status = Status::UNQUALIFIED;
                     self.jobs.insert(job_id, &job);
+                    // Emit the event.
+                    Self::env().emit_event(JobRejected {
+                        job_id,
+                        owner: caller,
+                    });
                 }
             }
             Ok(())
@@ -534,6 +664,13 @@ mod freelankakot {
                     self.jobs.insert(job_id, &job);
                 }
             }
+            // Emit the event.
+            Self::env().emit_event(JobApproved {
+                job_id,
+                owner: caller,
+                freelancer: job.person_obtain.unwrap(),
+            });
+
             Ok(())
         }
 
@@ -589,6 +726,11 @@ mod freelankakot {
                 }
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish), // job đã bị hủy hoặc finish
             }
+            // Emit the event.
+            Self::env().emit_event(JobCanceled {
+                job_id,
+                owner: caller,
+            });
             Ok(())
         }
 
@@ -641,6 +783,12 @@ mod freelankakot {
                 }
                 _ => return Err(JobError::InvalidPayAmount),
             }
+            // Emit the event.
+            Self::env().emit_event(JobNegotiationRequested {
+                job_id,
+                requester: caller,
+                pay,
+            });
             Ok(())
         }
 
@@ -724,6 +872,12 @@ mod freelankakot {
                 Status::DOING | Status::REVIEW => return Err(JobError::Proccessing),
                 Status::CANCELED | Status::FINISH => return Err(JobError::NotExisted),
             }
+            // Emit the event.
+            Self::env().emit_event(JobNegotiationResponded {
+                job_id,
+                responder: caller,
+                agreement,
+            });
             Ok(())
         }
 
@@ -771,6 +925,12 @@ mod freelankakot {
                 // If the job is in the CANCELED or FINISH status, return an error
                 Status::CANCELED | Status::FINISH => return Err(JobError::Finish),
             }
+            // Emit the event.
+            Self::env().emit_event(JobTerminated {
+                job_id,
+                terminator: caller,
+                reporter: job.reporter,
+            });
             Ok(())
         }
 
@@ -799,13 +959,13 @@ mod freelankakot {
                                 true => {
                                     let mut report_of_onwer =
                                         self.reports.get(job.person_obtain.unwrap()).unwrap();
-                                    report_of_onwer.push((job_id, Some(report)));
+                                    report_of_onwer.push((job_id, Some(report.clone())));
                                     self.reports
                                         .insert(job.person_obtain.unwrap(), &report_of_onwer);
                                 }
                                 false => {
                                     let mut report_of_onwer = Vec::new();
-                                    report_of_onwer.push((job_id, Some(report)));
+                                    report_of_onwer.push((job_id, Some(report.clone())));
                                     self.reports
                                         .insert(job.person_obtain.unwrap(), &report_of_onwer);
                                 }
@@ -819,13 +979,13 @@ mod freelankakot {
                                 true => {
                                     let mut report_of_freelancer =
                                         self.reports.get(job.person_create.unwrap()).unwrap();
-                                    report_of_freelancer.push((job_id, Some(report)));
+                                    report_of_freelancer.push((job_id, Some(report.clone())));
                                     self.reports
                                         .insert(job.person_create.unwrap(), &report_of_freelancer);
                                 }
                                 false => {
                                     let mut report_of_freelancer = Vec::new();
-                                    report_of_freelancer.push((job_id, Some(report)));
+                                    report_of_freelancer.push((job_id, Some(report.clone())));
                                     self.reports
                                         .insert(job.person_create.unwrap(), &report_of_freelancer);
                                 }
@@ -836,6 +996,12 @@ mod freelankakot {
                 }
                 _ => return Err(JobError::InvalidReport),
             }
+            // Emit the event.
+            Self::env().emit_event(JobReported {
+                job_id,
+                reporter: caller,
+                report,
+            });
             Ok(())
         }
 
@@ -861,13 +1027,13 @@ mod freelankakot {
                         match self.ratings.contains(job.person_create.unwrap()) {
                             true => {
                                 let mut ratings_of_onwer = self.ratings.get(caller).unwrap();
-                                ratings_of_onwer.push((job_id, Some(rating_point)));
+                                ratings_of_onwer.push((job_id, Some(rating_point.clone())));
                                 self.ratings
                                     .insert(job.person_obtain.unwrap(), &ratings_of_onwer);
                             }
                             false => {
                                 let mut ratings_of_onwer = Vec::new();
-                                ratings_of_onwer.push((job_id, Some(rating_point)));
+                                ratings_of_onwer.push((job_id, Some(rating_point.clone())));
                                 self.ratings
                                     .insert(job.person_obtain.unwrap(), &ratings_of_onwer);
                             }
@@ -880,13 +1046,13 @@ mod freelankakot {
                         match self.ratings.contains(job.person_obtain.unwrap()) {
                             true => {
                                 let mut ratings_of_freelancer = self.ratings.get(caller).unwrap();
-                                ratings_of_freelancer.push((job_id, Some(rating_point)));
+                                ratings_of_freelancer.push((job_id, Some(rating_point.clone())));
                                 self.ratings
                                     .insert(job.person_create.unwrap(), &ratings_of_freelancer);
                             }
                             false => {
                                 let mut ratings_of_freelancer = Vec::new();
-                                ratings_of_freelancer.push((job_id, Some(rating_point)));
+                                ratings_of_freelancer.push((job_id, Some(rating_point.clone())));
                                 self.ratings
                                     .insert(job.person_create.unwrap(), &ratings_of_freelancer);
                             }
@@ -897,6 +1063,12 @@ mod freelankakot {
                     _ => return Err(JobError::InvalidRating),
                 },
             }
+            // Emit the event.
+            Self::env().emit_event(JobRated {
+                job_id,
+                rater: caller,
+                rating_point,
+            });
             Ok(())
         }
     }
@@ -928,7 +1100,7 @@ mod freelankakot {
             ink::env::test::set_callee::<Environment>(sender);
         }
 
-        //get account Balance 
+        //get account Balance
         fn get_balance_of(sender: AccountId) -> u128 {
             ink::env::test::get_account_balance::<Environment>(sender).unwrap()
         }
@@ -945,7 +1117,7 @@ mod freelankakot {
             Account::new()
         }
 
-        fn register_owner(constract: &mut Account, caller: AccountId){
+        fn register_owner(constract: &mut Account, caller: AccountId) {
             set_caller(caller);
             let name = "User".to_string();
             let detail = "User information".to_string();
@@ -954,7 +1126,7 @@ mod freelankakot {
             assert!(result.is_ok())
         }
 
-        fn register_freelancer(constract: &mut Account, caller: AccountId){
+        fn register_freelancer(constract: &mut Account, caller: AccountId) {
             set_caller(caller);
             let name = "Freelancer".to_string();
             let detail = "Freelancer information".to_string();
@@ -1323,7 +1495,7 @@ mod freelankakot {
             let bob = default_accounts().bob;
             register_owner(&mut account, alice);
             set_caller(alice);
-            set_callee(AccountId::from([7;32]));
+            set_callee(AccountId::from([7; 32]));
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             let old_balance_of_alice = get_balance_of(alice);
             create_new_job(&mut account, alice);
