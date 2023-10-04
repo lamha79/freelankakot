@@ -47,6 +47,7 @@
     "eslint-config-next": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
+    "twin.macro": "^3.4.0",
     "typescript": "latest"
   }
 }
