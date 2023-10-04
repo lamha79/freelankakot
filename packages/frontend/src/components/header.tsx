@@ -2,6 +2,7 @@ import Link from "next/link"
 import { usePathname } from 'next/navigation';
 import { signIn, signOut, useSession } from "next-auth/react"
 import { Dropdown, Navbar, Avatar, Button } from 'flowbite-react';
+import { ConnectButton } from '@/components/web3/ConnectButton'
 
 export default function Header() {
     const pathname = usePathname();
@@ -34,9 +35,10 @@ export default function Header() {
                                 signIn()
                             }}
                         >
-                            <Button>
+                            <ConnectButton />
+                            {/* <Button>
                                 Sign in
-                            </Button>
+                            </Button> */}
                         </a>
                     )
                 }
