@@ -12,7 +12,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { env } from '@config/environment'
+import { env } from '../config/environment'
 import { InjectedAccount } from '@polkadot/extension-inject/types'
 import { encodeAddress } from '@polkadot/util-crypto'
 import {
@@ -24,8 +24,8 @@ import {
   useBalance,
   useInkathon,
 } from '@scio-labs/use-inkathon'
-import { truncateHash } from '@utils/truncateHash'
-import { useIsSSR } from '@utils/useIsSSR'
+import { truncateHash } from '../../utils/truncateHash'
+import { useIsSSR } from '../../utils/useIsSSR'
 import Image from 'next/image'
 import aznsIconSvg from 'public/icons/azns-icon.svg'
 import { FC, useMemo, useState } from 'react'
