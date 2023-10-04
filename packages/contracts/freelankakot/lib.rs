@@ -177,7 +177,7 @@ mod freelankakot {
         PHOTOSHOP,
     }
 
-    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq,Clone)]
+    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq, Clone)]
     #[cfg_attr(
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
@@ -322,6 +322,22 @@ mod freelankakot {
         // pub fn get_role_of(&self, account: AccountId) -> AccountRole {
         //     self.personal_account_info.get(account).unwrap().role
         // }
+
+        #[ink(message)]
+        pub fn get_all_open_jobs(
+            &mut self,
+            keyword: Option<String>,
+            category: Option<Category>,
+        ) -> Result<Vec<Job>, JobError> {
+            let jobs = self.jobs.get_all();
+            let open_jobs = jobs
+                .into_iter()
+                .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
+                .filter(|job| keyword.is_none() || job.name.contains(&keyword))
+                .filter(|job| category.is_none() || job.category == category)
+                .collect();
+            Ok(open_jobs)
+        }
 
         //show thông tin account
         #[ink(message)]
