@@ -10,7 +10,7 @@ import { contractTxWithToast } from '@/utils/contractTxWithToast'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-// import 'twin.macro'
+import 'twin.macro'
 
 type UpdateGreetingValues = { newMessage: string }
 

@@ -7,7 +7,7 @@ import {
 import Link from 'next/link'
 import { FC } from 'react'
 import { toast } from 'react-hot-toast'
-import 'twin.macro'
+// import 'twin.macro'
 
 type ContractTxWithToastParams = Parameters<typeof contractTx>
 

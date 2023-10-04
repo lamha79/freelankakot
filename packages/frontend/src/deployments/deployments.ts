@@ -3,6 +3,7 @@ import { SubstrateDeployment } from '@scio-labs/use-inkathon'
 
 export enum ContractIds {
   Greeter = 'greeter',
+  Freelankakot = 'freelankakot',
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
