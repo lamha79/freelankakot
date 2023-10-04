@@ -165,7 +165,7 @@ mod freelankakot {
         unqualifier: bool,   // smart contract phát hiện công việc không đạt chất lương (quá hạn)
     }
 
-    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq)]
+    #[derive(scale::Decode, scale::Encode, Default, Debug, PartialEq, Clone)]
     #[cfg_attr(
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
@@ -317,24 +317,27 @@ mod freelankakot {
             Ok(())
         }
 
-        // //check role tài khoản
-        // #[ink(message)]
-        // pub fn get_role_of(&self, account: AccountId) -> AccountRole {
-        //     self.personal_account_info.get(account).unwrap().role
-        // }
-
+        //check tài khoản đăng kí hay chưa
+        #[ink(message)]
+        pub fn check_account(&self, account: AccountId) -> bool {
+            self.personal_account_info.contains(account)
+        }
+        //get tất cả open job
         #[ink(message)]
         pub fn get_all_open_jobs(
             &mut self,
             keyword: Option<String>,
             category: Option<Category>,
         ) -> Result<Vec<Job>, JobError> {
-            let jobs = self.jobs.get_all();
+            let mut jobs = Vec::<Job>::new();
+            for i in 0..self.current_job_id {
+                jobs.push(self.jobs.get(i).unwrap());
+            }
             let open_jobs = jobs
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
-                .filter(|job| keyword.is_none() || job.name.contains(&keyword))
-                .filter(|job| category.is_none() || job.category == category)
+                .filter(|job| keyword.clone().is_none() || job.name.contains(&keyword.clone().unwrap()))
+                .filter(|job| category.clone().is_none() || job.category == category.clone().unwrap())
                 .collect();
             Ok(open_jobs)
         }
