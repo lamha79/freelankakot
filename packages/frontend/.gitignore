@@ -4,14 +4,13 @@
 /node_modules
 /.pnp
 .pnp.js
-
+.vscode
 # testing
 /coverage
 
 # next.js
 /.next/
 /out/
-next-env.d.ts
 
 # production
 /build
@@ -31,6 +30,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-
-# typescript
-*.tsbuildinfo
