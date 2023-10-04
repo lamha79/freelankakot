@@ -8,7 +8,7 @@ export default function Header() {
     const pathname = usePathname();
     const { data: session } = useSession()
 
-    const AvatarRender = (imgURL:string) => <Avatar alt="User settings" img={ imgURL } rounded />
+    const AvatarRender = (imgURL: string) => <Avatar alt="User settings" img={imgURL} rounded />
 
     return (
         <Navbar
@@ -47,7 +47,7 @@ export default function Header() {
                         <Dropdown
                             arrowIcon={false}
                             inline
-                            label={AvatarRender(session.user.image??"")}
+                            label={AvatarRender(session.user.image ?? "")}
                         >
                             <Dropdown.Header>
                                 <span className="block text-sm">
@@ -86,6 +86,10 @@ export default function Header() {
                 </Link>
                 <Link href="/">
                     Services
+                </Link>
+
+                <Link href="/createjob" className={pathname === "/protected" ? "text-yellow-700" : ""}>
+                    Create Job
                 </Link>
                 <Link href="/protected" className={pathname === "/protected" ? "text-yellow-700" : ""}>
                     Protected Page
