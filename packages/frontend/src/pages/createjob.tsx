@@ -20,8 +20,8 @@ export default function CreateJobPage() {
       </Head>
 
       <section className="text-center py-10">
-        <h1 className="text-2xl">Create Job Page</h1>
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-5">
+        <h1 className="text-3xl text-gray-800 mb-6">Create Job</h1>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobTitle">
               Job Title
@@ -30,6 +30,7 @@ export default function CreateJobPage() {
               type="text"
               id="jobTitle"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter the job title"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               required
@@ -42,6 +43,7 @@ export default function CreateJobPage() {
             <textarea
               id="description"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter the job description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -55,6 +57,7 @@ export default function CreateJobPage() {
               type="text"
               id="budget"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter the budget"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               required
