@@ -91,6 +91,9 @@ export default function Header() {
                 <Link href="/createjob" className={pathname === "/protected" ? "text-yellow-700" : ""}>
                     Create Job
                 </Link>
+                <Link href="/seachjob" className={pathname === "/protected" ? "text-yellow-700" : ""}>
+                    Search Job
+                </Link>
                 <Link href="/protected" className={pathname === "/protected" ? "text-yellow-700" : ""}>
                     Protected Page
                 </Link>
