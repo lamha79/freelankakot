@@ -46,11 +46,11 @@ export default function Header() {
         <Link href="/searchjobs" className={pathname === '/searchjobs' ? 'text-yellow-700' : ''}>
           Search Job
         </Link>
-        <Link href="/duebudget" className={pathname === '/duebudget' ? 'text-yellow-700' : ''}>
-          Due Budget
+        <Link href="/negotiate" className={pathname === '/duebudget' ? 'text-yellow-700' : ''}>
+          Negotitate
         </Link>
         <Link href="/protected" className={pathname === '/protected' ? 'text-yellow-700' : ''}>
-          Protected Page
+          Protected
         </Link>
       </Navbar.Collapse>
     </Navbar>

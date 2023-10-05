@@ -21,12 +21,11 @@ export default function NegotiateContractPage() {
   };
 
   // TODO: Determine if the user is the receiver of the negotiation request.
-  // You can do this by checking the user's role, or by checking the negotiation request itself.
+  // Checking the user's role, or by checking the negotiation request itself.
 
   return (
     isReceiver ? (
       <RespondContractLayout>
-        {/* Add children prop */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-gray-700 font-semibold mb-2" htmlFor="negotiatedPrice">
@@ -56,7 +55,6 @@ export default function NegotiateContractPage() {
       </RespondContractLayout>
     ) : (
       <RequestContractLayout>
-        {/* Add children prop */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-gray-700 font-semibold mb-2" htmlFor="negotiatedPrice">

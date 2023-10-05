@@ -337,8 +337,8 @@ mod freelankakot {
             let open_jobs = jobs
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
-                .filter(|job| match keyword {
-                    Some(ref kw) => job.name.contains(kw),
+                .filter(|job| match &keyword {
+                    Some(kw) => job.name.contains(kw),
                     None => true,
                 })
                 .filter(|job| match &category {
