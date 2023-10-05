@@ -322,7 +322,8 @@ mod freelankakot {
         pub fn check_account(&self, account: AccountId) -> bool {
             self.personal_account_info.contains(account)
         }
-        //get tất cả open job
+
+        // get tất cả open job
         #[ink(message)]
         pub fn get_all_open_jobs(
             &mut self,
@@ -336,8 +337,14 @@ mod freelankakot {
             let open_jobs = jobs
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
-                .filter(|job| keyword.clone().is_none() || job.name.contains(&keyword.clone().unwrap()))
-                .filter(|job| category.clone().is_none() || job.category == category.clone().unwrap())
+                .filter(|job| match keyword {
+                    Some(ref kw) => job.name.contains(kw),
+                    None => true,
+                })
+                .filter(|job| match &category {
+                    Some(cat) => job.category == *cat,
+                    None => true,
+                })
                 .collect();
             Ok(open_jobs)
         }
