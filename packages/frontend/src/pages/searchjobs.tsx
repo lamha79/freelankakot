@@ -6,7 +6,7 @@ import Layout from '@/components/layout';
 export default function SearchJobPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (event) => {
+  const handleSearch = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     // TODO: Perform search based on the searchQuery value
     console.log('Search query:', searchQuery);
