@@ -23,7 +23,7 @@ const Header: FC = () => {
       position="fixed"
       zIndex="999"
       width="100%"
-      bgColor="neutral.lightGray"
+      bgColor="#edf2f7"
       transition="all ease-in-out 250ms"
       boxShadow={hasScroll ? 'xl' : 'none'}
     >
