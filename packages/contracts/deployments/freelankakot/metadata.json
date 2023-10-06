@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x7d8c68f1db533e6fd922904cfaf600c9ce6660f09ec6e5e64e1d278eb0bb2ba7",
+    "hash": "0xdbe9681a75e17b88ea3f9cf3305369a1704439ce764581e4f20d9873e2516f0d",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.71.1",
     "build_info": {
@@ -142,17 +142,6 @@
                 "u128"
               ],
               "type": 1
-            }
-          },
-          {
-            "docs": [],
-            "indexed": true,
-            "label": "duration",
-            "type": {
-              "displayName": [
-                "u64"
-              ],
-              "type": 3
             }
           }
         ],
@@ -431,7 +420,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 32
+              "type": 31
             }
           }
         ],
@@ -596,6 +585,22 @@
         "selector": "0x6d41b157"
       },
       {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "get_all_open_jobs_no_params",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 25
+        },
+        "selector": "0xa0f82563"
+      },
+      {
         "args": [
           {
             "label": "keyword",
@@ -612,7 +617,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 25
+              "type": 33
             }
           }
         ],
@@ -626,7 +631,7 @@
             "ink",
             "MessageResult"
           ],
-          "type": 27
+          "type": 25
         },
         "selector": "0xad5e741f"
       },
@@ -795,7 +800,7 @@
               "displayName": [
                 "Status"
               ],
-              "type": 31
+              "type": 30
             }
           }
         ],
@@ -2206,17 +2211,22 @@
           "variant": {
             "variants": [
               {
-                "index": 0,
-                "name": "None"
-              },
-              {
                 "fields": [
                   {
                     "type": 26
                   }
                 ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 20
+                  }
+                ],
                 "index": 1,
-                "name": "Some"
+                "name": "Err"
               }
             ]
           }
@@ -2225,15 +2235,177 @@
           {
             "name": "T",
             "type": 26
+          },
+          {
+            "name": "E",
+            "type": 20
           }
         ],
         "path": [
-          "Option"
+          "Result"
         ]
       }
     },
     {
       "id": 26,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 27
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 27
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 28
+          }
+        }
+      }
+    },
+    {
+      "id": 28,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "name",
+                "type": 0,
+                "typeName": "String"
+              },
+              {
+                "name": "description",
+                "type": 0,
+                "typeName": "String"
+              },
+              {
+                "name": "category",
+                "type": 29,
+                "typeName": "Category"
+              },
+              {
+                "name": "result",
+                "type": 17,
+                "typeName": "Option<String>"
+              },
+              {
+                "name": "status",
+                "type": 30,
+                "typeName": "Status"
+              },
+              {
+                "name": "budget",
+                "type": 1,
+                "typeName": "Balance"
+              },
+              {
+                "name": "fee_percentage",
+                "type": 2,
+                "typeName": "u8"
+              },
+              {
+                "name": "start_time",
+                "type": 3,
+                "typeName": "Timestamp"
+              },
+              {
+                "name": "end_time",
+                "type": 3,
+                "typeName": "Timestamp"
+              },
+              {
+                "name": "person_create",
+                "type": 31,
+                "typeName": "Option<AccountId>"
+              },
+              {
+                "name": "person_obtain",
+                "type": 31,
+                "typeName": "Option<AccountId>"
+              },
+              {
+                "name": "pay",
+                "type": 1,
+                "typeName": "Balance"
+              },
+              {
+                "name": "feedback",
+                "type": 0,
+                "typeName": "String"
+              },
+              {
+                "name": "request_negotiation",
+                "type": 6,
+                "typeName": "bool"
+              },
+              {
+                "name": "requester",
+                "type": 31,
+                "typeName": "Option<AccountId>"
+              },
+              {
+                "name": "reporter",
+                "type": 31,
+                "typeName": "Option<AccountId>"
+              },
+              {
+                "name": "require_rating",
+                "type": 32,
+                "typeName": "(bool, bool)"
+              },
+              {
+                "name": "unqualifier",
+                "type": 6,
+                "typeName": "bool"
+              }
+            ]
+          }
+        },
+        "path": [
+          "freelankakot",
+          "freelankakot",
+          "Job"
+        ]
+      }
+    },
+    {
+      "id": 29,
       "type": {
         "def": {
           "variant": {
@@ -2261,207 +2433,7 @@
       }
     },
     {
-      "id": 27,
-      "type": {
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "fields": [
-                  {
-                    "type": 28
-                  }
-                ],
-                "index": 0,
-                "name": "Ok"
-              },
-              {
-                "fields": [
-                  {
-                    "type": 20
-                  }
-                ],
-                "index": 1,
-                "name": "Err"
-              }
-            ]
-          }
-        },
-        "params": [
-          {
-            "name": "T",
-            "type": 28
-          },
-          {
-            "name": "E",
-            "type": 20
-          }
-        ],
-        "path": [
-          "Result"
-        ]
-      }
-    },
-    {
-      "id": 28,
-      "type": {
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "fields": [
-                  {
-                    "type": 29
-                  }
-                ],
-                "index": 0,
-                "name": "Ok"
-              },
-              {
-                "fields": [
-                  {
-                    "type": 23
-                  }
-                ],
-                "index": 1,
-                "name": "Err"
-              }
-            ]
-          }
-        },
-        "params": [
-          {
-            "name": "T",
-            "type": 29
-          },
-          {
-            "name": "E",
-            "type": 23
-          }
-        ],
-        "path": [
-          "Result"
-        ]
-      }
-    },
-    {
-      "id": 29,
-      "type": {
-        "def": {
-          "sequence": {
-            "type": 30
-          }
-        }
-      }
-    },
-    {
       "id": 30,
-      "type": {
-        "def": {
-          "composite": {
-            "fields": [
-              {
-                "name": "name",
-                "type": 0,
-                "typeName": "String"
-              },
-              {
-                "name": "description",
-                "type": 0,
-                "typeName": "String"
-              },
-              {
-                "name": "category",
-                "type": 26,
-                "typeName": "Category"
-              },
-              {
-                "name": "result",
-                "type": 17,
-                "typeName": "Option<String>"
-              },
-              {
-                "name": "status",
-                "type": 31,
-                "typeName": "Status"
-              },
-              {
-                "name": "budget",
-                "type": 1,
-                "typeName": "Balance"
-              },
-              {
-                "name": "fee_percentage",
-                "type": 2,
-                "typeName": "u8"
-              },
-              {
-                "name": "start_time",
-                "type": 3,
-                "typeName": "Timestamp"
-              },
-              {
-                "name": "end_time",
-                "type": 3,
-                "typeName": "Timestamp"
-              },
-              {
-                "name": "person_create",
-                "type": 32,
-                "typeName": "Option<AccountId>"
-              },
-              {
-                "name": "person_obtain",
-                "type": 32,
-                "typeName": "Option<AccountId>"
-              },
-              {
-                "name": "pay",
-                "type": 1,
-                "typeName": "Balance"
-              },
-              {
-                "name": "feedback",
-                "type": 0,
-                "typeName": "String"
-              },
-              {
-                "name": "request_negotiation",
-                "type": 6,
-                "typeName": "bool"
-              },
-              {
-                "name": "requester",
-                "type": 32,
-                "typeName": "Option<AccountId>"
-              },
-              {
-                "name": "reporter",
-                "type": 32,
-                "typeName": "Option<AccountId>"
-              },
-              {
-                "name": "require_rating",
-                "type": 33,
-                "typeName": "(bool, bool)"
-              },
-              {
-                "name": "unqualifier",
-                "type": 6,
-                "typeName": "bool"
-              }
-            ]
-          }
-        },
-        "path": [
-          "freelankakot",
-          "freelankakot",
-          "Job"
-        ]
-      }
-    },
-    {
-      "id": 31,
       "type": {
         "def": {
           "variant": {
@@ -2505,7 +2477,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 31,
       "type": {
         "def": {
           "variant": {
@@ -2538,7 +2510,7 @@
       }
     },
     {
-      "id": 33,
+      "id": 32,
       "type": {
         "def": {
           "tuple": [
@@ -2546,6 +2518,39 @@
             6
           ]
         }
+      }
+    },
+    {
+      "id": 33,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 29
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 29
+          }
+        ],
+        "path": [
+          "Option"
+        ]
       }
     },
     {
@@ -2863,7 +2868,7 @@
               {
                 "fields": [
                   {
-                    "type": 30
+                    "type": 28
                   }
                 ],
                 "index": 1,
@@ -2875,7 +2880,7 @@
         "params": [
           {
             "name": "T",
-            "type": 30
+            "type": 28
           }
         ],
         "path": [
@@ -2892,7 +2897,7 @@
               {
                 "fields": [
                   {
-                    "type": 29
+                    "type": 27
                   }
                 ],
                 "index": 0,
@@ -2913,7 +2918,7 @@
         "params": [
           {
             "name": "T",
-            "type": 29
+            "type": 27
           },
           {
             "name": "E",

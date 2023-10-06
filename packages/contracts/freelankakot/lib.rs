@@ -27,8 +27,8 @@ mod freelankakot {
         description: String,
         #[ink(topic)]
         deposite: u128,
-        #[ink(topic)]
-        duration: u64,
+        // #[ink(topic)]
+        // duration: u64,
     }
 
     #[ink(event)]
@@ -283,7 +283,7 @@ mod freelankakot {
         #[ink(constructor)]
         pub fn new() -> Self {
             Self::default()
-        }
+        }        
 
         #[ink(message)]
         pub fn register(
@@ -321,6 +321,22 @@ mod freelankakot {
         #[ink(message)]
         pub fn check_account(&self, account: AccountId) -> bool {
             self.personal_account_info.contains(account)
+        }
+
+        // get tất cả open job no parametter 
+        #[ink(message)]
+        pub fn get_all_open_jobs_no_params(
+            &self,
+        ) -> Result<Vec<Job>, JobError> {
+            let mut jobs = Vec::<Job>::new();
+            for i in 0..self.current_job_id {
+                jobs.push(self.jobs.get(i).unwrap());
+            }
+            let open_jobs = jobs
+                .into_iter()
+                .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
+                .collect();
+            Ok(open_jobs)
         }
 
         // get tất cả open job
@@ -454,7 +470,7 @@ mod freelankakot {
                 name: name,
                 description: description,
                 deposite: deposite,
-                duration: duration,
+                // duration: duration,
             });
             Ok(())
         }
