@@ -1,4 +1,4 @@
-import { CreateJob } from '@workagora/utils';
+import { CreateJob } from '@workfreelankakot/utils';
 import { useCallback, useState } from 'react';
 import { getJobByUUID } from '../services/jobs';
 

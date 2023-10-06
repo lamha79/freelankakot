@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useJobs, useLanding } from '@workagora/front-provider';
-import { UserTypeEnum } from '@workagora/utils';
+import { useJobs, useLanding } from '@workfreelankakot/front-provider';
+import { UserTypeEnum } from '@workfreelankakot/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { FC } from 'react';

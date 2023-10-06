@@ -12,16 +12,16 @@ import {
 import { FC, useState } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import ArrowRightIcon from '@workagora/front/components/icons/ArrowRightIcon';
-import { useCurrentCompany, useCurrentUser } from '@workagora/front-provider';
-import StarIcon from '@workagora/front/components/icons/StarIcon';
-import PencilIcon from '@workagora/front/components/icons/PencilIcon';
-import CloseIcon from '@workagora/front/components/icons/CloseIcon';
-import CheckIcon from '@workagora/front/components/icons/CheckIcon';
-import WebsiteIcon from '@workagora/front/components/icons/WebsiteIcon';
-import { useUpdateCompany } from '@workagora/front/hooks/useUpdateCompany';
-import { locationRegex } from '@workagora/utils';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
+import { useCurrentCompany, useCurrentUser } from '@workfreelankakot/front-provider';
+import StarIcon from '@workfreelankakot/front/components/icons/StarIcon';
+import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
+import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
+import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
+import WebsiteIcon from '@workfreelankakot/front/components/icons/WebsiteIcon';
+import { useUpdateCompany } from '@workfreelankakot/front/hooks/useUpdateCompany';
+import { locationRegex } from '@workfreelankakot/utils';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 interface FormData {
   name: string;

@@ -12,11 +12,11 @@ import {
 import { FC } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import ArrowRightIcon from '@workagora/front/components/icons/ArrowRightIcon';
-import CheckIcon from '@workagora/front/components/icons/CheckIcon';
-import { useCreateCompany } from '@workagora/front/hooks/useCreateCompany';
-import { useCurrentUser } from '@workagora/front-provider';
-import { locationRegex } from '@workagora/utils';
+import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
+import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
+import { useCreateCompany } from '@workfreelankakot/front/hooks/useCreateCompany';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { locationRegex } from '@workfreelankakot/utils';
 
 interface FormData {
   name: string;

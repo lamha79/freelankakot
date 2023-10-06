@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useContext } from 'react';
-import { CreateCompany } from '@workagora/utils';
+import { CreateCompany } from '@workfreelankakot/utils';
 
 type CurrentCompanyContextInterface = {
   company: CreateCompany | null;

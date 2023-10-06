@@ -36,7 +36,7 @@ export function useSignUp() {
           const message = new SiweMessage({
             domain: window.location.host,
             address,
-            statement: 'Sign Up in WorkAgora',
+            statement: 'Sign Up in workfreelankakot',
             uri: API_URL,
             version: '1',
             chainId: chain.id,

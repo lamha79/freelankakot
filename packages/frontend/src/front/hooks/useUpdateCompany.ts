@@ -1,5 +1,5 @@
-import { useCurrentCompany } from '@workagora/front-provider';
-import { CreateCompany } from '@workagora/utils';
+import { useCurrentCompany } from '@workfreelankakot/front-provider';
+import { CreateCompany } from '@workfreelankakot/utils';
 import { useCallback, useState } from 'react';
 import { updateCompany } from '../services/company';
 

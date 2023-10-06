@@ -1,4 +1,4 @@
-import { useLanding } from '@workagora/front-provider';
+import { useLanding } from '@workfreelankakot/front-provider';
 import { NextPage } from 'next';
 import { useRef } from 'react';
 import DashboardLayout from '../../../components/layout/DashboardLayout';

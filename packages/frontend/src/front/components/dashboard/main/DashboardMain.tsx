@@ -1,15 +1,15 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useCurrentUser, useLanding } from '@workagora/front-provider';
+import { useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
 import { FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CompanyOpportunities from './company/CompanyOpportunities';
 import FreelanceInformations from './freelance/FreelanceInformations';
 import FreelanceOffers from './freelance/FreelanceOffers';
 import FreelanceOpportunities from './freelance/FreelanceOpportunities';
-import { UserTypeEnum } from '@workagora/utils';
+import { UserTypeEnum } from '@workfreelankakot/utils';
 import CompanyInformations from './company/CompanyInformations';
 import CompanyOffers from './company/CompanyOffers';
-import { SearchJobProvider } from '@workagora/front/hooks/useSearchJob';
+import { SearchJobProvider } from '@workfreelankakot/front/hooks/useSearchJob';
 
 const MotionBox = motion(Box);
 

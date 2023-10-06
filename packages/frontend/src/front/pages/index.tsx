@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import { NextPage } from 'next';
-import { useCurrentUser, useLanding } from '@workagora/front-provider';
+import { useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
 import Product from '../components/landing/product/Product';
 import Technology from '../components/landing/technology/Technology';
 import Community from '../components/landing/community/Community';

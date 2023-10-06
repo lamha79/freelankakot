@@ -11,9 +11,9 @@ import {
   Text,
   FlexProps
 } from '@chakra-ui/react';
-import ChevronDownIcon from '@workagora/front/components/icons/ChevronDownIcon';
+import ChevronDownIcon from '@workfreelankakot/front/components/icons/ChevronDownIcon';
 import { Field } from 'formik';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 interface SelectorProps extends FlexProps {
   id: string;

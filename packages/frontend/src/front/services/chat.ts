@@ -1,5 +1,5 @@
-import { privateApi } from "@workagora/front-provider";
-import { ChatInstance, ChatMessage } from "@workagora/utils";
+import { privateApi } from "@/front-provider/src/api";
+import { ChatInstance, ChatMessage } from "@/utility/src";
 
 export interface SendChatMessageProps {
     senderWallet: string;

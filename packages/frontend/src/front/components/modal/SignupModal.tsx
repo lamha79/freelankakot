@@ -12,11 +12,11 @@ import {
   ModalHeader,
   ModalOverlay
 } from '@chakra-ui/react';
-import { useLanding } from '@workagora/front-provider';
+import { useLanding } from '@workfreelankakot/front-provider';
 import { FC } from 'react';
 import { useDisconnect } from 'wagmi';
 import SignupForm from '../form/SignupForm';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 const SignupModal: FC = () => {
   const { disconnect } = useDisconnect();

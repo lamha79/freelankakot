@@ -12,13 +12,13 @@ import {
   InputGroup,
   Button
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workagora/front-provider';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
 import { FC, useEffect, useRef, useState } from 'react';
 import PencilIcon from '../../../icons/PencilIcon';
-import { useUpdateProfile } from '@workagora/front/hooks/useUpdateProfile';
-import { useColoredBadges } from '@workagora/front/hooks/useColoredBadges';
+import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
+import { useColoredBadges } from '@workfreelankakot/front/hooks/useColoredBadges';
 import SearchIcon from '../../../icons/SearchIcon';
-import { skills, User } from '@workagora/utils';
+import { skills, User } from '@workfreelankakot/utils';
 import CheckIcon from '../../../icons/CheckIcon';
 import CloseIcon from '../../../icons/CloseIcon';
 

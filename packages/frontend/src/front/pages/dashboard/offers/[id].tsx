@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react';
-import { useLanding } from '@workagora/front-provider';
+import { useLanding } from '@workfreelankakot/front-provider';
 import { NextPage } from 'next';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useEffect } from 'react';

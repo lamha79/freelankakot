@@ -9,7 +9,6 @@ import {
 } from '@scio-labs/use-inkathon'
 import { API_URL } from '../../front-provider/src/api';
 import { SiweMessage } from 'siwe';
-import { getNonceApi, signInWithEthereumApi } from '../services/auth';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -36,7 +35,7 @@ export function useConnect() {
       if (chain.unsupported) return;
       if (address && chain && chain.unsupported === false && pathname === '/') {
         try {
-          const nonce = await getNonceApi(address);
+          const nonce = null;
           const message = null;
           const user = null;
           return user;

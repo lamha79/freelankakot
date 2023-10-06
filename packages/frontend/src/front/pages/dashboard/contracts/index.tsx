@@ -1,10 +1,10 @@
-import { useLanding } from '@workagora/front-provider';
+import { useLanding } from '@workfreelankakot/front-provider';
 import { NextPage } from 'next';
 import { useRef } from 'react';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import DashboardContracts from '../../../components/dashboard/contracts/DashboardContracts';
-import Footer from '@workagora/front/components/landing/footer/Footer';
+import Footer from '@workfreelankakot/front/components/landing/footer/Footer';
 import { Flex } from '@chakra-ui/react';
 
 const DashboardContractsPage: NextPage = () => {

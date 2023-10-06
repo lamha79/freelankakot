@@ -1,5 +1,5 @@
-import { useCurrentUser } from '@workagora/front-provider';
-import { User } from '@workagora/utils';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { User } from '@workfreelankakot/utils';
 import { useCallback, useState } from 'react';
 import { updateUserProfile } from '../services/user';
 

@@ -1,5 +1,5 @@
 import { Avatar, Flex, Text } from '@chakra-ui/react';
-import { CreateCompany, User } from '@workagora/utils';
+import { CreateCompany, User } from '@workfreelankakot/utils';
 import { FC } from 'react';
 
 interface ChatPreviewProps {

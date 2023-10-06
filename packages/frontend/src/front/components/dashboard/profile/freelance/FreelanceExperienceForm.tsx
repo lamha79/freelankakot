@@ -9,17 +9,17 @@ import {
   FormLabel,
   Textarea
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workagora/front-provider';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
 import { FC } from 'react';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import CheckIcon from '@workagora/front/components/icons/CheckIcon';
-import CloseIcon from '@workagora/front/components/icons/CloseIcon';
-import TrashIcon from '@workagora/front/components/icons/TrashIcon';
-import ArrowRightIcon from '@workagora/front/components/icons/ArrowRightIcon';
+import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
+import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
+import TrashIcon from '@workfreelankakot/front/components/icons/TrashIcon';
+import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
-import { useExperiences } from '@workagora/front/hooks/useExperiences';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useExperiences } from '@workfreelankakot/front/hooks/useExperiences';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 interface FormData {
   company: string;

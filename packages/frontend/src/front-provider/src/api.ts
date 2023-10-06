@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { getRefreshToken } from '../../front/services/auth';
 
 export const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
@@ -61,7 +60,7 @@ async function refreshTokenAndReattemptRequest(error: any) {
 
     if (!isAlreadyFetchingAccessToken) {
       isAlreadyFetchingAccessToken = true;
-      const refreshToken = await getRefreshToken();
+      const refreshToken = null;
       if (!refreshToken) {
         return Promise.reject(error);
       }

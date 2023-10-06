@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
-import { User } from '@workagora/utils';
+import { User } from '@workfreelankakot/utils';
 import { FC } from 'react';
 import DollarIcon from '../icons/DollarIcon';
 import StarIcon from '../icons/StarIcon';

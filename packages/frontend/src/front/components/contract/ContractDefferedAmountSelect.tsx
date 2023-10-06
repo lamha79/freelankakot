@@ -2,10 +2,10 @@ import { Box, Button, Flex, FormControl, FormLabel, Text } from "@chakra-ui/reac
 import { ErrorMessage, Field, FieldProps, useFormikContext } from "formik";
 import { FC } from "react";
 import LockIcon from "../icons/LockIcon";
-import { usePriceFeed } from "@workagora/front/hooks/usePriceFeed";
-import { MainnetTokens, TestnetTokens } from "@workagora/utils";
+import { usePriceFeed } from "@workfreelankakot/front/hooks/usePriceFeed";
+import { MainnetTokens, TestnetTokens } from "@workfreelankakot/utils";
 import { useBalance } from "wagmi";
-import { useCurrentUser } from "@workagora/front-provider";
+import { useCurrentUser } from "@workfreelankakot/front-provider";
 import { utils } from "ethers";
 
 interface ContractDefferedAmountSelectorProps {

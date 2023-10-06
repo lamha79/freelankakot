@@ -1,13 +1,13 @@
 import { Avatar, Badge, Box, Button, Flex, Spinner, Text } from '@chakra-ui/react';
-import { useCurrentUser, useLanding } from '@workagora/front-provider';
-import { useColoredBadges } from '@workagora/front/hooks/useColoredBadges';
-import { useGetJobById } from '@workagora/front/hooks/useGetJobById';
+import { useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
+import { useColoredBadges } from '@workfreelankakot/front/hooks/useColoredBadges';
+import { useGetJobById } from '@workfreelankakot/front/hooks/useGetJobById';
 import {
   availabilityOptions,
   formatDate,
   UserTypeEnum,
   workLocationOptions
-} from '@workagora/utils';
+} from '@workfreelankakot/utils';
 import { useRouter } from 'next/router';
 import { FC, useEffect } from 'react';
 import FreelanceCard from '../card/FreelanceCard';

@@ -1,4 +1,4 @@
-import { privateApi } from '@workagora/front-provider';
+import { privateApi } from '@/front-provider/src/api';
 
 export const checkKycStatus = async () => {
   try {

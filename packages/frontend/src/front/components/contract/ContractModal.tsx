@@ -9,11 +9,11 @@ import {
   DrawerOverlay,
   Divider
 } from '@chakra-ui/react';
-import { CreateCompany, CreateJob, User } from '@workagora/utils';
+import { CreateCompany, CreateJob, User } from '@workfreelankakot/utils';
 import { FC } from 'react';
 import ContractTop from './ContratTop';
 import ContractForm from './ContractForm';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 interface ContractModalProps {

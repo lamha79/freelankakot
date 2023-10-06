@@ -1,5 +1,5 @@
 import { Avatar, Flex, Text, Box } from '@chakra-ui/react';
-import { formatDateMessage } from '@workagora/utils';
+import { formatDateMessage } from '@workfreelankakot/utils';
 import { FC } from 'react';
 
 interface ReceivedMessageProps {

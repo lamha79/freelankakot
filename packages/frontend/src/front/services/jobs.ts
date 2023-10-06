@@ -1,5 +1,5 @@
-import { privateApi } from '@workagora/front-provider';
-import { CreateJob } from '@workagora/utils';
+import { privateApi } from '@/front-provider/src/api';
+import { CreateJob } from '@/utility/src';
 
 export type CreateNewJob = (job: Partial<CreateJob>) => Promise<CreateJob>;
 

@@ -1,5 +1,5 @@
 import { Avatar, Box, Divider, Flex, Text } from "@chakra-ui/react";
-import { CreateCompany, User, shortHash } from "@workagora/utils";
+import { CreateCompany, User, shortHash } from "@workfreelankakot/utils";
 import { FC } from "react";
 import FileIcon from "../icons/FileIcon";
 

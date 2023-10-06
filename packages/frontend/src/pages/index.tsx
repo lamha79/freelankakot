@@ -35,7 +35,7 @@ export default function IndexPage() {
       onScrollY={handleScroll}
     >
       <Flex flexDir="column">
-        <Product />
+        {/* <Product /> */}
         <Technology />
         <Community />
         <Contact />

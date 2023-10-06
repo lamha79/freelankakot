@@ -14,12 +14,12 @@ import {
   useDisclosure,
   Text
 } from '@chakra-ui/react';
-import { useColoredBadges } from '@workagora/front/hooks/useColoredBadges';
+import { useColoredBadges } from '@workfreelankakot/front/hooks/useColoredBadges';
 import SearchIcon from '../../../icons/SearchIcon';
-import ChevronDownIcon from '@workagora/front/components/icons/ChevronDownIcon';
+import ChevronDownIcon from '@workfreelankakot/front/components/icons/ChevronDownIcon';
 import { useFormikContext, ErrorMessage } from 'formik';
-import { skills } from '@workagora/utils';
-import CloseIcon from '@workagora/front/components/icons/CloseIcon';
+import { skills } from '@workfreelankakot/utils';
+import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
 
 const CreateJobSkills: FC = () => {
   const { getCategoryColorForSkill, allSkills } = useColoredBadges();

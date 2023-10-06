@@ -12,13 +12,13 @@ import {
   MenuList,
   Text
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workagora/front-provider';
-import CheckIcon from '@workagora/front/components/icons/CheckIcon';
-import ChevronDownIcon from '@workagora/front/components/icons/ChevronDownIcon';
-import CloseIcon from '@workagora/front/components/icons/CloseIcon';
-import PencilIcon from '@workagora/front/components/icons/PencilIcon';
-import { useUpdateProfile } from '@workagora/front/hooks/useUpdateProfile';
-import { User } from '@workagora/utils';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
+import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
+import ChevronDownIcon from '@workfreelankakot/front/components/icons/ChevronDownIcon';
+import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
+import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
+import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
+import { User } from '@workfreelankakot/utils';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { FC, useEffect, useState } from 'react';
 import * as Yup from 'yup';

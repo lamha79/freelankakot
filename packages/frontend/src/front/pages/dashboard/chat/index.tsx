@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
 import { Flex } from '@chakra-ui/react';
-import DashboardChat from '@workagora/front/components/dashboard/chat/DashboardChat';
-import { ChatInstanceProvider } from '@workagora/front-provider';
+import DashboardChat from '@workfreelankakot/front/components/dashboard/chat/DashboardChat';
+import { ChatInstanceProvider } from '@workfreelankakot/front-provider';
 
 const DashboardChatPage: NextPage = () => {
 

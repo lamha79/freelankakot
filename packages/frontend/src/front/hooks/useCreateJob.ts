@@ -1,5 +1,5 @@
-import { useCurrentCompany, useJobs } from '@workagora/front-provider';
-import { CreateJob } from '@workagora/utils';
+import { useCurrentCompany, useJobs } from '@workfreelankakot/front-provider';
+import { CreateJob } from '@workfreelankakot/utils';
 import { useCallback, useState } from 'react';
 import { createJob } from '../services/jobs';
 

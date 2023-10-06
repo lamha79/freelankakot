@@ -1,12 +1,12 @@
 import { Flex, Spinner } from '@chakra-ui/react';
-import { useCurrentUser, useLanding } from '@workagora/front-provider';
+import { useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
 import { NextPage } from 'next';
 import DashboardMenu from '../dashboard/menu/DashboardMenu';
 import { ReactNode, useEffect } from 'react';
-import { UserTypeEnum } from '@workagora/utils';
+import { UserTypeEnum } from '@workfreelankakot/utils';
 import Footer from '../landing/footer/Footer';
 import LoadingScreen from '../LoadingScreen';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 interface DashboardLayoutProps {
   children: ReactNode;

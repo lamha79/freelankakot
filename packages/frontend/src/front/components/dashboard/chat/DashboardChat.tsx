@@ -1,17 +1,17 @@
 import { Box, Button, Flex, Spinner } from '@chakra-ui/react';
-import { useChatInstance, useCurrentCompany, useCurrentUser, useLanding } from '@workagora/front-provider';
+import { useChatInstance, useCurrentCompany, useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
 import { FC, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ChatPreview from './ChatPreview';
 import ChatMessages from './ChatMessages';
 import { useRouter } from 'next/router';
-import { useGetJobById } from '@workagora/front/hooks/useGetJobById';
-import { ChatAuthorType, ChatInstance, UserTypeEnum } from '@workagora/utils';
-import { useGetMyChats } from '@workagora/front/hooks/useGetMyChats';
-import { useGetUserProfile } from '@workagora/front/hooks/useGetUserProfile';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
-import { updateRelatedJob } from '@workagora/front/services/chat';
+import { useGetJobById } from '@workfreelankakot/front/hooks/useGetJobById';
+import { ChatAuthorType, ChatInstance, UserTypeEnum } from '@workfreelankakot/utils';
+import { useGetMyChats } from '@workfreelankakot/front/hooks/useGetMyChats';
+import { useGetUserProfile } from '@workfreelankakot/front/hooks/useGetUserProfile';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import { updateRelatedJob } from '@workfreelankakot/front/services/chat';
 import { ArrowLeftIcon } from '@chakra-ui/icons';
 
 const MotionBox = motion(Box);

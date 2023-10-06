@@ -1,11 +1,11 @@
 import { Box, Button, Flex, SimpleGrid, Spinner } from '@chakra-ui/react';
 import { FC, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSearchJob } from '@workagora/front/hooks/useSearchJob';
-import { useCurrentUser } from '@workagora/front-provider';
-import { useRecentJob } from '@workagora/front/hooks/useRecentJob';
-import JobCard from '@workagora/front/components/card/JobCard';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useSearchJob } from '@workfreelankakot/front/hooks/useSearchJob';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { useRecentJob } from '@workfreelankakot/front/hooks/useRecentJob';
+import JobCard from '@workfreelankakot/front/components/card/JobCard';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 const FreelanceOffers: FC = () => {
   const { push } = useRouter();

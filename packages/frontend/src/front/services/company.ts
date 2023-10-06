@@ -1,5 +1,5 @@
-import { privateApi } from '@workagora/front-provider';
-import { CreateCompany } from '@workagora/utils';
+import { privateApi } from '@/front-provider/src';
+import { CreateCompany } from '@/utility/src';
 import { omit } from 'lodash';
 
 export type CreateNewCompany = (company: Partial<CreateCompany>) => Promise<CreateCompany>;

@@ -10,18 +10,18 @@ import {
   InputGroup,
   InputRightElement
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workagora/front-provider';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
 import StarIcon from '../../../icons/StarIcon';
 import { FC, useState } from 'react';
-import PencilIcon from '@workagora/front/components/icons/PencilIcon';
-import { locationRegex, User } from '@workagora/utils';
-import DollarIcon from '@workagora/front/components/icons/DollarIcon';
+import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
+import { locationRegex, User } from '@workfreelankakot/utils';
+import DollarIcon from '@workfreelankakot/front/components/icons/DollarIcon';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import CheckIcon from '@workagora/front/components/icons/CheckIcon';
-import { useUpdateProfile } from '@workagora/front/hooks/useUpdateProfile';
-import CloseIcon from '@workagora/front/components/icons/CloseIcon';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
+import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
+import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 interface FormData {
   firstname: string;

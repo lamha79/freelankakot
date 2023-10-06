@@ -12,9 +12,9 @@ import {
   FlexProps,
   useDisclosure
 } from '@chakra-ui/react';
-import ChevronDownIcon from '@workagora/front/components/icons/ChevronDownIcon';
+import ChevronDownIcon from '@workfreelankakot/front/components/icons/ChevronDownIcon';
 import { Field, useFormikContext } from 'formik';
-import { useJobs } from '@workagora/front-provider';
+import { useJobs } from '@workfreelankakot/front-provider';
 import { FormData } from './ContractForm';
 
 interface SelectorProps extends FlexProps {

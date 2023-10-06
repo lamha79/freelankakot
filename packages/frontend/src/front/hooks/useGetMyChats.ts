@@ -1,7 +1,7 @@
-import { useChatInstance, useCurrentUser } from "@workagora/front-provider";
+import { useChatInstance, useCurrentUser } from "@workfreelankakot/front-provider";
 import { useCallback, useEffect, useState } from "react";
 import { getChatConversations } from "../services/chat";
-import { ChatInstance } from "@workagora/utils";
+import { ChatInstance } from "@workfreelankakot/utils";
 
 export const useGetMyChats = () => {
     const {user} = useCurrentUser();

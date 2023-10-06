@@ -1,9 +1,9 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
 import { FC } from 'react';
 import Image from 'next/image';
-import AddIcon from '@workagora/front/components/icons/AddIcon';
+import AddIcon from '@workfreelankakot/front/components/icons/AddIcon';
 import { useRouter } from 'next/router';
-import { useResponsive } from '@workagora/front/hooks/useResponsive';
+import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
 
 const CompanyTop: FC = () => {
   const { push } = useRouter();

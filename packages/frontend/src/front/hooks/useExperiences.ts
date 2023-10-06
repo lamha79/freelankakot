@@ -1,5 +1,5 @@
-import { useCurrentUser } from '@workagora/front-provider';
-import { Experience, User } from '@workagora/utils';
+import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { Experience, User } from '@workfreelankakot/utils';
 import { useCallback, useState } from 'react';
 import { addExperience, deleteExperience, updateExperience } from '../services/user';
 

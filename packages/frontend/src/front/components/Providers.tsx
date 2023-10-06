@@ -5,7 +5,7 @@ import {
   JobsProvider,
   LandingProvider,
   WagmiProvider
-} from '@workagora/front-provider';
+} from '@workfreelankakot/front-provider';
 import { FC, ReactNode } from 'react';
 
 interface ProvidersProps {

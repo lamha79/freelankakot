@@ -1,4 +1,4 @@
-import { ChatMessage } from "@workagora/utils";
+import { ChatMessage } from "@workfreelankakot/utils";
 import { useCallback, useEffect, useState } from "react";
 import { getMessagesInChat } from "../services/chat";
 
