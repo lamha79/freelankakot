@@ -7,7 +7,7 @@ export default function CreateJobPage() {
   const [description, setDescription] = useState('');
   const [budget, setBudget] = useState('');
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     // TODO: Send the job details to your backend server and handle job creation and marketplace integration.
     console.log('Job details:', { jobTitle, description, budget });

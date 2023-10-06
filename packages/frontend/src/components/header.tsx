@@ -25,11 +25,11 @@ export default function Header() {
       <div className="flex md:order-2">
         <ConnectButton />
         {!activeAccount &&
-          (
-            <a href={`/signup`}>
-              <Button>Sign Up</Button>
-            </a>
-          )}
+        (
+          <a href={`/signup`}>
+            <Button>Sign Up</Button>
+          </a>
+        )}
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
@@ -40,17 +40,15 @@ export default function Header() {
           About
         </Link>
         <Link href="/">Services</Link>
-        <Link href="/createjob" className={pathname === '/createjob' ? 'text-yellow-700' : ''}>
+
+        <Link href="/createjob" className={pathname === '/protected' ? 'text-yellow-700' : ''}>
           Create Job
         </Link>
-        <Link href="/searchjobs" className={pathname === '/searchjobs' ? 'text-yellow-700' : ''}>
+        <Link href="/searchjobs" className={pathname === '/protected' ? 'text-yellow-700' : ''}>
           Search Job
         </Link>
-        <Link href="/negotiate" className={pathname === '/duebudget' ? 'text-yellow-700' : ''}>
-          Negotitate
-        </Link>
         <Link href="/protected" className={pathname === '/protected' ? 'text-yellow-700' : ''}>
-          Protected
+          Protected Page
         </Link>
       </Navbar.Collapse>
     </Navbar>
