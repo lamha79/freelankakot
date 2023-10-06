@@ -283,7 +283,7 @@ mod freelankakot {
         #[ink(constructor)]
         pub fn new() -> Self {
             Self::default()
-        }        
+        }
 
         #[ink(message)]
         pub fn register(
@@ -323,11 +323,9 @@ mod freelankakot {
             self.personal_account_info.contains(account)
         }
 
-        // get tất cả open job no parametter 
+        // get tất cả open job no parametter
         #[ink(message)]
-        pub fn get_all_open_jobs_no_params(
-            &self,
-        ) -> Result<Vec<Job>, JobError> {
+        pub fn get_all_open_jobs_no_params(&self) -> Result<Vec<Job>, JobError> {
             let mut jobs = Vec::<Job>::new();
             for i in 0..self.current_job_id {
                 jobs.push(self.jobs.get(i).unwrap());
@@ -340,28 +338,23 @@ mod freelankakot {
         }
 
         // get tất cả open job
-        #[ink(message)]
         pub fn get_all_open_jobs(
             &mut self,
-            keyword: Option<String>,
-            category: Option<Category>,
+            keyword: String,
+            category: Category,
         ) -> Result<Vec<Job>, JobError> {
             let mut jobs = Vec::<Job>::new();
             for i in 0..self.current_job_id {
                 jobs.push(self.jobs.get(i).unwrap());
             }
+
             let open_jobs = jobs
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
-                .filter(|job| match &keyword {
-                    Some(kw) => job.name.contains(kw),
-                    None => true,
-                })
-                .filter(|job| match &category {
-                    Some(cat) => job.category == *cat,
-                    None => true,
-                })
+                .filter(|job| job.name.contains(&keyword))
+                .filter(|job| job.category == category)
                 .collect();
+
             Ok(open_jobs)
         }
 
