@@ -4,10 +4,11 @@ import ArrowRightIcon from '../../icons/ArrowRightIcon';
 
 const Newsletter: FC = () => {
   return (
-    <Flex w="100%" flexDir="column" bgColor="brand.secondary" pt={12} pb={16}>
+    <Flex w="100%" flexDir="column" bgColor="#002c39" pt={12} pb={16}>
       <Flex flexDir="column" mx="auto" width="80%" maxW="1280px">
         <Flex flexDir="column">
-          <Box textStyle="h3" as="h3" color="neutral.white">
+          <Box textStyle="h3" as="h3" fontFamily={"Comfortaa"} fontSize={"24px"} fontWeight={"700"}
+            lineHeight="120%" color="#ffffff">
             Newsletter
           </Box>
           <Text
@@ -15,7 +16,7 @@ const Newsletter: FC = () => {
             fontSize="20px"
             lineHeight="120%"
             fontFamily="Comfortaa"
-            color="neutral.dsGray"
+            color="#8194ac"
           >
             {`Don't miss any offer !`}
           </Text>

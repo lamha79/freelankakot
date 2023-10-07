@@ -10,6 +10,11 @@ import Footer from '../front/components/landing/footer/Footer';
 import { useRouter } from 'next/router';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
+//Import font
+//Import font
+import '@fontsource/comfortaa';
+import '@fontsource/montserrat';
+
 
 export default function IndexPage() {
   const { user } = useCurrentUser();

@@ -1,12 +1,12 @@
-import { Box, Flex } from '@chakra-ui/react';
-import { useLanding } from '../../../../front-provider/src';
-import { FC } from 'react';
-import { InView } from 'react-intersection-observer';
-import ContactForm from '../../form/ContactForm';
-import Newsletter from './Newsletter';
+import { Box, Flex } from '@chakra-ui/react'
+import { useLanding } from '../../../../front-provider/src'
+import { FC } from 'react'
+import { InView } from 'react-intersection-observer'
+import ContactForm from '../../form/ContactForm'
+import Newsletter from './Newsletter'
 
 const Contact: FC = () => {
-  const { handleViewChange } = useLanding();
+  const { handleViewChange } = useLanding()
 
   return (
     <InView
@@ -17,7 +17,16 @@ const Contact: FC = () => {
     >
       <Flex flexDir="column" py={16}>
         <Flex mx="auto" width="80%" maxW="1280px" flexDir="column">
-          <Box textStyle="h2" as="h2" mb={12}>
+          <Box
+            textStyle="h2"
+            as="h2"
+            textColor={'#002c39'}
+            fontFamily={'Comfortaa'}
+            fontSize={'36px'}
+            fontWeight={'700'}
+            lineHeight={'133%'}
+            mb={12}
+          >
             Contact us
           </Box>
           <ContactForm />
@@ -25,7 +34,7 @@ const Contact: FC = () => {
       </Flex>
       <Newsletter />
     </InView>
-  );
-};
+  )
+}
 
-export default Contact;
+export default Contact

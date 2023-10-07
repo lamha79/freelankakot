@@ -1,19 +1,29 @@
-import { Box, Flex, FlexProps } from '@chakra-ui/react';
-import { Autoplay } from 'swiper';
-import 'swiper/css';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { FC } from 'react';
-import { useResponsive } from '../../../../front/hooks/useResponsive';
-import { table } from 'console';
+import { Box, Flex, FlexProps } from '@chakra-ui/react'
+import { Autoplay } from 'swiper'
+import 'swiper/css'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { FC } from 'react'
+import { useResponsive } from '../../../../front/hooks/useResponsive'
+import { table } from 'console'
 
 const Partners: FC<FlexProps> = ({ ...props }: FlexProps) => {
-  const partnersLogo = [1, 2, 4, 6, 1, 2, 4, 6, 1, 2, 4, 6];
-  const {mobileDisplay , tabletDisplay, desktopDisplay} = useResponsive();
-  const slidesPerView = desktopDisplay ? 6 : tabletDisplay ? 4 : mobileDisplay ? 2 : 6;
+  const partnersLogo = [1, 2, 4, 6, 1, 2, 4, 6, 1, 2, 4, 6]
+  const { mobileDisplay, tabletDisplay, desktopDisplay } = useResponsive()
+  const slidesPerView = desktopDisplay ? 6 : tabletDisplay ? 4 : mobileDisplay ? 2 : 6
 
   return (
     <Flex flexDir="column" alignItems="center" {...props}>
-      <Box maxW="1280px" w="100%" textStyle="h2" cursor="default">
+      <Box
+        maxW="1280px"
+        w="100%"
+        textColor={'#002c39'}
+        fontFamily={'Comfortaa'}
+        fontSize={'36px'}
+        fontWeight={'700'}
+        lineHeight={'133%'}
+        textStyle="h2"
+        cursor="default"
+      >
         Partners who trusted us
       </Box>
       <Box
@@ -33,8 +43,8 @@ const Partners: FC<FlexProps> = ({ ...props }: FlexProps) => {
             marginBottom: 'auto',
             height: '100%',
             width: `400px`,
-            zIndex: '3'
-          }
+            zIndex: '3',
+          },
         }}
       >
         <Swiper
@@ -43,7 +53,7 @@ const Partners: FC<FlexProps> = ({ ...props }: FlexProps) => {
           loopedSlides={6}
           autoplay={{
             delay: 4000,
-            disableOnInteraction: false
+            disableOnInteraction: false,
           }}
           speed={1200}
           loop={true}
@@ -62,7 +72,7 @@ const Partners: FC<FlexProps> = ({ ...props }: FlexProps) => {
         </Swiper>
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
-export default Partners;
+export default Partners

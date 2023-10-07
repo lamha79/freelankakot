@@ -6,7 +6,12 @@ import { getDeployments } from '@/deployments/deployments'
 import { cache } from '@emotion/css'
 import { CacheProvider } from '@emotion/react'
 import { UseInkathonProvider } from '@scio-labs/use-inkathon'
+// import 'react-perfect-scrollbar/dist/css/styles.css';
+// import '../front/assets/scrollbar.css';
 
+//Import font
+import '@fontsource/comfortaa';
+import '@fontsource/montserrat';
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
