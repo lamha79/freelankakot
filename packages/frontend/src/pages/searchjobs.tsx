@@ -14,6 +14,7 @@ import { Option } from '@polkadot/types';
 
 export default function SearchJobPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [categoryQuery, setCategoryQuery] = useState('');
   const { api, activeAccount, activeSigner } = useInkathon()
   const [fetchIsLoading, setFetchIsLoading] = useState<boolean>();
   const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Freelankakot)
@@ -24,14 +25,14 @@ export default function SearchJobPage() {
     console.log('Search query:', searchQuery);
   };
 
-  const searchJobs = async (searchQuery: string) => {
+  const searchJobs = async (searchQuery: string, categoryQuery: string) => {
     console.log("b1")
     if (!contract || !api) return
     console.log("b2")
     setFetchIsLoading(true)
     try {
-      const result = await contractQuery(api, '', contract, 'get_all_open_jobs_no_params')
-      const { output, isError, decodedOutput } = decodeOutput(result, contract, 'get_all_open_jobs_no_params')
+      const result = await contractQuery(api, '', contract, 'get_all_open_jobs', {}, [searchQuery, categoryQuery])
+      const { output, isError, decodedOutput } = decodeOutput(result, contract, 'get_all_open_jobs')
       if (isError) throw new Error(decodedOutput)
       console.log(output)
       setSearchJobsResult(output)
@@ -59,12 +60,20 @@ export default function SearchJobPage() {
             <input
               type="text"
               className="border border-gray-300 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 flex-grow"
-              placeholder="Enter job search keywords"
+              placeholder="Enter job keyword"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <input
+              type="text"
+              className="border border-gray-300 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 flex-grow"
+              placeholder="Enter job category"
+              value={categoryQuery}
+              onChange={(e) => setCategoryQuery(e.target.value)}
+            />
+            
             <button
-              onClick={(e) => searchJobs(searchQuery)}
+              onClick={(e) => searchJobs(searchQuery, categoryQuery)}
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded ml-4 focus:outline-none focus:ring focus:border-blue-300"
             >
