@@ -172,6 +172,7 @@ mod freelankakot {
     )]
     pub enum Category {
         #[default]
+        NONE,
         IT,
         MARKETING,
         PHOTOSHOP,
@@ -359,7 +360,7 @@ mod freelankakot {
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)
                 .filter(|job| job.name.contains(&keyword))
-                .filter(|job| job.category == category)
+                .filter(|job| job.category == category || job.category == Category::NONE)
                 .collect();
 
             Ok(open_jobs)
@@ -422,6 +423,9 @@ mod freelankakot {
                 category = Category::MARKETING;
             } else if string_category.to_lowercase() == "photoshop" {
                 category = Category::PHOTOSHOP;
+            }
+            else {
+                category = Category::NONE;
             };
             let job = Job {
                 name: name.clone(),
