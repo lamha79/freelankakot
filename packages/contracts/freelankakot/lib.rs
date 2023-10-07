@@ -423,8 +423,7 @@ mod freelankakot {
                 category = Category::MARKETING;
             } else if string_category.to_lowercase() == "photoshop" {
                 category = Category::PHOTOSHOP;
-            }
-            else {
+            } else {
                 category = Category::NONE;
             };
             let job = Job {

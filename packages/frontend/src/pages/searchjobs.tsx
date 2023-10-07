@@ -11,6 +11,7 @@ import {
 } from '@scio-labs/use-inkathon'
 import { ContractIds } from '@/deployments/deployments'
 import { Option } from '@polkadot/types';
+import { border } from '@chakra-ui/react';
 
 
 export default function SearchJobPage() {
@@ -45,6 +46,7 @@ export default function SearchJobPage() {
   const json = JSON.stringify(searchJobsResult, null, 2);
   const list_jobs = JSON.parse(json);
   const data = list_jobs.Ok;
+  console.log(data)
 
 
   return (
@@ -88,7 +90,7 @@ export default function SearchJobPage() {
           {fetchIsLoading && <p>Loading...</p>}
 
           {data && data.length > 0 ? (
-            <table>
+            <table style={{ textAlign: 'center', border: '1px solid black' }}>
               <thead>
                 <tr>
                   <th>Job Name</th>
@@ -96,17 +98,19 @@ export default function SearchJobPage() {
                   <th>Category</th>
                   <th>Pay</th>
                   <th>End Time</th>
+                  <th>Status</th>
                 </tr>
               </thead>
 
               <tbody>
-                {data.map((item: { id: string, name: string, description: string, category: string, pay: string , endTime: string}) => (
+                {data.map((item: { id: string, name: string, description: string, category: string, pay: string, endTime: string, status: string, personCreate: string }) => (
                   <tr key={item.id}>
-                    <td style={{ textAlign: 'center' }}>{item.name}</td>
-                    <td style={{ textAlign: 'center' }}>{item.description}</td>
-                    <td style={{ textAlign: 'center' }}>{item.category}</td>
-                    <td style={{ textAlign: 'center' }}>{item.pay}</td>
-                    <td style={{ textAlign: 'center' }}>{item.endTime}</td>
+                    <td>{item.name}</td>
+                    <td>{item.description}</td>
+                    <td>{item.category}</td>
+                    <td>{item.pay}</td>
+                    <td>{item.endTime}</td>
+                    <td>{item.status}</td>
                   </tr>
                 ))}
               </tbody>
@@ -117,6 +121,6 @@ export default function SearchJobPage() {
 
         </div>
       </section>
-    </Layout>
+    </Layout >
   );
 }
