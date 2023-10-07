@@ -26,8 +26,6 @@ mod freelankakot {
         #[ink(topic)]
         description: String,
         #[ink(topic)]
-        deposite: u128,
-        #[ink(topic)]
         duration: u64,
     }
 
@@ -427,7 +425,6 @@ mod freelankakot {
             Self::env().emit_event(JobCreated {
                 name: name,
                 description: description,
-                deposite: deposite,
                 duration: duration,
             });
             Ok(())
