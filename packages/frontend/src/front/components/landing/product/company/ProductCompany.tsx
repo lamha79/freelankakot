@@ -3,8 +3,7 @@ import { useLanding } from '../../../../../front-provider/src';
 import { FC } from 'react';
 import ArrowRightIcon from '../../../icons/ArrowRightIcon';
 import Image from 'next/image';
-import DarkBrandLogo from '../../../logo/DarkBrandLogo';
-import { useResponsive } from '../../../../../front/hooks/useResponsive.ts';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 const ProductCompany: FC = () => {
   const { setSignupModalOpen } = useLanding();
@@ -43,9 +42,6 @@ const ProductCompany: FC = () => {
       </>}
       <Flex flexDir="column" alignItems={{base: 'center', md: "start"}} zIndex="2" position="relative">
         <Flex flexDir={{base: 'column', md: 'row'}} alignItems="center" mt={{base: 6, md: '10%', lg: '20%'}}>
-          <Box maxW="162px" maxH="162px" w="100%" h="100%">
-            <DarkBrandLogo />
-          </Box>
           <Box
             ml={{base: 0, md:6}}
             mt={{base: 4, md: 0}}

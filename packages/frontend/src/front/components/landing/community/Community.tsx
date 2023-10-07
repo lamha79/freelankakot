@@ -44,7 +44,7 @@ const Community: FC = () => {
           <Flex w="100%" justifyContent="space-between">
             {desktopDisplay && <Box minW="500px" maxW="500px" maxH="500px" w="500px" h="500px" position='relative' borderRadius='64px' overflow="hidden">
               <Image
-                src="/images/landing/community.png"
+                src="/images/landing/community.jpg"
                 alt="Community for all"
                 fill
               />

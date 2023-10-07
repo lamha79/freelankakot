@@ -3,7 +3,6 @@ import { useLanding } from '../../../../../front-provider/src';
 import { FC } from 'react';
 import ArrowRightIcon from '../../../icons/ArrowRightIcon';
 import Image from 'next/image';
-import DarkBrandLogo from '../../../logo/DarkBrandLogo';
 import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 const ProductFreelance: FC = () => {
@@ -29,11 +28,11 @@ const ProductFreelance: FC = () => {
           overflow="hidden"
           filter="drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25))"
         >
-          <Image src="/images/landing/freelance-top.png" alt="Kingdom of talents" fill />
+          <Image src="/images/landing/freelance-top.jpg" alt="Kingdom of talents" fill />
         </Box>
         <Box
           position="absolute"
-          w="57%"
+          w="45%"
           background="linear-gradient(180deg, #EDF2F7 0%, rgba(237, 242, 247, 0.3) 100%)"
           h="100%"
           zIndex="1"
@@ -56,9 +55,6 @@ const ProductFreelance: FC = () => {
           >
             {(desktopDisplay || tabletDisplay)  && `Find a mission has\nnever been easier`}
             {mobileDisplay && `Find a mission has never been easier`}
-          </Box>
-          <Box maxW="162px" maxH="162px" w="100%" h="100%">
-            <DarkBrandLogo />
           </Box>
         </Flex>
         <Box mt={{base: 12, md: 6, lg: 12}} mr="auto" ml={{base: 'auto', md: 0}}>
