@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
-import { Formik, Form, Field, ErrorMessage, FieldProps } from 'formik';
-import * as Yup from 'yup';
+import { FC, useState } from 'react'
+import { Formik, Form, Field, ErrorMessage, FieldProps } from 'formik'
+import * as Yup from 'yup'
 import {
   Button,
   Checkbox,
@@ -11,8 +11,8 @@ import {
   Flex,
   useToast,
   FormHelperText,
-  Box
-} from '@chakra-ui/react';
+  Box,
+} from '@chakra-ui/react'
 import {
   SubstrateChain,
   SubstrateWalletPlatform,
@@ -21,37 +21,37 @@ import {
   isWalletInstalled,
   useBalance,
   useInkathon,
-} from '@scio-labs/use-inkathon';
-import { encodeAddress } from '@polkadot/util-crypto';
-import {ConnectButton} from '../../../components/web3/ConnectButton';
-import RadioCard from '../radio/RadioCard';
-import RadioCardGroup from '../radio/RadioCardGroup';
-import {shortHash, UserTypeEnum} from '../../../utility/src';
-import { useSignUp } from '../../hooks/useSignUp';
+} from '@scio-labs/use-inkathon'
+import { encodeAddress } from '@polkadot/util-crypto'
+import { ConnectButton } from '../../../components/web3/ConnectButton'
+import RadioCard from '../radio/RadioCard'
+import RadioCardGroup from '../radio/RadioCardGroup'
+import { shortHash, UserTypeEnum } from '../../../utility/src'
+import { useSignUp } from '../../hooks/useSignUp'
 
 interface RadioUserType {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 
 const RadioGroupUserType: RadioUserType[] = [
   {
     label: 'Freelancer',
-    value: UserTypeEnum.Freelancer
+    value: UserTypeEnum.Freelancer,
   },
   {
     label: 'Employer',
-    value: UserTypeEnum.Company
-  }
-];
+    value: UserTypeEnum.Company,
+  },
+]
 
 interface FormData {
-  email: string;
-  firstname: string;
-  lastname: string;
-  currentUserType: string;
-  agreeTOS: boolean;
-  agreeDataTreatment: boolean;
+  email: string
+  firstname: string
+  lastname: string
+  currentUserType: string
+  agreeTOS: boolean
+  agreeDataTreatment: boolean
 }
 
 const validationSchema = Yup.object().shape({
@@ -60,12 +60,13 @@ const validationSchema = Yup.object().shape({
   lastname: Yup.string().min(2).required('Lastname required'),
   currentUserType: Yup.string()
     .oneOf(Object.values(UserTypeEnum), 'Invalid user type')
-    .required('User type is required'),  agreeTOS: Yup.bool().oneOf([true], 'Must agree to Terms of Service'),
-  agreeDataTreatment: Yup.bool().oneOf([true], 'Must agree to data treatment policy')
-});
+    .required('User type is required'),
+  agreeTOS: Yup.bool().oneOf([true], 'Must agree to Terms of Service'),
+  agreeDataTreatment: Yup.bool().oneOf([true], 'Must agree to data treatment policy'),
+})
 
 interface SignupFormProps {
-  onSubmitSuccess: () => void;
+  onSubmitSuccess: () => void
 }
 
 const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
@@ -78,35 +79,35 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
     activeAccount,
     accounts,
     setActiveAccount,
-  } = useInkathon();
-  const { signUp } = useSignUp();
-  const toast = useToast();
+  } = useInkathon()
+  const { signUp } = useSignUp()
+  const toast = useToast()
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const onSubmit = async (values: FormData) => {
     if (activeAccount?.address && !loading) {
-      setLoading(true);
-      const res = true;//await signUp({ "", ...values });
+      setLoading(true)
+      const res = true //await signUp({ "", ...values });
       if (res === true) {
         toast({
           title: <Text mt={-0.5}>Account registered</Text>,
           status: 'success',
           isClosable: true,
-          position: 'top-right'
-        });
-        onSubmitSuccess();
+          position: 'top-right',
+        })
+        onSubmitSuccess()
       } else {
         toast({
           title: <Text mt={-0.5}>Error while registering</Text>,
           description: typeof res === 'string' ? res : null,
           status: 'error',
           isClosable: true,
-          position: 'top-right'
-        });
+          position: 'top-right',
+        })
       }
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
   return (
     <Formik
       initialValues={{
@@ -115,7 +116,7 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
         lastname: '',
         currentUserType: RadioGroupUserType[0].value,
         agreeTOS: false,
-        agreeDataTreatment: false
+        agreeDataTreatment: false,
       }}
       validationSchema={validationSchema}
       isInitialValid={false}
@@ -174,7 +175,7 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
               {RadioGroupUserType.map((v, k) => {
                 return (
                   <RadioCard key={k} groupName="currentUserType" label={v.label} value={v.value} />
-                );
+                )
               })}
             </RadioCardGroup>
             <FormHelperText>You’ll be able to switch at any moment *</FormHelperText>
@@ -219,7 +220,9 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
           </Flex>
           <FormControl mb={4}>
             {!activeAccount && (
-              <ConnectButton />
+              <Box fontWeight="600" textAlign="center" px={6} py={2.5} cursor="default">
+                <ConnectButton />
+              </Box>
             )}
             {activeAccount && (
               <Box
@@ -233,7 +236,8 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
                 py={2.5}
                 cursor="default"
               >
-                Connected with {shortHash(activeAccount.address, { padLeft: 6, padRight: 6, separator: '...' })}
+                Connected with{' '}
+                {shortHash(activeAccount.address, { padLeft: 6, padRight: 6, separator: '...' })}
               </Box>
             )}
             <FormHelperText>
@@ -244,7 +248,14 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
             variant={!isValid || !activeAccount?.address ? 'outline' : 'primary'}
             type="submit"
             width="100%"
-            isDisabled={!isValid || !activeAccount?.address}
+            height={'40px'}
+            backgroundColor={'#fdb81e'}
+            textColor={'#002c39'}
+            fontFamily={'Comfortaa'}
+            fontSize={'1rem'}
+            fontWeight={'700'}
+            lineHeight={'133%'}
+            isDisabled={!activeAccount}
             isLoading={loading}
             loadingText="Waiting for wallet signature"
             spinnerPlacement="end"
@@ -254,7 +265,7 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default SignupForm;
+export default SignupForm

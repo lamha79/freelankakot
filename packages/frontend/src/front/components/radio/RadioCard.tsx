@@ -32,7 +32,7 @@ const RadioCard = React.forwardRef((props: RadioCardProps, ref) => {
         {...getRadioProps()}
         borderWidth="3px"
         borderRadius="16px"
-        _checked={{ bgColor: 'brand.primary', borderColor: 'brand.primary' }}
+        _checked={{ bgColor: '#fdb81e', borderColor: '#fdb81e' }}
         _hover={{ bgColor: 'brand.primaryHover', borderColor: 'brand.primaryHover' }}
         borderColor="brand.primary"
         display="flex"

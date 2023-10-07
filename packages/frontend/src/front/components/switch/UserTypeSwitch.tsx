@@ -2,7 +2,7 @@ import { Box, Flex, FlexProps, Text } from '@chakra-ui/react';
 import { useCurrentUser, useLanding } from '../../../front-provider/src';
 import { changeUserType } from '../../services/user';
 import { FC, useState } from 'react';
-import { UserTypeEnum } from '../../../utility/src/index.ts';
+import { UserTypeEnum } from '../../../utility/src/index';
 import { useResponsive } from '../../../front/hooks/useResponsive';
 
 interface UserTypeSwitchProps extends FlexProps{
@@ -40,7 +40,7 @@ const UserTypeSwitch: FC<UserTypeSwitchProps> = ({ onCloseMenu, ...props }) => {
         transition="all ease-in-out 250ms"
         py={1.5}
         px={4}
-        bgColor={type === UserTypeEnum.Freelancer ? 'brand.primary' : 'none'}
+        bgColor={type === UserTypeEnum.Freelancer ? '#fdb81e' : 'none'}
         cursor="pointer"
         _hover={{ bgColor: 'brand.primaryHover', borderColor: 'brand.primaryHover' }}
         onClick={() => setUserType(UserTypeEnum.Freelancer)}
@@ -58,7 +58,8 @@ const UserTypeSwitch: FC<UserTypeSwitchProps> = ({ onCloseMenu, ...props }) => {
         py={1.5}
         px={4}
         cursor="pointer"
-        bgColor={type === UserTypeEnum.Company ? 'brand.primary' : 'none'}
+        bgColor={type === UserTypeEnum.Company ? '#fdb81e' : 'none'}
+        _checked={{ bgColor: '#fdb81e', borderColor: '#fdb81e' }}
         _hover={{ bgColor: 'brand.primaryHover', borderColor: 'brand.primaryHover' }}
         onClick={() => setUserType(UserTypeEnum.Company)}
       >
