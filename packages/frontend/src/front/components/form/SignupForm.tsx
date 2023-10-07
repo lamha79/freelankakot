@@ -105,38 +105,49 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
       await contractTx(api, activeAccount.address, contract, 'register', {}, [
         values.firstname + values.lastname, values.email, values.currentUserType
       ])
-      return true
+      toast({
+        title: <Text mt={-0.5}>Account registered</Text>,
+        status: 'success',
+        isClosable: true,
+        position: 'top-right',
+      })
+      // return true
     //   reset()
     } catch (e) {
       console.error(e)
-      return false
-    } finally {
-      return true
-    }
+      toast({
+        title: <Text mt={-0.5}>Account registered</Text>,
+        status: 'error',
+        isClosable: true,
+        position: 'top-right',
+      })
+      // return false
+    } 
   }
 
 
   const onSubmit = async (values: FormData) => {
     if (activeAccount?.address && !loading) {
       setLoading(true)
-      const res = await updateRegister(values);
-      if (res === true) {
-        toast({
-          title: <Text mt={-0.5}>Account registered</Text>,
-          status: 'success',
-          isClosable: true,
-          position: 'top-right',
-        })
-        onSubmitSuccess()
-      } else {
-        toast({
-          title: <Text mt={-0.5}>Error while registering</Text>,
-          description: typeof res === 'string' ? res : null,
-          status: 'error',
-          isClosable: true,
-          position: 'top-right',
-        })
-      }
+      updateRegister(values)
+      // const res = await updateRegister(values);
+      // if (res === true) {
+      //   toast({
+      //     title: <Text mt={-0.5}>Account registered</Text>,
+      //     status: 'success',
+      //     isClosable: true,
+      //     position: 'top-right',
+      //   })
+      //   onSubmitSuccess()
+      // } else {
+      //   toast({
+      //     title: <Text mt={-0.5}>Error while registering</Text>,
+      //     description: typeof res === 'string' ? res : null,
+      //     status: 'error',
+      //     isClosable: true,
+      //     position: 'top-right',
+      //   })
+      // }
       setLoading(false)
     }
   }
