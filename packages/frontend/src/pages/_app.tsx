@@ -40,7 +40,6 @@ export default function App({
       <CacheProvider value={cache}>
         <ChakraProvider>
           <SessionProvider session={session}>
-            {/*  */}
             <Component {...pageProps} />
           </SessionProvider>
           <HotToastConfig />

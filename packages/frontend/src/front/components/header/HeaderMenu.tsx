@@ -45,7 +45,7 @@ const HeaderMenu: FC<HeaderMenuProps> = ({ onCloseMenu, noActive = false }) => {
               color="neutral.dsDarkGray"
               position="relative"
               _hover={{
-                color: 'brand.secondary',
+                color: '#fdb81e',
                 _after: {
                   opacity: '1',
                   visibility: 'visible'
@@ -58,7 +58,7 @@ const HeaderMenu: FC<HeaderMenuProps> = ({ onCloseMenu, noActive = false }) => {
                 display: 'block',
                 height: '2px',
                 width: '100%',
-                bgColor: 'brand.primary',
+                bgColor: '#fdb81e',
                 opacity: active ? '1' : '0',
                 visibility: active ? 'visible' : 'hidden'
               }}

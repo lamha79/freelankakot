@@ -34,7 +34,7 @@ const Footer: FC = () => {
           fontWeight="400"
           color="neutral.dsGray"
         >
-          @WorkFreelankakot 2023, All rights reserved
+          @WorkFreelan 2023, All rights reserved
         </Text>
         <Flex columnGap={12} flexWrap="wrap" justifyContent={{base: 'center', md: 'initial'}} rowGap={4} pb={{base: 4, md: 0}} mt={{base: 4, md: 0}}>
           {socialIcons.map((v, k) => (
