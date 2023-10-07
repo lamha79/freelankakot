@@ -111,6 +111,12 @@ export default function SearchJobPage() {
                     <td>{item.pay}</td>
                     <td>{item.endTime}</td>
                     <td>{item.status}</td>
+                    <button
+                      className="bg-gray-300 hover:bg-gray-700 text-black font-bold py-2 px-2 rounded focus:outline-none focus:shadow-outline"
+                      style={{ margin: '10px', fontSize: '11px' }}
+                    >
+                      Obtain
+                    </button>
                   </tr>
                 ))}
               </tbody>
