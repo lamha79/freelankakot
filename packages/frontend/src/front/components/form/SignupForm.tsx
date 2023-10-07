@@ -13,11 +13,21 @@ import {
   FormHelperText,
   Box
 } from '@chakra-ui/react';
-import { ConnectButton } from '../../../components/web3/ConnectButton';
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon';
+import { encodeAddress } from '@polkadot/util-crypto';
+import {ConnectButton} from '../../../components/web3/ConnectButton';
 import RadioCard from '../radio/RadioCard';
 import RadioCardGroup from '../radio/RadioCardGroup';
 import {shortHash, UserTypeEnum} from '../../../utility/src';
-import { useSignUp } from '../../../front/hooks/useSignUp';
+import { useSignUp } from '../../hooks/useSignUp';
 
 interface RadioUserType {
   label: string;
@@ -59,13 +69,43 @@ interface SignupFormProps {
 }
 
 const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
-  // const { isConnected, address } = useAccount();
-  // const { chain } = useNetwork();
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon();
   const { signUp } = useSignUp();
   const toast = useToast();
 
   const [loading, setLoading] = useState(false);
   const onSubmit = async (values: FormData) => {
+    if (activeAccount?.address && !loading) {
+      setLoading(true);
+      const res = true;//await signUp({ "", ...values });
+      if (res === true) {
+        toast({
+          title: <Text mt={-0.5}>Account registered</Text>,
+          status: 'success',
+          isClosable: true,
+          position: 'top-right'
+        });
+        onSubmitSuccess();
+      } else {
+        toast({
+          title: <Text mt={-0.5}>Error while registering</Text>,
+          description: typeof res === 'string' ? res : null,
+          status: 'error',
+          isClosable: true,
+          position: 'top-right'
+        });
+      }
+      setLoading(false);
+    }
   };
   return (
     <Formik
@@ -178,7 +218,10 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
             </ErrorMessage>
           </Flex>
           <FormControl mb={4}>
-          <ConnectButton />
+            {!activeAccount && (
+              <ConnectButton />
+            )}
+            {activeAccount && (
               <Box
                 borderWidth="1px"
                 borderColor="green.300"
@@ -190,17 +233,18 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
                 py={2.5}
                 cursor="default"
               >
-                Connected with 
+                Connected with {shortHash(activeAccount.address, { padLeft: 6, padRight: 6, separator: '...' })}
               </Box>
+            )}
             <FormHelperText>
               Once connected, you can change address with your wallet provider *
             </FormHelperText>
           </FormControl>
           <Button
-            variant='outline'
+            variant={!isValid || !activeAccount?.address ? 'outline' : 'primary'}
             type="submit"
             width="100%"
-            isDisabled={false}
+            isDisabled={!isValid || !activeAccount?.address}
             isLoading={loading}
             loadingText="Waiting for wallet signature"
             spinnerPlacement="end"

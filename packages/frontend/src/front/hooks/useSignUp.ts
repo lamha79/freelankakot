@@ -13,7 +13,6 @@ import { useCallback } from 'react';
 
 interface SigupProps {
   address: `0x${string}`;
-  chain: { id: number; unsupported?: boolean };
   email: string;
   firstname: string;
   lastname: string;
@@ -37,7 +36,6 @@ export function useSignUp() {
   const signUp = useCallback(
     async ({
       address,
-      chain,
       email,
       firstname,
       lastname,
@@ -45,7 +43,7 @@ export function useSignUp() {
       agreeTOS,
       agreeDataTreatment
     }: SigupProps): Promise<boolean | string> => {
-      if (address && chain) {
+      if (address) {
         try {
           
         } catch (error: any) {

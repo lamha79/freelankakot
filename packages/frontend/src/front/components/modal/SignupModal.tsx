@@ -19,6 +19,9 @@ import SignupForm from '../form/SignupForm';
 import { useResponsive } from '../../../front/hooks/useResponsive';
 
 const SignupModal: FC = () => {
+  const { signupModalOpen, setSignupModalOpen } = useLanding();
+  const {mobileDisplay , tabletDisplay, desktopDisplay} = useResponsive();
+
   const {
     activeChain,
     switchActiveChain,
@@ -28,9 +31,7 @@ const SignupModal: FC = () => {
     activeAccount,
     accounts,
     setActiveAccount,
-  } = useInkathon()
-  const { signupModalOpen, setSignupModalOpen } = useLanding();
-  const {mobileDisplay , tabletDisplay, desktopDisplay} = useResponsive();
+  } = useInkathon();
 
   const close = () => {
     disconnect;
@@ -41,7 +42,7 @@ const SignupModal: FC = () => {
 
   return (
     <>
-      {(desktopDisplay || tabletDisplay) && <Modal isOpen={signupModalOpen} onClose={close} isCentered={mobileDisplay ? false : true} size={{base: 'full', md: "xl"}}>
+      {(desktopDisplay || tabletDisplay) && <Modal isOpen={true} onClose={close} isCentered={mobileDisplay ? false : true} size={{base: 'full', md: "xl"}}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Sign up</ModalHeader>

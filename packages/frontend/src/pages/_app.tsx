@@ -9,6 +9,13 @@ import { UseInkathonProvider } from '@scio-labs/use-inkathon'
 // import 'react-perfect-scrollbar/dist/css/styles.css';
 // import '../front/assets/scrollbar.css';
 
+import {
+  CurrentCompanyProvider,
+  CurrentUserProvider,
+  JobsProvider,
+  LandingProvider
+} from '@/front-provider/src';
+
 //Import font
 import '@fontsource/comfortaa';
 import '@fontsource/montserrat';
@@ -32,9 +39,8 @@ export default function App({
       <CacheProvider value={cache}>
         <ChakraProvider>
           <SessionProvider session={session}>
-            <Component {...pageProps} />
+            <LandingProvider><Component {...pageProps} /></LandingProvider>
           </SessionProvider>
-
           <HotToastConfig />
         </ChakraProvider>
       </CacheProvider>
