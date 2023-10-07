@@ -30,7 +30,8 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps<{ session: Session }>) {
   return (
-    <UseInkathonProvider
+    <LandingProvider>
+      <UseInkathonProvider
       appName="ink!athon" // TODO
       connectOnInit={true}
       defaultChain={env.defaultChain}
@@ -39,11 +40,14 @@ export default function App({
       <CacheProvider value={cache}>
         <ChakraProvider>
           <SessionProvider session={session}>
-            <LandingProvider><Component {...pageProps} /></LandingProvider>
+            {/*  */}
+            <Component {...pageProps} />
           </SessionProvider>
           <HotToastConfig />
         </ChakraProvider>
       </CacheProvider>
     </UseInkathonProvider>
+    </LandingProvider>
+    
   );
 }
