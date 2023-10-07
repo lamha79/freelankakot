@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import GlobalLayout from '../components/GlobalLayout';
 
 //Import styles
-import { darkTheme } from '@workfreelankakot/themes';
+import { darkTheme } from '../../themes/src';
 import '@rainbow-me/rainbowkit/styles.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../assets/scrollbar.css';

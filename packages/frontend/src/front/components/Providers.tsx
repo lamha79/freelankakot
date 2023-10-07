@@ -3,10 +3,12 @@ import {
   CurrentCompanyProvider,
   CurrentUserProvider,
   JobsProvider,
-  LandingProvider,
-  WagmiProvider
-} from '@workfreelankakot/front-provider';
+  LandingProvider
+} from '../../front-provider/src';
 import { FC, ReactNode } from 'react';
+import { UseInkathonProvider } from '@scio-labs/use-inkathon'
+import { env } from '../../components/config/environment'
+import { getDeployments } from '../../deployments/deployments'
 
 interface ProvidersProps {
   children: ReactNode;
@@ -16,7 +18,10 @@ interface ProvidersProps {
 const Providers: FC<ProvidersProps> = ({ children, theme }) => {
   return (
     <ChakraProvider resetCSS theme={theme}>
-      <WagmiProvider>
+      <UseInkathonProvider appName="WorkFreelan" // TODO
+      connectOnInit={true}
+      defaultChain={env.defaultChain}
+      deployments={getDeployments()}>
         <CurrentUserProvider>
           <CurrentCompanyProvider>
             <JobsProvider>
@@ -24,7 +29,7 @@ const Providers: FC<ProvidersProps> = ({ children, theme }) => {
             </JobsProvider>
           </CurrentCompanyProvider>
         </CurrentUserProvider>
-      </WagmiProvider>
+      </UseInkathonProvider>
     </ChakraProvider>
   );
 };

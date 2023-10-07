@@ -42,7 +42,7 @@ const SignupModal: FC = () => {
 
   return (
     <>
-      {(desktopDisplay || tabletDisplay) && <Modal isOpen={true} onClose={close} isCentered={mobileDisplay ? false : true} size={{base: 'full', md: "xl"}}>
+      {(desktopDisplay || tabletDisplay) && <Modal isOpen={signupModalOpen} onClose={close} isCentered={mobileDisplay ? false : true} size={{base: 'full', md: "xl"}}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Sign up</ModalHeader>
