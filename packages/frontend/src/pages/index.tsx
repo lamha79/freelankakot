@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Layout from "@/components/layout"
-import { GreeterContractInteractions } from '@/components/web3/GreeterContractInteractions'
 import { Flex } from '@chakra-ui/react';
 import { useCurrentUser, useLanding } from '../front-provider/src';
 import Product from '../front/components/landing/product/Product';
@@ -25,17 +24,12 @@ export default function IndexPage() {
       <Head>
         <title>Home page</title>
       </Head>
-
-      <section className='text-center py-10'>
-        <h1 className='text-2xl'>Rocket Boilerplate</h1>
-        <GreeterContractInteractions />
-      </section>
       <PerfectScrollbar
       options={{ suppressScrollX: true, maxScrollbarLength: 160 }}
       onScrollY={handleScroll}
     >
       <Flex flexDir="column">
-        {/* <Product /> */}
+        <Product />
         <Technology />
         <Community />
         <Contact />

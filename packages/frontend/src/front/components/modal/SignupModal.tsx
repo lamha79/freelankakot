@@ -12,19 +12,28 @@ import {
   ModalHeader,
   ModalOverlay
 } from '@chakra-ui/react';
-import { useLanding } from '@workfreelankakot/front-provider';
+import { useInkathon } from '@scio-labs/use-inkathon'
+import { useLanding } from '../../../front-provider/src'
 import { FC } from 'react';
-import { useDisconnect } from 'wagmi';
 import SignupForm from '../form/SignupForm';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import { useResponsive } from '../../../front/hooks/useResponsive';
 
 const SignupModal: FC = () => {
-  const { disconnect } = useDisconnect();
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon()
   const { signupModalOpen, setSignupModalOpen } = useLanding();
   const {mobileDisplay , tabletDisplay, desktopDisplay} = useResponsive();
 
   const close = () => {
-    disconnect();
+    disconnect;
     setTimeout(() => {
       setSignupModalOpen(false);
     }, 200);
@@ -40,7 +49,7 @@ const SignupModal: FC = () => {
           <ModalBody >
             <SignupForm
               onSubmitSuccess={() => {
-                disconnect();
+                disconnect;
                 setTimeout(() => {
                   setSignupModalOpen(false);
                 }, 200);
@@ -57,7 +66,7 @@ const SignupModal: FC = () => {
               <DrawerBody mt={".5rem"} height="100%" display="flex" flexDir="column">
                   <SignupForm
                   onSubmitSuccess={() => {
-                    disconnect();
+                    disconnect;
                     setTimeout(() => {
                       setSignupModalOpen(false);
                     }, 200);

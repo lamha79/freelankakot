@@ -1,7 +1,14 @@
-import { useDisconnect, useSignMessage } from 'wagmi';
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon'
 import { API_URL } from '../../front-provider/src/api';
 import { SiweMessage } from 'siwe';
-import { getNonceApi, signUpWithEthereumApi } from '../services/auth';
 import { useCallback } from 'react';
 
 interface SigupProps {
@@ -16,8 +23,16 @@ interface SigupProps {
 }
 
 export function useSignUp() {
-  const { disconnect } = useDisconnect();
-  const { signMessageAsync } = useSignMessage();
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon()
 
   const signUp = useCallback(
     async ({
@@ -32,38 +47,14 @@ export function useSignUp() {
     }: SigupProps): Promise<boolean | string> => {
       if (address && chain) {
         try {
-          const nonce = await getNonceApi(address);
-          const message = new SiweMessage({
-            domain: window.location.host,
-            address,
-            statement: 'Sign Up in workfreelankakot',
-            uri: API_URL,
-            version: '1',
-            chainId: chain.id,
-            expirationTime: new Date(Date.now() + 1000 * 60 * 5).toISOString(),
-            nonce
-          }).prepareMessage();
-          const signature = await signMessageAsync({ message });
-          const res = await signUpWithEthereumApi({
-            message,
-            signature,
-            wallet: address,
-            email,
-            firstname,
-            lastname,
-            currentUserType,
-            agreeTOS,
-            agreeDataTreatment
-          });
-          disconnect();
-          return res;
+          
         } catch (error: any) {
           return error.response.data.message;
         }
       }
       return 'Please link your wallet';
     },
-    [disconnect, signMessageAsync]
+    [disconnect]
   );
 
   return { signUp };

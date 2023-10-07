@@ -1,5 +1,5 @@
 import { Container } from '@chakra-ui/react';
-import { useCurrentCompany, useCurrentUser, useJobs, useLanding } from '@workfreelankakot/front-provider';
+import { useCurrentCompany, useCurrentUser, useJobs, useLanding } from '../../front-provider/src';
 import Cookies from 'js-cookie';
 import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { checkUserLogged } from '../services/user';
@@ -7,7 +7,6 @@ import Header from './header/Header';
 import SignupModal from './modal/SignupModal';
 import { useRouter } from 'next/router';
 import { getMyCompanies } from '../services/company';
-import { UserTypeEnum } from '@workfreelankakot/utils';
 import { getMyJobs } from '../services/jobs';
 
 export const GlobalLayout: FC<PropsWithChildren> = ({ children }: PropsWithChildren) => {
