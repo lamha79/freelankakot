@@ -319,7 +319,8 @@ mod freelankakot {
 
         //check tài khoản đăng kí hay chưa
         #[ink(message)]
-        pub fn check_account(&self, account: AccountId) -> bool {
+        pub fn check_account(&self) -> bool {
+            let account = self.env().caller();
             self.personal_account_info.contains(account)
         }
 
@@ -337,17 +338,23 @@ mod freelankakot {
             Ok(open_jobs)
         }
 
+        #[ink(message)]
         // get tất cả open job
         pub fn get_all_open_jobs(
             &mut self,
             keyword: String,
-            category: Category,
+            string_category: String,
         ) -> Result<Vec<Job>, JobError> {
             let mut jobs = Vec::<Job>::new();
             for i in 0..self.current_job_id {
                 jobs.push(self.jobs.get(i).unwrap());
             }
-
+            let category = match string_category.to_lowercase().as_str() {
+                "it" => Category::IT,
+                "marketing" => Category::MARKETING,
+                "photoshop" => Category::PHOTOSHOP,
+                _ => Category::default(),
+            };
             let open_jobs = jobs
                 .into_iter()
                 .filter(|job| job.status == Status::OPEN || job.status == Status::REOPEN)

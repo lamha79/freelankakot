@@ -1,12 +1,12 @@
 {
   "source": {
-    "hash": "0x18ef86ebf024aecf69578698e2c6e7fe73488ee3ac36ab8311f3eee71050fb24",
+    "hash": "0xcafced70a8e49af020213bf4af8a87457ce388cb1bf63bbbdfd1cb1bffb1f93a",
     "language": "ink! 4.3.0",
-    "compiler": "rustc 1.72.1",
+    "compiler": "rustc 1.71.1",
     "build_info": {
       "build_mode": "Release",
       "cargo_contract_version": "3.2.0",
-      "rust_toolchain": "stable-x86_64-unknown-linux-gnu",
+      "rust_toolchain": "stable-aarch64-apple-darwin",
       "wasm_opt_settings": {
         "keep_debug_symbols": false,
         "optimization_passes": "Z"
@@ -559,17 +559,7 @@
         "selector": "0x229b553f"
       },
       {
-        "args": [
-          {
-            "label": "account",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 4
-            }
-          }
-        ],
+        "args": [],
         "default": false,
         "docs": [],
         "label": "check_account",
@@ -599,6 +589,41 @@
           "type": 25
         },
         "selector": "0xa0f82563"
+      },
+      {
+        "args": [
+          {
+            "label": "keyword",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "label": "string_category",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "get_all_open_jobs",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 25
+        },
+        "selector": "0xad5e741f"
       },
       {
         "args": [
