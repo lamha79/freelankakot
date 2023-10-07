@@ -88,8 +88,6 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
   const { signUp } = useSignUp()
   const toast = useToast()
 
-  
-
   // thêm vào
   const [loading, setLoading] = useState(false)
   const { api, activeSigner } = useInkathon()
@@ -97,7 +95,6 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
   const updateRegister = async (values: FormData) => {
         
     if (!activeAccount || !contract || !activeSigner || !api) {
-      // toast.error('Wallet not connected. Try again…')
       return false
     }
     
@@ -111,17 +108,14 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
         isClosable: true,
         position: 'top-right',
       })
-      // return true
-    //   reset()
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      let error = e.errorMessage;
       toast({
-        title: <Text mt={-0.5}>Account registered</Text>,
+        title: <Text mt={-0.5}>{error}</Text>,
         status: 'error',
         isClosable: true,
         position: 'top-right',
       })
-      // return false
     } 
   }
 
@@ -130,24 +124,6 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
     if (activeAccount?.address && !loading) {
       setLoading(true)
       updateRegister(values)
-      // const res = await updateRegister(values);
-      // if (res === true) {
-      //   toast({
-      //     title: <Text mt={-0.5}>Account registered</Text>,
-      //     status: 'success',
-      //     isClosable: true,
-      //     position: 'top-right',
-      //   })
-      //   onSubmitSuccess()
-      // } else {
-      //   toast({
-      //     title: <Text mt={-0.5}>Error while registering</Text>,
-      //     description: typeof res === 'string' ? res : null,
-      //     status: 'error',
-      //     isClosable: true,
-      //     position: 'top-right',
-      //   })
-      // }
       setLoading(false)
     }
   }
