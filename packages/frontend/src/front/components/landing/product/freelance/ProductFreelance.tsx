@@ -49,6 +49,11 @@ const ProductFreelance: FC = () => {
             as="h1"
             display="inline"
             whiteSpace="pre-wrap"
+            textColor={'#002c39'}
+            fontFamily={'Comfortaa'}
+            fontSize={'48px'}
+            fontWeight={'700'}
+            lineHeight={'133%'}
             textAlign={{base: 'center', md: 'right'}}
             cursor="default"
             textShadow="0px 4px 8px rgba(0, 0, 0, 0.25)"

@@ -68,7 +68,13 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
           size="md"
           rightIcon={<FiChevronDown size={22} />}
           py={6}
-          fontWeight="bold"
+          height={"40px"}
+          backgroundColor={"#fdb81e"}
+          textColor={'#002c39'}
+          fontFamily={'Comfortaa'}
+          fontSize={'1rem'}
+          fontWeight={'700'}
+          lineHeight={'133%'}
           rounded="2xl"
           colorScheme="purple"
         >
