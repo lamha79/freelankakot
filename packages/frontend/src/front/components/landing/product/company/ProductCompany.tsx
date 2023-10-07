@@ -61,6 +61,7 @@ const ProductCompany: FC = () => {
         <Box mt={{base: 12, md: 6, lg: 12}} ml="auto" mr={{base: 'auto', md: 0}}>
           <Button
             variant="primary"
+            backgroundColor={"#fdb81e"}
             rightIcon={<ArrowRightIcon />}
             onClick={() => setSignupModalOpen(true)}
           >

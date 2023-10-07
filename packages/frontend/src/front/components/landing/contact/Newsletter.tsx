@@ -25,8 +25,8 @@ const Newsletter: FC = () => {
             placeholder="Your mail"
             bgColor="neutral.white"
             borderRadius="32px"
-            borderWidth="1px"
-            borderColor="brand.primary"
+            borderWidth="2px"
+            borderColor="#fdb81e"
             px={4}
             py="10px"
             fontFamily="Comfortaa"
@@ -39,7 +39,7 @@ const Newsletter: FC = () => {
               boxShadow: '0 0 0 1px var(--chakra-colors-brand-primaryHover)'
             }}
           />
-          <Button variant="primary" rightIcon={<ArrowRightIcon />}>
+          <Button variant="primary" backgroundColor={"#fdb81e"} rightIcon={<ArrowRightIcon />}>
             Stay tuned
           </Button>
         </Flex>

@@ -16,7 +16,7 @@ const Community: FC = () => {
    if (type === UserTypeEnum.Freelancer) {
     JoinCommunity = <>
                       <Button variant="link" pl={0} >Join our Twitter</Button>
-                      <Button variant="primary" rightIcon={<ArrowRightIcon />}>
+                      <Button variant="primary" backgroundColor={"#fdb81e"} rightIcon={<ArrowRightIcon />}>
                         Join our linkedin
                       </Button>
                     </>
@@ -25,7 +25,7 @@ const Community: FC = () => {
    if (type === UserTypeEnum.Company) {
     JoinCommunity = <>
                       <Button variant="link" pl={0} >Join our Github</Button>
-                      <Button variant="primary" rightIcon={<ArrowRightIcon />}>
+                      <Button variant="primary" backgroundColor={"#fdb81e"} rightIcon={<ArrowRightIcon />}>
                         Join our linkedin
                       </Button>
                     </>

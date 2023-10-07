@@ -131,7 +131,7 @@ const Gallery: FC<SimpleGridProps> = ({ ...props }: SimpleGridProps) => {
           {caption}
         </Box>
         <Box mt={4}>
-          <Button variant="primary" size="md" onClick={() => setSignupModalOpen(true)}>
+          <Button variant="primary" backgroundColor={"#fdb81e"} size="md" onClick={() => setSignupModalOpen(true)}>
             Sign up
           </Button>
         </Box>

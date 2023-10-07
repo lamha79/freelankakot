@@ -153,6 +153,8 @@ const SearchBar: FC<FlexProps> = ({ ...props }: FlexProps) => {
           ref={inputRef}
           variant="searchBar"
           mt={2}
+          borderColor={"#fdb81e"}
+          borderWidth={"2px"}
           value={searchText}
           placeholder="Add a filter to improve your research"
           onChange={(e) => {

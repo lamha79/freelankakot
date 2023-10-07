@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import { FC, useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import {
   Button,
   Flex,
@@ -15,29 +15,29 @@ import {
   Text,
   Box,
   Textarea,
-  useToast
-} from '@chakra-ui/react';
-import ArrowRightIcon from '../icons/ArrowRightIcon';
-import ChevronDownIcon from '../icons/ChevronDownIcon';
+  useToast,
+} from '@chakra-ui/react'
+import ArrowRightIcon from '../icons/ArrowRightIcon'
+import ChevronDownIcon from '../icons/ChevronDownIcon'
 
 interface FormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
+  name: string
+  email: string
+  subject: string
+  message: string
 }
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().min(2).required('Name is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
   subject: Yup.string().min(2).required('Subject is required'),
-  message: Yup.string().min(2).required('Message is required')
-});
+  message: Yup.string().min(2).required('Message is required'),
+})
 
 const ContactForm: FC = () => {
-  const toast = useToast();
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectOpen, setSelectOpen] = useState(false);
+  const toast = useToast()
+  const [selectedSubject, setSelectedSubject] = useState('')
+  const [selectOpen, setSelectOpen] = useState(false)
   const selectOptions: { [key: string]: string } = {
     generalInquiry: 'General Inquiry',
     technicalSupport: 'Technical Support',
@@ -48,13 +48,13 @@ const ContactForm: FC = () => {
     partnershipOpportunities: 'Partnership Opportunities',
     feedbackSuggestions: 'Feedback and Suggestions',
     disputeResolution: 'Dispute Resolution',
-    pressMedia: 'Press and Media'
-  };
+    pressMedia: 'Press and Media',
+  }
 
   const onSubmit = async (values: FormData) => {
     // Your form submission logic here
     // For example, you can send the form data to an API endpoint
-  };
+  }
 
   /**    setSelectedSubject(value);
     setFieldValue('subject', value); */
@@ -65,7 +65,7 @@ const ContactForm: FC = () => {
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
       }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
@@ -73,21 +73,23 @@ const ContactForm: FC = () => {
       {({ setFieldValue, isValid, errors, touched }) => {
         const handleSubjectSelection = (value: string) => {
           if (selectedSubject === value) {
-            setSelectedSubject('');
-            setFieldValue('subject', '');
+            setSelectedSubject('')
+            setFieldValue('subject', '')
           } else {
-            setSelectedSubject(value);
-            setFieldValue('subject', value);
+            setSelectedSubject(value)
+            setFieldValue('subject', value)
           }
-        };
+        }
         return (
           <Form>
-            <Flex columnGap={12} flexDir={{base: 'column', md: 'row'}}>
+            <Flex columnGap={12} flexDir={{ base: 'column', md: 'row' }}>
               <FormControl id="name" isRequired mb={6}>
                 <FormLabel>Name</FormLabel>
                 <Field
                   name="name"
                   placeholder="Enter your name"
+                  borderColor={'#fdb81e'}
+                  borderWidth={'2px'}
                   as={Input}
                   type="text"
                   isInvalid={errors.name && touched.name}
@@ -101,6 +103,8 @@ const ContactForm: FC = () => {
                 <Field
                   name="email"
                   placeholder="Enter your email"
+                  borderColor={'#fdb81e'}
+                  borderWidth={'2px'}
                   as={Input}
                   type="email"
                   isInvalid={errors.email && touched.email}
@@ -115,6 +119,8 @@ const ContactForm: FC = () => {
               <Menu onOpen={() => setSelectOpen(true)} onClose={() => setSelectOpen(false)}>
                 <MenuButton
                   as={Button}
+                  borderColor={'#fdb81e'}
+                  borderWidth={'2px'}
                   variant="select"
                   color={selectedSubject ? 'neutral.black' : 'neutral.dsGray'}
                   opacity={selectedSubject ? 1 : 0.75}
@@ -147,9 +153,9 @@ const ContactForm: FC = () => {
                       fontWeight: '700',
                       _hover: {
                         bgColor: 'brand.primary',
-                        color: 'neutral.white'
-                      }
-                    }
+                        color: 'neutral.white',
+                      },
+                    },
                   }}
                 >
                   {Object.keys(selectOptions).map((v, k) => (
@@ -169,6 +175,8 @@ const ContactForm: FC = () => {
               <Field
                 name="message"
                 placeholder="Enter your message"
+                borderColor={'#fdb81e'}
+                borderWidth={'2px'}
                 as={Textarea}
                 isInvalid={errors.message && touched.message}
                 resize="vertical"
@@ -180,15 +188,15 @@ const ContactForm: FC = () => {
               </ErrorMessage>
             </FormControl>
             <Flex alignItems="center" justifyContent="end">
-              <Button variant="primary" type="submit" rightIcon={<ArrowRightIcon />}>
+              <Button variant="primary" backgroundColor={"#fdb81e"} type="submit" rightIcon={<ArrowRightIcon />}>
                 Send the message
               </Button>
             </Flex>
           </Form>
-        );
+        )
       }}
     </Formik>
-  );
-};
+  )
+}
 
-export default ContactForm;
+export default ContactForm
