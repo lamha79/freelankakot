@@ -17,10 +17,12 @@ import {
   SubstrateChain,
   SubstrateWalletPlatform,
   allSubstrateWallets,
+  contractTx, //thêm vào
   getSubstrateChain,
   isWalletInstalled,
   useBalance,
   useInkathon,
+  useRegisteredContract,
 } from '@scio-labs/use-inkathon'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { ConnectButton } from '../../../components/web3/ConnectButton'
@@ -28,6 +30,9 @@ import RadioCard from '../radio/RadioCard'
 import RadioCardGroup from '../radio/RadioCardGroup'
 import { shortHash, UserTypeEnum } from '../../../utility/src'
 import { useSignUp } from '../../hooks/useSignUp'
+//thêm vào 
+import { ContractIds } from '../../../deployments/deployments'
+
 
 interface RadioUserType {
   label: string
@@ -83,11 +88,38 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
   const { signUp } = useSignUp()
   const toast = useToast()
 
+  
+
+  // thêm vào
   const [loading, setLoading] = useState(false)
+  const { api, activeSigner } = useInkathon()
+  const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Freelankakot)
+  const updateRegister = async (values: FormData) => {
+        
+    if (!activeAccount || !contract || !activeSigner || !api) {
+      // toast.error('Wallet not connected. Try again…')
+      return false
+    }
+    
+    try {
+      await contractTx(api, activeAccount.address, contract, 'register', {}, [
+        values.firstname + values.lastname, values.email, values.currentUserType
+      ])
+      return true
+    //   reset()
+    } catch (e) {
+      console.error(e)
+      return false
+    } finally {
+      return true
+    }
+  }
+
+
   const onSubmit = async (values: FormData) => {
     if (activeAccount?.address && !loading) {
       setLoading(true)
-      const res = true //await signUp({ "", ...values });
+      const res = await updateRegister(values);
       if (res === true) {
         toast({
           title: <Text mt={-0.5}>Account registered</Text>,

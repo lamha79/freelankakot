@@ -11,10 +11,10 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
   const deployments = networks
     .map(async (network) => [
       {
-        contractId: ContractIds.Greeter,
+        contractId: ContractIds.Freelankakot,
         networkId: network,
-        abi: await import(`../../../contracts/deployments/greeter/metadata.json`),
-        address: (await import(`../../../contracts/deployments/greeter/${network}.ts`)).address,
+        abi: await import(`../../../contracts/deployments/freelankakot/metadata.json`),
+        address: (await import(`../../../contracts/deployments/freelankakot/${network}.ts`)).address,
       },
     ])
     .reduce(async (acc, curr) => [...(await acc), ...(await curr)], [] as any)
