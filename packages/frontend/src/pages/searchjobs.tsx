@@ -1,6 +1,6 @@
 import { FaCode } from 'react-icons/fa';
 import Head from 'next/head';
-import { useState } from 'react';
+import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useState } from 'react';
 import Layout from '@/components/layout';
 import toast from 'react-hot-toast'
 import {
@@ -12,38 +12,40 @@ import {
 import { ContractIds } from '@/deployments/deployments'
 import { Option } from '@polkadot/types';
 
+
 export default function SearchJobPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryQuery, setCategoryQuery] = useState('');
   const { api, activeAccount, activeSigner } = useInkathon()
   const [fetchIsLoading, setFetchIsLoading] = useState<boolean>();
   const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Freelankakot)
-  const [searchJobsResult, setSearchJobsResult] = useState<string>()
-  const handleSearch = (event : { preventDefault: () => void; }) => {
+  const [searchJobsResult, setSearchJobsResult] = useState<any[]>([]);
+  const handleSearch = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    // TODO: Perform search based on the searchQuery value
     console.log('Search query:', searchQuery);
   };
 
   const searchJobs = async (searchQuery: string, categoryQuery: string) => {
-    console.log("b1")
-    if (!contract || !api) return
-    console.log("b2")
-    setFetchIsLoading(true)
+    if (!contract || !api) return;
+    setFetchIsLoading(true);
     try {
-      const result = await contractQuery(api, '', contract, 'get_all_open_jobs', {}, [searchQuery, categoryQuery])
-      const { output, isError, decodedOutput } = decodeOutput(result, contract, 'get_all_open_jobs')
-      if (isError) throw new Error(decodedOutput)
-      console.log(output)
-      setSearchJobsResult(output)
+      const result = await contractQuery(api, '', contract, 'get_all_open_jobs', {}, [searchQuery, categoryQuery]);
+      const { output, isError, decodedOutput } = decodeOutput(result, contract, 'get_all_open_jobs');
+      if (isError) throw new Error(decodedOutput);
+      setSearchJobsResult(output);
     } catch (e) {
-      console.error(e)
-      toast.error('Error while fetching greeting. Try again…')
-      setSearchJobsResult(undefined)
+      console.error(e);
+      toast.error('Error while fetching greeting. Try again...');
+      setSearchJobsResult([]);
     } finally {
-      setFetchIsLoading(false)
+      setFetchIsLoading(false);
     }
-  }
+  };
+
+  const json = JSON.stringify(searchJobsResult, null, 2);
+  const list_jobs = JSON.parse(json);
+  const data = list_jobs.Ok;
+
 
   return (
     <Layout>
@@ -53,6 +55,8 @@ export default function SearchJobPage() {
 
       <section className="py-10">
         <div className="bg-white rounded-lg shadow p-6 mx-auto max-w-3xl">
+
+
           <h1 className="text-3xl text-gray-800 font-bold mb-6">
             <FaCode className="inline-block align-middle text-blue-500 mr-2" /> Find Jobs
           </h1>
@@ -71,7 +75,7 @@ export default function SearchJobPage() {
               value={categoryQuery}
               onChange={(e) => setCategoryQuery(e.target.value)}
             />
-            
+
             <button
               onClick={(e) => searchJobs(searchQuery, categoryQuery)}
               type="submit"
@@ -80,7 +84,37 @@ export default function SearchJobPage() {
               Search
             </button>
           </form>
-          {/* Your search job results can be added here */}
+
+          {fetchIsLoading && <p>Loading...</p>}
+
+          {data && data.length > 0 ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Job Name</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Pay</th>
+                  <th>End Time</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data.map((item: { id: string, name: string, description: string, category: string, pay: string , endTime: string}) => (
+                  <tr key={item.id}>
+                    <td style={{ textAlign: 'center' }}>{item.name}</td>
+                    <td style={{ textAlign: 'center' }}>{item.description}</td>
+                    <td style={{ textAlign: 'center' }}>{item.category}</td>
+                    <td style={{ textAlign: 'center' }}>{item.pay}</td>
+                    <td style={{ textAlign: 'center' }}>{item.endTime}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No data available.</p>
+          )}
+
         </div>
       </section>
     </Layout>
