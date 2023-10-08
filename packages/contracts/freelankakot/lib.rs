@@ -146,6 +146,7 @@ mod freelankakot {
     )]
     pub struct Job {
         name: String,
+        job_id: JobId,
         description: String,
         category: Category,
         result: Option<String>,
@@ -490,8 +491,10 @@ mod freelankakot {
             } else {
                 category = Category::NONE;
             };
+            let current_id = self.current_job_id;
             let job = Job {
                 name: name.clone(),
+                job_id: current_id,
                 description: description.clone(),
                 category: category,
                 result: None,
@@ -510,7 +513,6 @@ mod freelankakot {
                 require_rating: (false, false),
                 unqualifier: false,
             };
-            let current_id = self.current_job_id;
             self.jobs.insert(current_id, &job);
             // update owner_jobs
             match self.owner_jobs.contains(caller) {

@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x71e8f8e1dc46d6fe2ac389171a9a5f2164ece7250b5a69a2199734321aa2e9a7",
+    "hash": "0x959e1c589047e97811bfc525d69d22bf8698c223cc24c7b60ecdbef69aab94f7",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.71.1",
     "build_info": {
@@ -1212,6 +1212,15 @@
                           "layout": {
                             "leaf": {
                               "key": "0xeea82b82",
+                              "ty": 1
+                            }
+                          },
+                          "name": "job_id"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xeea82b82",
                               "ty": 0
                             }
                           },
@@ -2366,6 +2375,11 @@
                 "name": "name",
                 "type": 0,
                 "typeName": "String"
+              },
+              {
+                "name": "job_id",
+                "type": 1,
+                "typeName": "JobId"
               },
               {
                 "name": "description",
