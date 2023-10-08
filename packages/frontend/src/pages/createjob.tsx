@@ -1,16 +1,57 @@
 import Head from 'next/head';
 import { useState } from 'react';
 import Layout from '@/components/layout';
+import { ContractIds } from '@/deployments/deployments'
+import {
+  contractQuery,
+  decodeOutput,
+  useInkathon,
+  useRegisteredContract,
+  transferBalance
+} from '@scio-labs/use-inkathon'
+import { contractTxWithToast } from '@/utils/contractTxWithToast'
+import toast from 'react-hot-toast'
+import { ButtonGroup } from '@chakra-ui/react';
+// import { useTransfer } from 'useink';
 
 export default function CreateJobPage() {
   const [jobTitle, setJobTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [budget, setBudget] = useState('');
+  const [category, setCategory] = useState('');
+  const [duration, setDuration] = useState<number>(0);
+  const [budget, setBudget] = useState<number>(0);
+  const { api, activeAccount, activeSigner } = useInkathon()
+  const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Freelankakot)
+  const [updateIsLoading, setUpdateIsLoading] = useState<boolean>()
+  const DECIMAL_NUMBER = 1000000000000;  
 
-  const handleSubmit = (event) => {
+  const createJob = async (jobTitle: string, description: string, category: string, budget: number, duration: number) => {
+    
+    if (!activeAccount || !contract || !activeSigner || !api) {
+      toast.error('Wallet not connected. Try again…')
+      return
+    }
+
+    // Send transaction
+    setUpdateIsLoading(true)
+    try {
+      await contractTxWithToast(api, activeAccount.address, contract, 'create', {value: budget*DECIMAL_NUMBER}, [
+        jobTitle, description, category, duration
+      ])
+      // await useTransfer()?.signAndSend(contract.address.toString(), budget)
+    //   reset()
+    } catch (e) {
+      console.error(e)
+    } finally {
+    setUpdateIsLoading(false)
+    //   fetchGreeting()
+    }
+  }
+
+  const handleSubmit = (event: any) => {
     event.preventDefault();
     // TODO: Send the job details to your backend server and handle job creation and marketplace integration.
-    console.log('Job details:', { jobTitle, description, budget });
+    console.log('Job details:', { jobTitle, description, category, duration});
   };
 
   return (
@@ -51,22 +92,51 @@ export default function CreateJobPage() {
               />
             </div>
             <div>
+              <label className="text-gray-700 font-semibold mb-2" htmlFor="category">
+                Category
+              </label>
+              <input
+                type="string"
+                id="category"
+                className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
+                placeholder="Enter the category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              />
+            </div>
+            <div>
               <label className="text-gray-700 font-semibold mb-2" htmlFor="budget">
                 Budget
               </label>
               <input
-                type="text"
+                type="number"
                 id="budget"
                 className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
-                placeholder="Enter the budget"
+                placeholder="Enter the budget (TZERO)"
+                value={duration}
+                onChange={(e) => setDuration(parseInt(e.target.value))}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-semibold mb-2" htmlFor="duration">
+                Duration
+              </label>
+              <input
+                type="number"
+                id="duration"
+                className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
+                placeholder="Enter duration"
                 value={budget}
-                onChange={(e) => setBudget(e.target.value)}
+                onChange={(e) => setBudget(parseInt(e.target.value))}
                 required
               />
             </div>
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded focus:outline-none focus:ring focus:border-blue-300"
+              onClick={(e) => createJob(jobTitle, description, category, budget, duration)}
             >
               Post Job
             </button>
