@@ -83,7 +83,7 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
         </>
       )}
 
-      {activeAccount && (
+      {user && (
         <Flex
           alignItems="center"
           columnGap={{ base: 8, md: 4, xl: 8 }}

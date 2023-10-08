@@ -16,6 +16,7 @@ const UserTypeSwitch: FC<UserTypeSwitchProps> = ({ onCloseMenu, ...props }) => {
   const {mobileDisplay} = useResponsive();
 
   const setUserType = async (newType: UserTypeEnum) => {
+    alert(newType);
     setType(newType);
     if (mobileDisplay && onCloseMenu !== undefined) {
       onCloseMenu();

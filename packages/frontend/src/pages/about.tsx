@@ -1,7 +1,19 @@
 import Head from 'next/head'
 import Layout from "@/components/layout"
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function IndexPage() {
+    const router = useRouter()
+ 
+  useEffect(() => {
+    // Always do navigations after the first render
+    router.push('/about')
+  }, [])
+ 
+  useEffect(() => {
+    // The counter changed!
+  }, [router.query.counter])
     return (
         <Layout>
             <Head>
