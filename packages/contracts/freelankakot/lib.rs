@@ -309,7 +309,8 @@ mod freelankakot {
             };
             match self.personal_account_info.get(caller) {
                 None => self.personal_account_info.insert(caller, &caller_info),
-                _ => return Err(JobError::Registered),
+                // _ => return Err(JobError::Registered),
+                _ => self.personal_account_info.insert(caller, &caller_info)
             };
             Self::env().emit_event(Registered {
                 account_id: caller,
