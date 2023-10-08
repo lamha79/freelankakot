@@ -103,11 +103,12 @@ const SignupForm: FC<SignupFormProps> = ({ onSubmitSuccess }) => {
         values.firstname + values.lastname, values.email, values.currentUserType
       ])
       toast({
-        title: <Text mt={-0.5}>Account registered</Text>,
+        title: <Text mt={-0.5}>Account registered Successfully</Text>,
         status: 'success',
         isClosable: true,
         position: 'top-right',
       })
+      onSubmitSuccess();
     } catch (e: any) {
       let error = e.errorMessage;
       toast({
