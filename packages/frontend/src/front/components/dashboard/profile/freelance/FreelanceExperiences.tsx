@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Flex } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
-import AddIcon from '@workfreelankakot/front/components/icons/AddIcon';
-import { Experience } from '@workfreelankakot/utils';
+import { useCurrentUser } from '../../../../../front-provider/src';
+import AddIcon from '../../../../../front/components/icons/AddIcon';
+import { Experience } from '../../../../../utility/src';
 import { FC, useState } from 'react';
 import FreelanceExperienceForm from './FreelanceExperienceForm';
 import FreelanceExperiencesLine from './FreelanceExperiencesLine';

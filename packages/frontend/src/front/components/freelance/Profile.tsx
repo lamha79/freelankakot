@@ -1,6 +1,6 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { useGetUserProfile } from '@workfreelankakot/front/hooks/useGetUserProfile';
-import { shortHash } from '@workfreelankakot/utils';
+import { useGetUserProfile } from '../../../front/hooks/useGetUserProfile';
+import { shortHash } from '../../../utility/src';
 import { useRouter } from 'next/router';
 import { FC, useEffect } from 'react';
 import ArrowRightIcon from '../icons/ArrowRightIcon';

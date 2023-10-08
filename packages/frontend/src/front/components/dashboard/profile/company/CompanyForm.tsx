@@ -12,11 +12,11 @@ import {
 import { FC } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import { useCreateCompany } from '@workfreelankakot/front/hooks/useCreateCompany';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
-import { locationRegex } from '@workfreelankakot/utils';
+import ArrowRightIcon from '../../../../../front/components/icons/ArrowRightIcon';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import { useCreateCompany } from '../../../../../front/hooks/useCreateCompany';
+import { useCurrentUser } from '../../../../../front-provider/src';
+import { locationRegex } from '../../../../../utility/src';
 
 interface FormData {
   name: string;

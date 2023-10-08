@@ -12,13 +12,13 @@ import {
   MenuList,
   Text
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import ChevronDownIcon from '@workfreelankakot/front/components/icons/ChevronDownIcon';
-import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
-import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
-import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
-import { User } from '@workfreelankakot/utils';
+import { useCurrentUser } from '../../../../../front-provider/src';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import ChevronDownIcon from '../../../../../front/components/icons/ChevronDownIcon';
+import CloseIcon from '../../../../../front/components/icons/CloseIcon';
+import PencilIcon from '../../../../../front/components/icons/PencilIcon';
+import { useUpdateProfile } from '../../../../../front/hooks/useUpdateProfile';
+import { User } from '../../../../../utility/src';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { FC, useEffect, useState } from 'react';
 import * as Yup from 'yup';

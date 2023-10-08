@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useContext } from 'react';
-import { ChatInstance } from '@workfreelankakot/utils';
+import { ChatInstance } from '../../../utility/src';
 
 type ChatInstanceContextInterface = {
   chats: ChatInstance[] | null;

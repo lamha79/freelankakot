@@ -1,8 +1,8 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useCurrentCompany, useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
+import { useCurrentCompany, useCurrentUser, useLanding } from '../../../../front-provider/src';
 import { FC, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { UserTypeEnum } from '@workfreelankakot/utils';
+import { UserTypeEnum } from '../../../../utility/src';
 import FreelanceTopProfile from './freelance/FreelanceTopProfile';
 import FreelanceResume from './freelance/FreelanceResume';
 import FreelanceSkills from './freelance/FreelanceSkills';

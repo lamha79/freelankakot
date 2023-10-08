@@ -52,7 +52,9 @@
     "yup": "^1.1.1",
     "swiper": "^9.2.4",
     "nft.storage": "^7.0.3",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "framer-motion": "^10.12.8",
+    "chakra-dayzed-datepicker": "^0.2.8"
   },
   "devDependencies": {
     "@types/node": "latest",

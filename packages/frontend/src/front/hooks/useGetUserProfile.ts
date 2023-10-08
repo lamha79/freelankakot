@@ -1,4 +1,4 @@
-import { User } from '@workfreelankakot/utils';
+import { User } from '../../utility/src';
 import { useCallback, useEffect, useState } from 'react';
 import { getUserProfile } from '../services/user';
 

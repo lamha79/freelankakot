@@ -1,5 +1,5 @@
-import { useCurrentUser } from '@workfreelankakot/front-provider';
-import { User } from '@workfreelankakot/utils';
+import { useCurrentUser } from '../../front-provider/src';
+import { User } from '../../utility/src';
 import { useCallback, useState } from 'react';
 import { updateUserProfile } from '../services/user';
 

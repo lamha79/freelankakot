@@ -9,17 +9,17 @@ import {
   FormLabel,
   Textarea
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { useCurrentUser } from '../../../../../front-provider/src';
 import { FC } from 'react';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
-import TrashIcon from '@workfreelankakot/front/components/icons/TrashIcon';
-import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import CloseIcon from '../../../../../front/components/icons/CloseIcon';
+import TrashIcon from '../../../../../front/components/icons/TrashIcon';
+import ArrowRightIcon from '../../../../../front/components/icons/ArrowRightIcon';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
-import { useExperiences } from '@workfreelankakot/front/hooks/useExperiences';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import { useExperiences } from '../../../../../front/hooks/useExperiences';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 interface FormData {
   company: string;

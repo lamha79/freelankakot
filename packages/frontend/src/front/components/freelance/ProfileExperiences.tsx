@@ -1,5 +1,5 @@
 import { Avatar, Box, Flex } from '@chakra-ui/react';
-import { getDateDiff, User } from '@workfreelankakot/utils';
+import { getDateDiff, User } from '../../../utility/src';
 import { FC } from 'react';
 
 interface ProfileExperienceProps {

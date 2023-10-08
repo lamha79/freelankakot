@@ -1,8 +1,8 @@
 import { Box, Button, Flex, SimpleGrid, Spinner, Text } from '@chakra-ui/react';
 import { FC, MutableRefObject } from 'react';
 import { useRouter } from 'next/router';
-import { useSearchJob } from '@workfreelankakot/front/hooks/useSearchJob';
-import JobCard from '@workfreelankakot/front/components/card/JobCard';
+import { useSearchJob } from '../../../../../front/hooks/useSearchJob';
+import JobCard from '../../../../../front/components/card/JobCard';
 
 interface CompanyGalleryProps {
   scrollbarRef: MutableRefObject<HTMLElement | null>;

@@ -1,5 +1,5 @@
 import { Avatar, Flex, Text, Box } from '@chakra-ui/react';
-import { formatDateMessage } from '@workfreelankakot/utils';
+import { formatDateMessage } from '../../../../utility/src';
 import { FC } from 'react';
 
 interface SentMessageProps {

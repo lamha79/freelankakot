@@ -18,10 +18,10 @@ import {
   Visibility,
   WorkAvailability,
   workLocationOptions
-} from '@workfreelankakot/utils';
-import { useCreateJob } from '@workfreelankakot/front/hooks/useCreateJob';
+} from '../../../../utility/src';
+import { useCreateJob } from '../../../../front/hooks/useCreateJob';
 import { useRouter } from 'next/router';
-import { useLanding } from '@workfreelankakot/front-provider';
+import { useLanding } from '../../../../front-provider/src';
 
 const MotionBox = motion(Box);
 

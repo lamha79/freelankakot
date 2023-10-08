@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useContext } from 'react';
-import { CreateJob } from '@workfreelankakot/utils';
+import { CreateJob } from '../../../utility/src';
 
 type JobsContextInterface = {
   jobs: CreateJob[] | null;

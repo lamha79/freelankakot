@@ -1,14 +1,14 @@
 import { Box, Text, Flex, Button, Input, FormControl } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { useCurrentUser } from '../../../../../front-provider/src';
 import { FC, useState } from 'react';
 import PencilIcon from '../../../icons/PencilIcon';
-import { User } from '@workfreelankakot/utils';
+import { User } from '../../../../../utility/src';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import CheckIcon from '../../../icons/CheckIcon';
-import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
+import { useUpdateProfile } from '../../../../../front/hooks/useUpdateProfile';
 import CloseIcon from '../../../icons/CloseIcon';
-import { useIconForLink } from '@workfreelankakot/front/hooks/useIconForLink';
+import { useIconForLink } from '../../../../../front/hooks/useIconForLink';
 import AddIcon from '../../../icons/AddIcon';
 
 interface FormData {

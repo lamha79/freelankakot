@@ -2,7 +2,7 @@ import { Box, Button, Flex } from '@chakra-ui/react';
 import { FC } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 const FreelanceTop: FC = () => {
   const { push } = useRouter();

@@ -1,5 +1,5 @@
-import { useCurrentUser } from '@workfreelankakot/front-provider';
-import { Experience, User } from '@workfreelankakot/utils';
+import { useCurrentUser } from '../../front-provider/src';
+import { Experience, User } from '../../utility/src';
 import { useCallback, useState } from 'react';
 import { addExperience, deleteExperience, updateExperience } from '../services/user';
 

@@ -7,7 +7,15 @@ import MessageIcon from '../icons/MessageIcon'
 import { shortHash } from '../../../utility/src'
 import { useRouter } from 'next/router'
 import { useResponsive } from '../../../front/hooks/useResponsive'
-import SignupModal from '../../../front/components/modal/SignupModal';
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon'
 
 interface HeaderButtonProps {
   onCloseMenu?: () => void
@@ -18,6 +26,16 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
   const { signupModalOpen, setSignupModalOpen , activeAccountUser} = useLanding()
   const { push, pathname } = useRouter()
   const { mobileDisplay } = useResponsive()
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon()
 
   const handleLogout = () => {
     if (mobileDisplay && onCloseMenu) {
@@ -64,8 +82,8 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
           </Button>}
         </>
       )}
-      {signupModalOpen && <SignupModal />}
-      {user && (
+
+      {activeAccount && (
         <Flex
           alignItems="center"
           columnGap={{ base: 8, md: 4, xl: 8 }}
@@ -88,7 +106,7 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
             <IconButton variant="icon" aria-label="Message Icon" icon={<NotificationIcon />} />
           </Flex>
           <Text fontFamily="Comfortaa" fontWeight="600" cursor="initial">
-            {shortHash(user.wallet, { padLeft: 6, padRight: 4, separator: '...' })}
+            {shortHash(activeAccount.address, { padLeft: 6, padRight: 4, separator: '...' })}
           </Text>
           <Button variant="outline" size="md" onClick={handleLogout}>
             Disconnect

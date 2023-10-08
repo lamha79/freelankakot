@@ -4,7 +4,7 @@ import { FC } from 'react';
 import DollarIcon from '../icons/DollarIcon';
 import SendMsgIcon from '../icons/SendMsgIcon';
 import StarIcon from '../icons/StarIcon';
-import { User } from '@workfreelankakot/utils';
+import { User } from '../../../utility/src';
 import { useRouter } from 'next/router';
 
 interface FreelanceInlineCardProps {

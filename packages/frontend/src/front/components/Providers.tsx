@@ -19,7 +19,7 @@ const Providers: FC<ProvidersProps> = ({ children, theme }) => {
   return (
     <ChakraProvider resetCSS theme={theme}>
       <UseInkathonProvider appName="WorkFreelan" // TODO
-      connectOnInit={true}
+      connectOnInit={false}
       defaultChain={env.defaultChain}
       deployments={getDeployments()}>
         <CurrentUserProvider>

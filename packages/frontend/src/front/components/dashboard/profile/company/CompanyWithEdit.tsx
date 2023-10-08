@@ -12,16 +12,16 @@ import {
 import { FC, useState } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
-import { useCurrentCompany, useCurrentUser } from '@workfreelankakot/front-provider';
-import StarIcon from '@workfreelankakot/front/components/icons/StarIcon';
-import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
-import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import WebsiteIcon from '@workfreelankakot/front/components/icons/WebsiteIcon';
-import { useUpdateCompany } from '@workfreelankakot/front/hooks/useUpdateCompany';
-import { locationRegex } from '@workfreelankakot/utils';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import ArrowRightIcon from '../../../../../front/components/icons/ArrowRightIcon';
+import { useCurrentCompany, useCurrentUser } from '../../../../../front-provider/src';
+import StarIcon from '../../../../../front/components/icons/StarIcon';
+import PencilIcon from '../../../../../front/components/icons/PencilIcon';
+import CloseIcon from '../../../../../front/components/icons/CloseIcon';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import WebsiteIcon from '../../../../../front/components/icons/WebsiteIcon';
+import { useUpdateCompany } from '../../../../../front/hooks/useUpdateCompany';
+import { locationRegex } from '../../../../../utility/src';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 interface FormData {
   name: string;

@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Flex, Spinner, Text } from '@chakra-ui/react';
-import { useCurrentCompany, useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
+import { useCurrentCompany, useCurrentUser, useLanding } from '../../../../front-provider/src';
 import { FC } from 'react';
-import { UserTypeEnum } from '@workfreelankakot/utils';
+import { UserTypeEnum } from '../../../../utility/src';
 import { useRouter } from 'next/router';
 import DashboardMenuContent from './DashboardMenuContent';
 

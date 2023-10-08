@@ -58,10 +58,30 @@ import Footer from '../front/components/landing/footer/Footer';
 import { useRouter } from 'next/router';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon'
+
 const Home: NextPage = () => {
   const { user } = useCurrentUser();
   const { push, pathname } = useRouter();
   const { handleScroll } = useLanding();
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon()
 
   if (user && !pathname.includes('dashboard')) {
     push('/dashboard');

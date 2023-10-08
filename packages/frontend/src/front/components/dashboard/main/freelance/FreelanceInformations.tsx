@@ -1,8 +1,8 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
 import DashboardCard from '../../../card/DashbordCard';
 import { FC } from 'react';
-import ArrowRightIcon from '@workfreelankakot/front/components/icons/ArrowRightIcon';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import ArrowRightIcon from '../../../../../front/components/icons/ArrowRightIcon';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 const FreelanceInformations: FC = () => {
   const {mobileDisplay, tabletDisplay, desktopDisplay} = useResponsive();

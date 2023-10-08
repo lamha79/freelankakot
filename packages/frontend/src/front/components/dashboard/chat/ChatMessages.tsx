@@ -10,10 +10,10 @@ import {
   Textarea,
   useDisclosure
 } from '@chakra-ui/react';
-import { useCurrentCompany, useCurrentUser, useLanding } from '@workfreelankakot/front-provider';
-import { useGetChatMessages } from '@workfreelankakot/front/hooks/useGetChatMessages';
-import { useSendMessage } from '@workfreelankakot/front/hooks/useSendMessage';
-import { ChatInstance, CreateCompany, CreateJob, User, UserTypeEnum } from '@workfreelankakot/utils';
+import { useCurrentCompany, useCurrentUser, useLanding } from '../../../../front-provider/src';
+import { useGetChatMessages } from '../../../../front/hooks/useGetChatMessages';
+import { useSendMessage } from '../../../../front/hooks/useSendMessage';
+import { ChatInstance, CreateCompany, CreateJob, User, UserTypeEnum } from '../../../../utility/src';
 import { ChangeEvent, FC, useState, KeyboardEvent, useEffect} from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ContractModal from '../../contract/ContractModal';
@@ -22,9 +22,9 @@ import SendMsgIcon from '../../icons/SendMsgIcon';
 import ChatContractProposal from './ChatContractProposal';
 import ReceivedMessage from './ReceivedMessage';
 import SentMessage from './SentMessage';
-import { updateRelatedJob } from '@workfreelankakot/front/services/chat';
+import { updateRelatedJob } from '../../../../front/services/chat';
 import { useRouter } from 'next/router';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import { useResponsive } from '../../../../front/hooks/useResponsive';
 
 interface ChatMessagesProps {
   id: string;

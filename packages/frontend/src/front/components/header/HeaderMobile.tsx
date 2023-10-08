@@ -30,8 +30,8 @@ const HeaderMobile: FC = () => {
               <BrandLogo />
                 <Flex flexDir="column" flexGrow="1">
                     <Box my={8}><HeaderButton onCloseMenu={onClose}/></Box>
-                    {!user && !fetchingUser && <Box my="auto"><HeaderMenu onCloseMenu={onClose}/></Box>}
-                    {user && !fetchingUser && <DashboardMenuContent onCloseMenu={onClose}/>}
+                     <Box my="auto"><HeaderMenu onCloseMenu={onClose}/></Box>
+                    <DashboardMenuContent onCloseMenu={onClose}/>
                     <UserTypeSwitch mt="auto" mx="auto" mb={2} onCloseMenu={onClose}/>
                 </Flex>
               </DrawerBody>

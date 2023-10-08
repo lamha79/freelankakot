@@ -37,6 +37,9 @@ export const GlobalLayout: FC<PropsWithChildren> = ({ children }: PropsWithChild
       setFetchingUser(true);
       isUserLogged();
     }
+    if (pathname !== '/') {
+      push('/');
+    }
     if (!authenticatedCookie) {
       if (pathname !== '/') {
         push('/');

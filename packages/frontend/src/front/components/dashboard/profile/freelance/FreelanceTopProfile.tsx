@@ -10,18 +10,18 @@ import {
   InputGroup,
   InputRightElement
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { useCurrentUser } from '../../../../../front-provider/src';
 import StarIcon from '../../../icons/StarIcon';
 import { FC, useState } from 'react';
-import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
-import { locationRegex, User } from '@workfreelankakot/utils';
-import DollarIcon from '@workfreelankakot/front/components/icons/DollarIcon';
+import PencilIcon from '../../../../../front/components/icons/PencilIcon';
+import { locationRegex, User } from '../../../../../utility/src';
+import DollarIcon from '../../../../../front/components/icons/DollarIcon';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
-import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import { useUpdateProfile } from '../../../../../front/hooks/useUpdateProfile';
+import CloseIcon from '../../../../../front/components/icons/CloseIcon';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 interface FormData {
   firstname: string;

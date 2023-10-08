@@ -1,4 +1,4 @@
-import { ChatMessage } from "@workfreelankakot/utils";
+import { ChatMessage } from "../../utility/src";
 import { useCallback, useEffect, useState } from "react";
 import { getMessagesInChat } from "../services/chat";
 

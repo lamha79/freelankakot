@@ -1,6 +1,6 @@
 import { Box, Button, Flex, SimpleGrid, Spinner, Text } from '@chakra-ui/react';
 import { FC, MutableRefObject, useCallback, useEffect, useState } from 'react';
-import FreelanceCard from '@workfreelankakot/front/components/card/FreelanceCard';
+import FreelanceCard from '../../../../../front/components/card/FreelanceCard';
 import {
   SearchFreelancerProvider,
   useSearchFreelancer

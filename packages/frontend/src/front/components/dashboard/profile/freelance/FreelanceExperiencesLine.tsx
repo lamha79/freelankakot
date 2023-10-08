@@ -1,6 +1,6 @@
 import { Avatar, Box, Flex } from '@chakra-ui/react';
-import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
-import { Experience, getDateDiff } from '@workfreelankakot/utils';
+import PencilIcon from '../../../../../front/components/icons/PencilIcon';
+import { Experience, getDateDiff } from '../../../../../utility/src';
 import { FC } from 'react';
 
 interface FreelanceExperiencesLineProps {

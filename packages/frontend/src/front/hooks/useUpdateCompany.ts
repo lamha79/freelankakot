@@ -1,5 +1,5 @@
-import { useCurrentCompany } from '@workfreelankakot/front-provider';
-import { CreateCompany } from '@workfreelankakot/utils';
+import { useCurrentCompany } from '../../front-provider/src';
+import { CreateCompany } from '../../utility/src';
 import { useCallback, useState } from 'react';
 import { updateCompany } from '../services/company';
 

@@ -1,4 +1,4 @@
-import { CreateCompany } from '@workfreelankakot/utils';
+import { CreateCompany } from '../../utility/src';
 import { useCallback, useState } from 'react';
 import { getCompanyByUUID } from '../services/company';
 

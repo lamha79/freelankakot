@@ -11,16 +11,16 @@ import {
   InputRightElement,
   Textarea
 } from '@chakra-ui/react';
-import { useCurrentUser } from '@workfreelankakot/front-provider';
+import { useCurrentUser } from '../../../../../front-provider/src';
 import { FC, useEffect, useState } from 'react';
-import PencilIcon from '@workfreelankakot/front/components/icons/PencilIcon';
-import { User } from '@workfreelankakot/utils';
+import PencilIcon from '../../../../../front/components/icons/PencilIcon';
+import { User } from '../../../../../utility/src';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import CheckIcon from '@workfreelankakot/front/components/icons/CheckIcon';
-import { useUpdateProfile } from '@workfreelankakot/front/hooks/useUpdateProfile';
-import CloseIcon from '@workfreelankakot/front/components/icons/CloseIcon';
-import { useResponsive } from '@workfreelankakot/front/hooks/useResponsive';
+import CheckIcon from '../../../../../front/components/icons/CheckIcon';
+import { useUpdateProfile } from '../../../../../front/hooks/useUpdateProfile';
+import CloseIcon from '../../../../../front/components/icons/CloseIcon';
+import { useResponsive } from '../../../../../front/hooks/useResponsive';
 
 interface FormData {
   longDesc: string;

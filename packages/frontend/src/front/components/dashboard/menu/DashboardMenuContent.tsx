@@ -4,6 +4,15 @@ import { useResponsive } from "../../../../front/hooks/useResponsive";
 import { UserTypeEnum } from "../../../../utility/src";
 import { useRouter } from "next/router";
 import { FC } from "react";
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon'
 
 interface MenuElement {
     view: string;
@@ -20,6 +29,16 @@ const DashboardMenuContent: FC<DashboardMenuContentProps> = ({onCloseMenu}) => {
     const { user } = useCurrentUser();
     const { company } = useCurrentCompany();
     const {mobileDisplay, tabletDisplay, desktopDisplay} = useResponsive();
+    const {
+      activeChain,
+      switchActiveChain,
+      connect,
+      disconnect,
+      isConnecting,
+      activeAccount,
+      accounts,
+      setActiveAccount,
+    } = useInkathon()
 
     const companyMenu: MenuElement[] = [
         { view: '/dashboard', label: 'Dashboard' },
@@ -67,7 +86,7 @@ const DashboardMenuContent: FC<DashboardMenuContentProps> = ({onCloseMenu}) => {
       justifyContent={!user ? 'center' : 'start'}
       onClick={() => handleViewChange('/dashboard/profile')}
     >
-      {user && type === UserTypeEnum.Freelancer && (
+      {activeAccount && (
         <>
           <Box w="48px" h="48px" ml={{base: "auto", lg: 0}}>
             <Avatar />
@@ -86,7 +105,7 @@ const DashboardMenuContent: FC<DashboardMenuContentProps> = ({onCloseMenu}) => {
           </Text>
         </>
       )}
-      {user && type === UserTypeEnum.Company && (
+      {activeAccount && (
         <>
           {!company && (
             <Box fontWeight={700} fontFamily="Comfortaa" textAlign="center" w="100%" >
@@ -114,7 +133,7 @@ const DashboardMenuContent: FC<DashboardMenuContentProps> = ({onCloseMenu}) => {
         </>
       )}
 
-      {!user && <Spinner color="neutral.lightGray" size="md" />}
+      {activeAccount && <Spinner color="neutral.lightGray" size="md" />}
     </Flex>
     {menuElement.map((v, k) => {
       let active = false;

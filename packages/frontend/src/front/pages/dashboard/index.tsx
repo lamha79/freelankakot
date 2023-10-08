@@ -1,4 +1,4 @@
-import { useLanding } from '@workfreelankakot/front-provider';
+import { useLanding } from '../../../front-provider/src';
 import { NextPage } from 'next';
 import DashboardMain from '../../components/dashboard/main/DashboardMain';
 import { useRef } from 'react';

@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useLanding } from '@workfreelankakot/front-provider';
-import { UserTypeEnum } from '@workfreelankakot/utils';
+import { useLanding } from '../../../../front-provider/src';
+import { UserTypeEnum } from '../../../../utility/src';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC, MutableRefObject, useState } from 'react';
 import FreelanceTop from './freelance/FreelanceTop';
@@ -8,8 +8,8 @@ import FreelanceGallery from './freelance/FreelanceGallery';
 import CompanyTop from './company/CompanyTop';
 import CompanyGallery from './company/CompanyGallery';
 import SearchBar from '../../landing/product/SearchBar';
-import { SearchFreelancerProvider } from '@workfreelankakot/front/hooks/useSearchFreelancer';
-import { SearchJobProvider } from '@workfreelankakot/front/hooks/useSearchJob';
+import { SearchFreelancerProvider } from '../../../../front/hooks/useSearchFreelancer';
+import { SearchJobProvider } from '../../../../front/hooks/useSearchJob';
 
 const MotionBox = motion(Box);
 

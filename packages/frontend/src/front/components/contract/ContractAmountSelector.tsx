@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Flex, FormControl, FormLabel, Text } from "@chakra-ui/react";
-import { usePriceFeed } from "@workfreelankakot/front/hooks/usePriceFeed";
+import { usePriceFeed } from "../../../front/hooks/usePriceFeed";
 import { ErrorMessage, Field, FieldProps, useFormikContext } from "formik";
 import { FC } from "react";
 import { FormData } from "./ContractForm";

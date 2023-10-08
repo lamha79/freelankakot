@@ -1,6 +1,6 @@
 import { Badge, Box, Flex } from '@chakra-ui/react';
-import { useColoredBadges } from '@workfreelankakot/front/hooks/useColoredBadges';
-import { User } from '@workfreelankakot/utils';
+import { useColoredBadges } from '../../../front/hooks/useColoredBadges';
+import { User } from '../../../utility/src';
 import { FC } from 'react';
 
 interface ProfileSkillsProps {
