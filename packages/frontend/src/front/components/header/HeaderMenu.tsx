@@ -3,6 +3,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 import { useLanding } from '../../../front-provider/src';
 import { useResponsive } from '../../../front/hooks/useResponsive';
+import CreateJobModal from '../modal/CreateJobModal';
 
 interface MenuElement {
   id: string;
@@ -13,7 +14,8 @@ const menuElement: MenuElement[] = [
   { id: 'product', label: 'Product' },
   { id: 'technology', label: 'Technology' },
   { id: 'community', label: 'Community' },
-  { id: 'contact', label: 'Contact' }
+  { id: 'contact', label: 'Contact' },
+  { id: 'createjob', label: 'Create Job' }
 ];
 
 interface HeaderMenuProps {
@@ -22,13 +24,17 @@ interface HeaderMenuProps {
 }
 
 const HeaderMenu: FC<HeaderMenuProps> = ({ onCloseMenu, noActive = false }) => {
-  const { currentView, setCurrentView } = useLanding();
+  const { currentView, setCurrentView, setCreateJobModalOpen } = useLanding();
   const { mobileDisplay } = useResponsive();
 
   const handleClick = (id: string) => {
     if (mobileDisplay && onCloseMenu) {
       setCurrentView(id);
       onCloseMenu();
+    }
+    if(id === "createjob") {
+      setCreateJobModalOpen(true);
+      <CreateJobModal />
     }
   };
 

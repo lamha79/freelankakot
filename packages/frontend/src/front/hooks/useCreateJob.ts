@@ -1,26 +1,59 @@
-import { useCurrentCompany, useJobs } from '@workfreelankakot/front-provider';
-import { CreateJob } from '@workfreelankakot/utils';
+import { useCurrentCompany, useJobs } from '../../front-provider/src';
+import { CreateJob } from '../../utility/src';
 import { useCallback, useState } from 'react';
-import { createJob } from '../services/jobs';
+import {
+  SubstrateChain,
+  SubstrateWalletPlatform,
+  allSubstrateWallets,
+  getSubstrateChain,
+  isWalletInstalled,
+  useBalance,
+  useInkathon,
+} from '@scio-labs/use-inkathon'
 
-export const useCreateJob = () => {
-  const [loading, setLoading] = useState(false);
-  const { jobs, setJobs } = useJobs();
-  const { company } = useCurrentCompany();
+interface CreateJobProps {
+  address: `0x${string}`;
+  email: string;
+  firstname: string;
+  lastname: string;
+  currentUserType: string;
+  agreeTOS: boolean;
+  agreeDataTreatment: boolean;
+}
 
-  const createNewJob = useCallback(
-    async (job: Partial<CreateJob>) => {
-      setLoading(true);
-      const res = await createJob({ ...job, companyUuid: company?.uuid });
-      if (jobs) {
-        setJobs([...jobs, res]);
-      } else {
-        setJobs([res]);
+export function useCreateJob() {
+  const {
+    activeChain,
+    switchActiveChain,
+    connect,
+    disconnect,
+    isConnecting,
+    activeAccount,
+    accounts,
+    setActiveAccount,
+  } = useInkathon()
+
+  const createJob = useCallback(
+    async ({
+      address,
+      email,
+      firstname,
+      lastname,
+      currentUserType,
+      agreeTOS,
+      agreeDataTreatment
+    }: CreateJobProps): Promise<boolean | string> => {
+      if (address) {
+        try {
+          
+        } catch (error: any) {
+          return error.response.data.message;
+        }
       }
-      setLoading(false);
+      return 'Please link your wallet';
     },
-    [setJobs]
+    [disconnect]
   );
 
-  return { loading, createNewJob };
-};
+  return { createJob };
+}

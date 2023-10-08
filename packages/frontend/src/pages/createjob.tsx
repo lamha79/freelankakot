@@ -114,8 +114,8 @@ export default function CreateJobPage() {
                 id="budget"
                 className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
                 placeholder="Enter the budget (TZERO)"
-                value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value))}
+                value={budget}
+                onChange={(e) => setBudget(parseInt(e.target.value))}
                 required
               />
             </div>
@@ -128,8 +128,8 @@ export default function CreateJobPage() {
                 id="duration"
                 className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
                 placeholder="Enter duration"
-                value={budget}
-                onChange={(e) => setBudget(parseInt(e.target.value))}
+                value={duration}
+                onChange={(e) => setDuration(parseInt(e.target.value))}
                 required
               />
             </div>

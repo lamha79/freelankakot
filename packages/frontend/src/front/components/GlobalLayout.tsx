@@ -8,6 +8,7 @@ import SignupModal from './modal/SignupModal';
 import { useRouter } from 'next/router';
 import { getMyCompanies } from '../services/company';
 import { getMyJobs } from '../services/jobs';
+import CreateJobModal from './modal/CreateJobModal';
 
 export const GlobalLayout: FC<PropsWithChildren> = ({ children }: PropsWithChildren) => {
   const { user, setUser, setFetchingUser } = useCurrentUser();
@@ -89,6 +90,7 @@ export const GlobalLayout: FC<PropsWithChildren> = ({ children }: PropsWithChild
       color="neutral.black"
     >
       {!user && !isFetching && <SignupModal />}
+      {!user && !isFetching && <CreateJobModal />}
       <Header />
       {children}
     </Container>
