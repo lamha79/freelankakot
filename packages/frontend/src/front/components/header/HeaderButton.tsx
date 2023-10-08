@@ -15,7 +15,7 @@ interface HeaderButtonProps {
 
 const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
   const { user, logout } = useCurrentUser()
-  const { signupModalOpen, setSignupModalOpen } = useLanding()
+  const { signupModalOpen, setSignupModalOpen , activeAccountUser} = useLanding()
   const { push, pathname } = useRouter()
   const { mobileDisplay } = useResponsive()
 
@@ -40,7 +40,7 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
           <LoginButton signupModalOpen={signupModalOpen} mr={{ base: 0, md: 4, xl: 8 }}>
             Login
           </LoginButton>
-          <Button
+          {!activeAccountUser && <Button
             backgroundColor={'#fdb81e'}
             textColor={'#002c39'}
             fontFamily={'Comfortaa'}
@@ -61,7 +61,7 @@ const HeaderButton: FC<HeaderButtonProps> = ({ onCloseMenu }) => {
             }}
           >
             Sign up
-          </Button>
+          </Button>}
         </>
       )}
       {signupModalOpen && <SignupModal />}

@@ -19,7 +19,7 @@ import SignupForm from '../form/SignupForm';
 import { useResponsive } from '../../../front/hooks/useResponsive';
 
 const SignupModal: FC = () => {
-  const { signupModalOpen, setSignupModalOpen } = useLanding();
+  const { signupModalOpen, setSignupModalOpen, setActiveAccountUser } = useLanding();
   const {mobileDisplay , tabletDisplay, desktopDisplay} = useResponsive();
 
   const {
@@ -53,6 +53,7 @@ const SignupModal: FC = () => {
                 disconnect;
                 setTimeout(() => {
                   setSignupModalOpen(false);
+                  setActiveAccountUser(true);
                 }, 200);
               }}
             />
@@ -70,6 +71,7 @@ const SignupModal: FC = () => {
                     disconnect;
                     setTimeout(() => {
                       setSignupModalOpen(false);
+                      setActiveAccountUser(true);
                     }, 200);
                   }}
                 />
