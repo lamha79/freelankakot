@@ -326,6 +326,32 @@ mod freelankakot {
             self.personal_account_info.contains(account)
         }
 
+        //check người gọi là freelancer hay không
+        #[ink(message)]
+        pub fn check_caller_is_freelancer(&self) -> bool {
+            let caller = self.env().caller();
+            // self.personal_account_info.get(caller).unwrap().role == AccountRole::FREELANCER
+            match self.personal_account_info.get(caller) {
+                None => return false,
+                Some(x) => {
+                    return x.role == AccountRole::FREELANCER;
+                }
+            }
+        }
+
+        //check người gọi là owner hay không
+        //owner được phép tạo job
+        #[ink(message)]
+        pub fn check_caller_is_owner(&self) -> bool {
+            let caller = self.env().caller();
+            match self.personal_account_info.get(caller) {
+                None => return false,
+                Some(x) => {
+                    return x.role != AccountRole::FREELANCER;
+                }
+            }
+        }
+
         // get tất cả open job no parametter
         #[ink(message)]
         pub fn get_all_open_jobs_no_params(&self) -> Result<Vec<Job>, JobError> {
@@ -367,6 +393,43 @@ mod freelankakot {
             Ok(open_jobs)
         }
 
+        // get tất cả doing job của freelancer để submit, người gọi là freelancer
+        #[ink(message)]
+        pub fn get_all_doning_jobs_of_freelancer(
+            &self
+        ) -> Result<Vec<Job>, JobError> {
+            let freelancer = self.env().caller();
+            let mut jobs = Vec::<Job>::new();
+            for i in 0..self.current_job_id {
+                jobs.push(self.jobs.get(i).unwrap());
+            }
+            let doing_jobs = jobs
+                .into_iter()
+                .filter(|job| job.status == Status::DOING )
+                .filter(|job| job.person_obtain.unwrap() == freelancer)
+                .collect();
+
+            Ok(doing_jobs)
+        }
+
+        // get tất cả các review job của onwer, người gọi là owner 
+        #[ink(message)]
+        pub fn get_all_review_jobs_of_owner(
+            &self
+        ) -> Result<Vec<Job>, JobError> {
+            let owner = self.env().caller();
+            let mut jobs = Vec::<Job>::new();
+            for i in 0..self.current_job_id {
+                jobs.push(self.jobs.get(i).unwrap());
+            }
+            let doing_jobs = jobs
+                .into_iter()
+                .filter(|job| job.status == Status::REVIEW )
+                .filter(|job| job.person_create.unwrap() == owner)
+                .collect();
+            Ok(doing_jobs)
+        }
+
         //show thông tin account
         #[ink(message)]
         pub fn get_account_info(&self, caller: AccountId) -> Option<UserInfo> {
@@ -390,7 +453,7 @@ mod freelankakot {
         }
 
         #[ink(message, payable)]
-        pub fn create(
+        pub fn create_job(
             &mut self,
             name: String,
             description: String,
@@ -1187,7 +1250,7 @@ mod freelankakot {
             let description = "detail of user's job".to_string();
             let string_category = "it".to_string();
             let duration: u64 = 1;
-            let result = contract.create(name, description, string_category, duration);
+            let result = contract.create_job(name, description, string_category, duration);
             assert!(result.is_ok());
         }
 
@@ -1246,7 +1309,7 @@ mod freelankakot {
             //set số lượng tiền deposit vào smartcontract
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             // Create a new job.
-            let result = account.create(
+            let result = account.create_job(
                 "My new job".to_string(),
                 "This is a description of my new job.".to_string(),
                 "it".to_string(),
@@ -1295,7 +1358,7 @@ mod freelankakot {
             );
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             // Create a new job.
-            let result = account.create(
+            let result = account.create_job(
                 "My new job".to_string(),
                 "This is a description of my new job.".to_string(),
                 "it".to_string(),
@@ -1347,7 +1410,7 @@ mod freelankakot {
             );
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
             account
-                .create(
+                .create_job(
                     "My new job".to_string(),
                     "This is a description of my new job.".to_string(),
                     "it".to_string(),
@@ -1386,7 +1449,7 @@ mod freelankakot {
                 "individual".to_string(),
             );
             account
-                .create(
+                .create_job(
                     "My new job".to_string(),
                     "This is a description of my new job.".to_string(),
                     "it".to_string(),
@@ -1409,7 +1472,7 @@ mod freelankakot {
                 "individual".to_string(),
             );
             account
-                .create(
+                .create_job(
                     "My new job".to_string(),
                     "This is a description of my new job.".to_string(),
                     "it".to_string(),
@@ -1543,7 +1606,7 @@ mod freelankakot {
             set_caller(alice);
             set_callee(AccountId::from([7; 32]));
             ink::env::test::set_value_transferred::<ink::env::DefaultEnvironment>(1000);
-            let old_balance_of_alice = get_balance_of(alice);
+            // let old_balance_of_alice = get_balance_of(alice);
             create_new_job(&mut account, alice);
             assert_eq!(account.jobs.get(0).unwrap().budget, 970);
             //không hiểu sao lại lỗi chỗ này

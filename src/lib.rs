@@ -344,7 +344,7 @@ mod freelankakot {
         }
 
         #[ink(message, payable)]
-        pub fn create(
+        pub fn create_job (
             &mut self,
             name: String,
             description: String,
@@ -352,7 +352,6 @@ mod freelankakot {
             duration: u64,
         ) -> Result<(), JobError> {
             // Tạo một công việc mới.
-            //
             // Hàm này cho phép người phân công công việc tạo các công việc mới.
 
             //duration là nhập số ngày chú ý timestamp tính theo mili giây

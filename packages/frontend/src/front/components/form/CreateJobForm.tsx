@@ -32,6 +32,8 @@ import { shortHash, UserTypeEnum } from '../../../utility/src'
 import { useCreateJob } from '../../hooks/useCreateJob'
 //thêm vào
 import { ContractIds } from '../../../deployments/deployments'
+const DECIMAL_NUMBER = 1_000_000_000_000;  
+
 
 interface RadioUserType {
   label: string
@@ -58,7 +60,7 @@ interface FormData {
 }
 
 const validationSchema = Yup.object().shape({
-  jobTitle: Yup.string().email('Invalid job title').required('Job title is required'),
+  jobTitle: Yup.string().min(2).required('Job title is required'),
   description: Yup.string().min(2).required('Description required'),
   category: Yup.string().min(2).required('Category required'),
   budget: Yup.number()
@@ -93,19 +95,18 @@ const CreateJobForm: FC<CreateJobFormProps> = ({ onSubmitSuccess }) => {
   const [loading, setLoading] = useState(false)
   const { api, activeSigner } = useInkathon()
   const { contract, address: contractAddress } = useRegisteredContract(ContractIds.Freelankakot)
-  const updateRegister = async (values: FormData) => {
+  const updateCreateJob = async (values: FormData) => {
     if (!activeAccount || !contract || !activeSigner || !api) {
-      return false
+      return
     }
-
     try {
-      await contractTx(api, activeAccount.address, contract, 'createJob', {}, [
+      await contractTx(api, activeAccount.address, contract, 'create_job', {value: values.budget * DECIMAL_NUMBER}, [
         values.jobTitle,
         values.description,
         values.category,
-        values.budget,
         values.duration,
       ])
+
       toast({
         title: <Text mt={-0.5}>Create Job Successfully</Text>,
         status: 'success',
@@ -127,7 +128,7 @@ const CreateJobForm: FC<CreateJobFormProps> = ({ onSubmitSuccess }) => {
   const onSubmit = async (values: FormData) => {
     if (activeAccount?.address && !loading) {
       setLoading(true)
-      updateRegister(values)
+      updateCreateJob(values)
       setLoading(false)
     }
   }
@@ -192,7 +193,7 @@ const CreateJobForm: FC<CreateJobFormProps> = ({ onSubmitSuccess }) => {
             </ErrorMessage>
           </FormControl>
           <FormControl id="budget" mb={6}>
-            <FormLabel>Your are a</FormLabel>
+            <FormLabel>Budget</FormLabel>
             <Field
               name="budget"
               placeholder="Budget"
@@ -205,6 +206,7 @@ const CreateJobForm: FC<CreateJobFormProps> = ({ onSubmitSuccess }) => {
             </ErrorMessage>
           </FormControl>
           <FormControl id="duration" isRequired>
+            <FormLabel>Duration</FormLabel>
             <Field
               name="duration"
               placeholder="Duration"
