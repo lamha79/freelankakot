@@ -46,8 +46,7 @@ export default function SearchJobPage() {
   const json = JSON.stringify(searchJobsResult, null, 2);
   const list_jobs = JSON.parse(json);
   const data = list_jobs.Ok;
-  console.log(data)
-
+  
 
   return (
     <Layout>
@@ -58,75 +57,73 @@ export default function SearchJobPage() {
       <section className="py-10">
         <div className="bg-white rounded-lg shadow p-6 mx-auto max-w-3xl">
 
-
-          <h1 className="text-3xl text-gray-800 font-bold mb-6">
+          <h1 className="text-3xl text-gray-800 font-bold mb-6" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '2px', color: 'blue' }}>
             <FaCode className="inline-block align-middle text-blue-500 mr-2" /> Find Jobs
           </h1>
           <form onSubmit={handleSearch} className="flex items-center">
             <input
               type="text"
-              className="border border-gray-300 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 flex-grow"
-              placeholder="Enter job keyword"
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              className="border border-gray-400 rounded py-2 px-4 mr-2"
+              style={{ width: '250px' }}
             />
-            <input
-              type="text"
-              className="border border-gray-300 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 flex-grow"
-              placeholder="Enter job category"
+            <select
               value={categoryQuery}
               onChange={(e) => setCategoryQuery(e.target.value)}
-            />
-
+              className="border border-gray-400 rounded py-2 px-4 mr-2"
+              style={{ width: '150px' }}
+            >
+              <option value="">NONE</option>
+              <option value="IT">IT</option>
+              <option value="PHOTOSHOP">PHOTOSHOP</option>
+              <option value="MARKETING">MARKETING</option>
+            </select>
             <button
-              onClick={(e) => searchJobs(searchQuery, categoryQuery)}
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded ml-4 focus:outline-none focus:ring focus:border-blue-300"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Search
             </button>
           </form>
 
-          {fetchIsLoading && <p>Loading...</p>}
+          {fetchIsLoading && <p style={{ color: 'red' }}>Loading...</p>}
 
           {data && data.length > 0 ? (
             <table style={{ textAlign: 'center', border: '1px solid black' }}>
               <thead>
                 <tr>
-                  <th>Job Name</th>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>Pay</th>
-                  <th>End Time</th>
-                  <th>Status</th>
+                  <th style={{ backgroundColor: 'yellow' }}>Job Name</th>
+                  <th style={{ backgroundColor: 'pink' }}>Description</th>
+                  <th style={{ backgroundColor: 'orange' }}>Category</th>
+                  <th style={{ backgroundColor: 'lightblue' }}>Pay</th>
+                  <th style={{ backgroundColor: 'lightgreen' }}>End Time</th>
+                  <th style={{ backgroundColor: 'lightgray' }}>Status</th>
                 </tr>
               </thead>
 
               <tbody>
                 {data.map((item: { id: string, name: string, description: string, category: string, pay: string, endTime: string, status: string, personCreate: string }) => (
                   <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>{item.description}</td>
-                    <td>{item.category}</td>
-                    <td>{item.pay}</td>
-                    <td>{item.endTime}</td>
-                    <td>{item.status}</td>
-                    <button
-                      className="bg-gray-300 hover:bg-gray-700 text-black font-bold py-2 px-2 rounded focus:outline-none focus:shadow-outline"
-                      style={{ margin: '10px', fontSize: '11px' }}
-                    >
-                      Obtain
-                    </button>
+                    <td style={{ color: 'red' }}>{item.name}</td>
+                    <td style={{ color: 'blue' }}>{item.description}</td>
+                    <td style={{ color: 'green' }}>{item.category}</td>
+                    <td style={{ color: 'purple' }}>{item.pay}</td>
+                    <td style={{ color: 'yellow' }}>{item.endTime}</td>
+                    <td style={{ color: 'pink' }}>{item.status}</td>
+                    <td>
+                      <button className="button" style={{ backgroundColor: 'orange' }}>Detail</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p>No data available.</p>
+            <p style={{ color: 'gray' }}>No data available.</p>
           )}
-
         </div>
       </section>
-    </Layout >
+    </Layout>
   );
 }
