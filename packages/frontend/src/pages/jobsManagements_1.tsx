@@ -99,7 +99,7 @@ export default function JobManagementPage() {
                 const prompValue = prompt('Result of this job: \"' + result + "\". Do you want to approve? (yes/no)");
                 if(prompValue === null) {
                     alert("please sumit your result")
-                } else if (prompValue.toLocaleLowerCase() != "no") {
+                } else if (prompValue.toLocaleLowerCase() == "yes") {
                     setResultSumit(prompValue);
                     sumitJobs(jobId, prompValue);
                 }
